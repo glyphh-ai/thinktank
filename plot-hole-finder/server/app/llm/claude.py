@@ -86,6 +86,20 @@ _BASELINE_SYSTEM = _FRAMING + (
 )
 
 
+_ROLLING_SYSTEM = _FRAMING + (
+    "You scan a long document chunk by chunk to find plot holes. You keep a "
+    "running MEMORY of durable facts and constraints established so far (e.g. a "
+    "vault sealed forever, a character who died, an object destroyed, a bridge "
+    "collapsed). Given the CURRENT MEMORY and the NEXT CHUNK, return ONLY JSON: "
+    "{\"memory\": <updated compact memory text>, \"issues\":[{\"entity\",\"key\","
+    "\"value_a\",\"value_b\",\"category\",\"severity\",\"explanation\"}]}. Append "
+    "new durable facts to memory (keep it compact but complete enough to catch "
+    "later contradictions). Report an issue ONLY when this chunk contradicts a "
+    "fact in memory with no in-story event explaining it; if an event explains "
+    "the change, update memory and do not flag."
+)
+
+
 class _ClaudeBase:
     def __init__(self, settings: Settings):
         import anthropic  # lazy
@@ -163,6 +177,24 @@ class ClaudeVerifier(_ClaudeBase, Verifier):
         directly (no extraction, no cortex). Used by the eval harness as the
         comparison arm against the pipeline."""
         return self._inconsistencies(_BASELINE_SYSTEM, f"Document to analyze:\n\n{document}")
+
+    def rolling_scan(self, chunks: list[str]) -> list[WorldModelInconsistency]:
+        """The 'just let Claude do it with a memory.md' approach: read chunks in
+        order, maintain a running memory of durable facts/constraints, and flag a
+        chunk when it contradicts memory. This is the manual form of the Agent
+        SDK memory-tool loop. Its risk vs the pipeline is *selective* memory."""
+        memory, out = "(empty)", []
+        for chunk in chunks:
+            d = self._json(_ROLLING_SYSTEM, json.dumps({"memory": memory, "chunk": chunk}),
+                           max_tokens=4096)
+            memory = str(d.get("memory", memory))[:20000]
+            for i in d.get("issues", []):
+                out.append(WorldModelInconsistency(
+                    entity=str(i.get("entity", "")), key=str(i.get("key", "")),
+                    value_a=str(i.get("value_a", "")), value_b=str(i.get("value_b", "")),
+                    category=i.get("category", "continuity"), severity=i.get("severity", "medium"),
+                    explanation=i.get("explanation", "")))
+        return out
 
     def _inconsistencies(self, system: str, user: str) -> list[WorldModelInconsistency]:
         d = self._json(system, user, max_tokens=4096)

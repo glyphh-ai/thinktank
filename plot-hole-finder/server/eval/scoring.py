@@ -62,6 +62,13 @@ def _matches_decoy(decoy: Decoy, issue: dict) -> bool:
     return any(t in text for t in _SYNONYMS.get(decoy.key, {_key_token(decoy.key)}))
 
 
+def detail(case: Case, issues: list[dict]):
+    """Per-item breakdown: (plant, found?) and (decoy, wrongly_flagged?)."""
+    found = [(p, any(_matches_plant(p, i) for i in issues)) for p in case.plants]
+    flagged = [(d, any(_matches_decoy(d, i) for i in issues)) for d in case.decoys]
+    return found, flagged
+
+
 def score_case(case: Case, issues: list[dict]) -> CaseResult:
     found = sum(1 for p in case.plants if any(_matches_plant(p, i) for i in issues))
     true_issues = sum(1 for i in issues if any(_matches_plant(p, i) for p in case.plants))
