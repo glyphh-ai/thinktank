@@ -63,7 +63,12 @@ def run_find(
     verifier: Verifier,
     project: Project,
     user: User,
+    on_progress=None,
 ) -> AnalysisRun:
+    def progress(step: str, fraction: float) -> None:
+        if on_progress is not None:
+            on_progress(step, fraction)
+
     plan = current_plan(session, user.id)
     run = AnalysisRun(project_id=project.id, kind=RunKind.FIND, status=RunStatus.RUNNING,
                       plan_at_run=plan, started_at=_now())
@@ -73,13 +78,16 @@ def run_find(
 
     try:
         _reset_derived(session, project.id)
+        progress("extracting", 0.15)
         chunks = _ingest(session, blob_store, embedder, extractor, project)
         entities, facts = _persist_world_model(session, project, chunks)
         project.status = ProjectStatus.ANALYZING
         session.flush()
+        progress("analyzing", 0.5)
 
         cortex, codebook, value_clean = _build_cortex(session, project, entities, facts)
         candidates = _generate_candidates(cortex, codebook, value_clean, entities, facts)
+        progress("verifying", 0.7)
 
         issues = 0
         for cand in candidates:
@@ -99,6 +107,7 @@ def run_find(
         project.status = ProjectStatus.READY
         session.add(UsageEvent(user_id=user.id, project_id=project.id,
                                metric=UsageMetric.WORDS_ANALYZED, amount=project.word_count))
+        progress("done", 1.0)
     except Exception as exc:  # mark the run failed, surface the message
         run.status = RunStatus.FAILED
         run.error = str(exc)

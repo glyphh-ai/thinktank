@@ -11,15 +11,19 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+import threading
+
+from .cache import get_cache
 from .config import Settings, get_settings
-from .db import init_db, make_engine, make_session_factory
+from .db import auto_migrate, init_db, make_engine, make_session_factory
 from .embeddings import get_embedder
 from .errors import AppError
 from .llm import get_extractor, get_verifier
-from .routers import analysis, auth, billing, projects
+from .routers import analysis, auth, billing, jobs, projects
 from .services.billing import get_billing_provider
 from .storage.blob import get_blob_store
 from .storage.email import get_email_sender
+from .worker import build_worker
 
 
 def create_app(settings: Settings | None = None, *, init: bool = True) -> FastAPI:
@@ -29,7 +33,7 @@ def create_app(settings: Settings | None = None, *, init: bool = True) -> FastAP
     # --- infra singletons on app.state ---
     engine = make_engine(settings)
     if init:
-        init_db(engine)
+        auto_migrate(engine) if settings.auto_migrate else init_db(engine)
     app.state.settings = settings
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
@@ -39,6 +43,15 @@ def create_app(settings: Settings | None = None, *, init: bool = True) -> FastAP
     app.state.extractor = get_extractor(settings)
     app.state.verifier = get_verifier(settings)
     app.state.billing = get_billing_provider(settings)
+    app.state.cache = get_cache(settings)
+    app.state.worker = build_worker(settings, app.state.session_factory)
+
+    # In "thread" mode a daemon worker polls the queue inside the API process
+    # (dev convenience). Prod uses "external" + `python -m app.worker`.
+    if settings.job_runner == "thread":
+        t = threading.Thread(target=app.state.worker.run_forever, daemon=True)
+        t.start()
+        app.state.worker_thread = t
 
     # --- CORS for the Next.js frontend ---
     app.add_middleware(
@@ -59,7 +72,7 @@ def create_app(settings: Settings | None = None, *, init: bool = True) -> FastAP
     def health():
         return {"status": "ok", "env": settings.env}
 
-    for r in (auth.router, projects.router, analysis.router, billing.router):
+    for r in (auth.router, projects.router, analysis.router, jobs.router, billing.router):
         app.include_router(r)
 
     return app

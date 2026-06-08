@@ -43,6 +43,9 @@ class Settings:
     database_url: str = field(
         default_factory=lambda: _env("DATABASE_URL", "sqlite+pysqlite:///./var/app.db")
     )
+    # Dev: sync additive schema changes (new tables/columns) on startup.
+    # Disable in prod and use Alembic migrations instead.
+    auto_migrate: bool = field(default_factory=lambda: _bool("AUTO_MIGRATE", True))
 
     # --- auth / tokens ---
     jwt_secret: str = field(default_factory=lambda: _env("JWT_SECRET", "dev-insecure-secret-change-me"))
@@ -95,6 +98,20 @@ class Settings:
     stripe_webhook_secret: str = field(default_factory=lambda: _env("STRIPE_WEBHOOK_SECRET", ""))
     stripe_price_basic: str = field(default_factory=lambda: _env("STRIPE_PRICE_BASIC", ""))
     stripe_price_pro: str = field(default_factory=lambda: _env("STRIPE_PRICE_PRO", ""))
+
+    # --- cache (Redis) ---
+    # "memory" (dev, process-local) or "redis" (prod / shared).
+    cache_backend: str = field(default_factory=lambda: _env("CACHE_BACKEND", "memory"))
+    redis_url: str = field(default_factory=lambda: _env("REDIS_URL", "redis://localhost:6379/0"))
+
+    # --- background jobs ---
+    # "inline"   : API drains the queue in-request (tests / simple dev)
+    # "thread"   : a background thread in the API process polls the queue (dev)
+    # "external" : API only enqueues; run `python -m app.worker` separately (prod)
+    job_runner: str = field(default_factory=lambda: _env("JOB_RUNNER", "inline"))
+    job_lease_seconds: int = field(default_factory=lambda: int(_env("JOB_LEASE_SECONDS", "600")))
+    job_max_attempts: int = field(default_factory=lambda: int(_env("JOB_MAX_ATTEMPTS", "3")))
+    job_poll_interval: float = field(default_factory=lambda: float(_env("JOB_POLL_INTERVAL", "2.0")))
 
     # --- urls (links in emails, Stripe redirects, CORS) ---
     frontend_url: str = field(default_factory=lambda: _env("FRONTEND_URL", "http://localhost:3000"))

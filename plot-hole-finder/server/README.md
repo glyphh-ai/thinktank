@@ -29,6 +29,9 @@ prod backend selected by an env var:
 | Email | console | Resend / SMTP | `EMAIL_BACKEND=resend` |
 | Blobs | local disk | R2 | `BLOB_BACKEND=r2` |
 | Billing | disabled | Stripe | `BILLING_BACKEND=stripe` |
+| Cache | in-memory | Redis | `CACHE_BACKEND=redis` + `REDIS_URL` |
+| Jobs | inline | external worker | `JOB_RUNNER=external` |
+| Migrations | auto (additive) | Alembic | `AUTO_MIGRATE=false` |
 
 ## API
 
@@ -82,5 +85,44 @@ tests/         storage bones + full API e2e
 
 ## Vectors (two stores by design)
 
-- RAG embeddings → pgvector `vector(384)` on PG, bytes on SQLite.
+- RAG embeddings → pgvector `vector(384)` on PG (+ HNSW index), bytes on SQLite.
 - glyphh hypervectors → int8 bytes, rehydrated into the in-process cortex.
+
+## Background jobs
+
+Analysis runs as a **durable, DB-backed job** (`jobs` table = source of truth:
+status, progress, attempts, lease, backoff). Never run minutes-long work inside a
+request. Three runner modes (`JOB_RUNNER`):
+
+- `inline` — API drains the queue in-request (tests / simple dev)
+- `thread` — a daemon thread polls the queue inside the API (dev convenience)
+- `external` — API only enqueues; run the worker separately (prod):
+  `python -m app.worker`. Scale by running more worker replicas; claiming uses
+  `FOR UPDATE SKIP LOCKED` on Postgres for safe concurrency.
+
+`POST /projects/{id}/analyze` returns `202` + a job; poll `GET /jobs/{id}` for
+progress, or cancel with `POST /jobs/{id}/cancel`.
+
+## Schema changes
+
+Dev auto-migrates **additive** changes (new tables/columns) on startup
+(`AUTO_MIGRATE=true`). Drops/renames/type changes and prod use **Alembic**
+(`AUTO_MIGRATE=false`); `python -m app.release` is the deploy hook.
+
+## Docker
+
+From `plot-hole-finder/`:
+
+```bash
+docker compose up --build   # API + worker + Postgres/pgvector + Redis
+# enable real extraction: LLM_BACKEND=claude ANTHROPIC_API_KEY=... docker compose up
+```
+
+API on `:8000`, Postgres on `:5432`, Redis on `:6379`. The worker runs as its own
+service (`JOB_RUNNER=external`).
+
+## Deployment
+
+`Procfile` defines `web`, `worker`, and `release` processes for Heroku-style
+platforms. See repo root notes for hosting options (Heroku / Railway / Render /
+Fly / managed K8s).

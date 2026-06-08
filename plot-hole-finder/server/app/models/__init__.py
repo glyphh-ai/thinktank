@@ -6,6 +6,7 @@ registered on the metadata.
 
 from .base import Base, Bipolar, Embedding, new_id
 from .billing import StripeEvent, Subscription, SubscriptionStatus
+from .jobs import Job, JobStatus, JobType
 from .narrative import (
     AnalysisRun,
     Entity,
@@ -46,6 +47,10 @@ __all__ = [
     "Subscription",
     "SubscriptionStatus",
     "StripeEvent",
+    # jobs
+    "Job",
+    "JobStatus",
+    "JobType",
     # project
     "Project",
     "ProjectStatus",

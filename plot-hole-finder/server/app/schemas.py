@@ -101,6 +101,17 @@ class RunResponse(BaseModel):
     error: str | None
 
 
+class JobResponse(BaseModel):
+    id: str
+    type: str
+    status: str
+    progress: float
+    step: str | None
+    error: str | None
+    result: dict | None
+    run_id: str | None
+
+
 # --- billing ---
 class CheckoutRequest(BaseModel):
     tier: str  # "basic" | "pro"

@@ -110,9 +110,13 @@ def test_full_flow_finds_planted_plot_hole(client):
     project_id = r.json()["id"]
 
     r = client.post(f"/projects/{project_id}/analyze", headers=_auth(token))
-    assert r.status_code == 200, r.text
-    stats = r.json()["stats"]
-    assert stats["issues"] >= 1
+    assert r.status_code == 202, r.text
+    job = r.json()
+    assert job["status"] == "succeeded"  # inline runner ran it synchronously
+    assert job["result"]["issues"] >= 1
+    # job is observable via the jobs API
+    polled = client.get(f"/jobs/{job['id']}", headers=_auth(token)).json()
+    assert polled["progress"] == 1.0
 
     issues = client.get(f"/projects/{project_id}/issues", headers=_auth(token)).json()
     # Elena's eye colour is flagged; Marcus's licensed hair change is not.
@@ -146,7 +150,8 @@ def test_upgrade_unlocks_limits_and_fix(client):
 
     client.post(f"/projects/{project_id}/analyze", headers=_auth(token))
     r = client.post(f"/projects/{project_id}/fix", headers=_auth(token))
-    assert r.status_code == 200, r.text
+    assert r.status_code == 202, r.text
+    assert r.json()["status"] == "succeeded"
     issues = client.get(f"/projects/{project_id}/issues", headers=_auth(token)).json()
     assert any(i["suggested_fix"] for i in issues)
 

@@ -58,6 +58,10 @@ def get_billing(request: Request):
     return request.app.state.billing
 
 
+def get_worker(request: Request):
+    return request.app.state.worker
+
+
 def get_current_user(
     authorization: str | None = Header(default=None),
     session: Session = Depends(get_session),

@@ -28,8 +28,10 @@ def search_passages(
     query = np.asarray(query, dtype=np.float32)
 
     if session.bind.dialect.name == "postgresql":
-        # pgvector: cosine distance = 1 - cosine similarity.
-        distance = PassageEmbedding.embedding.cosine_distance(query)
+        # pgvector cosine distance operator (<=>); cosine sim = 1 - distance.
+        # Using op("<=>") because the column is a portable TypeDecorator, not a
+        # raw pgvector Vector (whose .cosine_distance comparator we don't expose).
+        distance = PassageEmbedding.embedding.op("<=>")(list(map(float, query)))
         rows = session.execute(
             select(PassageEmbedding, distance.label("distance"))
             .where(PassageEmbedding.project_id == project_id)
