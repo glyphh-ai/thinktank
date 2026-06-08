@@ -115,7 +115,7 @@ class _ClaudeBase:
         text = "".join(block.text for block in msg.content if block.type == "text")
         if not text.strip():
             raise RuntimeError(f"Claude returned no text (stop_reason={msg.stop_reason})")
-        return json.loads(_strip_fences(text))
+        return json.loads(_extract_json(text))
 
 
 class ClaudeExtractor(_ClaudeBase, Extractor):
@@ -182,3 +182,11 @@ def _strip_fences(text: str) -> str:
     if text.startswith("```"):
         text = text.split("\n", 1)[1].rsplit("```", 1)[0]
     return text.strip()
+
+
+def _extract_json(text: str) -> str:
+    """Extract the outermost JSON object, tolerating fences or stray prose the
+    model may add before/after despite 'ONLY JSON'."""
+    text = _strip_fences(text)
+    start, end = text.find("{"), text.rfind("}")
+    return text[start:end + 1] if start != -1 and end > start else text
