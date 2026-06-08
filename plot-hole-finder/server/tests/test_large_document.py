@@ -14,8 +14,6 @@ import pytest
 
 from app.config import Settings
 from app.db import init_db, make_engine, make_session_factory, session_scope
-from app.embeddings import get_embedder
-from app.llm import get_extractor, get_verifier
 from app.models import Issue, SourceType, User
 from app.plans import PlanTier
 from app.services import analysis as analysis_service
@@ -23,6 +21,7 @@ from app.services import projects as project_service
 from app.services.billing import get_or_create_subscription
 from app.storage.blob import get_blob_store
 from app.text import word_count
+from fakes import StubEmbedder, StubExtractor, StubVerifier
 
 TARGET_WORDS = 250_000  # safely beyond a 200k-token context window
 
@@ -46,7 +45,6 @@ def env(tmp_path):
     settings = Settings(
         database_url=f"sqlite+pysqlite:///{tmp_path}/big.db",
         blob_local_root=str(tmp_path / "blobs"),
-        llm_backend="heuristic", embed_backend="hash",
     )
     engine = make_engine(settings)
     init_db(engine)
@@ -72,8 +70,8 @@ def test_finds_contradiction_beyond_context_window(env):
         project = db.get(type(project), project_id)
         user = db.get(User, user_id)
         run = analysis_service.run_find(
-            db, settings, get_blob_store(settings), get_embedder(settings),
-            get_extractor(settings), get_verifier(settings), project, user,
+            db, settings, get_blob_store(settings), StubEmbedder(),
+            StubExtractor(), StubVerifier(), project, user,
         )
         stats = run.stats
 

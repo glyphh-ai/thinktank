@@ -55,6 +55,20 @@ class FixSuggestion:
     text: str
 
 
+@dataclass
+class WorldModelInconsistency:
+    """An inconsistency found by the holistic pass over the compressed world model."""
+
+    entity: str
+    key: str
+    value_a: str
+    value_b: str
+    category: str        # continuity | timeline | character | knowledge | broken_reference
+    severity: str        # low | medium | high
+    explanation: str
+    confidence: float = 0.8
+
+
 class Extractor(ABC):
     @abstractmethod
     def extract(self, chunk_text: str, char_offset: int) -> ChunkExtraction:
@@ -69,3 +83,9 @@ class Verifier(ABC):
     @abstractmethod
     def suggest_fix(self, issue: dict, evidence: list[str]) -> FixSuggestion:
         """Propose an edit that resolves the issue (Pro 'fix this for me')."""
+
+    @abstractmethod
+    def review_world_model(self, world_model: str) -> list[WorldModelInconsistency]:
+        """Holistic pass: reason over the whole compressed world model and surface
+        inconsistencies the per-slot structured checks miss (cross-entity,
+        semantic, timeline, knowledge). This is the LLM arm of the hybrid."""

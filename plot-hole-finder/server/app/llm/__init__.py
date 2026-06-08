@@ -1,4 +1,5 @@
-"""LLM extraction & verification, provider-agnostic."""
+"""LLM extraction & verification. Claude is the only implementation -- there is
+no non-LLM fallback; extraction quality is the product."""
 
 from ..config import Settings, get_settings
 from .base import (
@@ -9,26 +10,29 @@ from .base import (
     FixSuggestion,
     Verifier,
     VerifierVerdict,
+    WorldModelInconsistency,
 )
-from .heuristic import HeuristicExtractor, HeuristicVerifier
+
+
+def _require_key(settings: Settings) -> None:
+    if not settings.anthropic_api_key:
+        raise RuntimeError("ANTHROPIC_API_KEY is required -- there is no extraction fallback")
 
 
 def get_extractor(settings: Settings | None = None) -> Extractor:
     settings = settings or get_settings()
-    if settings.llm_backend == "claude":
-        from .claude import ClaudeExtractor
+    _require_key(settings)
+    from .claude import ClaudeExtractor
 
-        return ClaudeExtractor(settings)
-    return HeuristicExtractor()
+    return ClaudeExtractor(settings)
 
 
 def get_verifier(settings: Settings | None = None) -> Verifier:
     settings = settings or get_settings()
-    if settings.llm_backend == "claude":
-        from .claude import ClaudeVerifier
+    _require_key(settings)
+    from .claude import ClaudeVerifier
 
-        return ClaudeVerifier(settings)
-    return HeuristicVerifier()
+    return ClaudeVerifier(settings)
 
 
 __all__ = [
@@ -39,6 +43,7 @@ __all__ = [
     "ChunkExtraction",
     "VerifierVerdict",
     "FixSuggestion",
+    "WorldModelInconsistency",
     "get_extractor",
     "get_verifier",
 ]

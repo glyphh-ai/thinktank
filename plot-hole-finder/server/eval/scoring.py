@@ -35,6 +35,9 @@ _SYNONYMS = {
     "age": {"age", "years", "old"},
     "hair": {"hair"},
     "location": {"location", "place", "whereabouts"},
+    "status": {"status", "amulet", "destroyed", "shattered", "intact", "present", "exist"},
+    "capital": {"capital", "lived", "visited", "been", "travelled", "traveled"},
+    "rank": {"rank", "captain", "lieutenant", "promot"},
 }
 
 

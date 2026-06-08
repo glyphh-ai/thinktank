@@ -1,22 +1,34 @@
-"""Run the analysis pipeline over the labeled cases and report a benchmark.
+"""Comparative benchmark: run the same labeled corpus through every approach and
+score them head-to-head on recall / precision / F1 / cost / latency.
 
-    python -m eval.harness            # uses the configured backend (.env)
-    LLM_BACKEND=heuristic python -m eval.harness   # offline
+    python -m eval.harness            # needs ANTHROPIC_API_KEY (real Claude)
 
-Adapters are built once and reused across cases, so when the Claude extractor is
-active its cumulative token usage yields a real cost figure for the whole run.
+Arms:
+- claude_1m   : hand the whole document to Claude in one pass ("find all
+                inconsistencies"). The baseline.
+- structured  : extract -> glyphh cortex -> verify (per-attribute, exhaustive).
+- holistic    : extract -> one LLM pass over the compressed world model.
+- hybrid      : structured + holistic, deduped (the product).
+
+Detection is real Claude end to end. Embeddings here are evidence-only and not
+scored, so the harness uses a tiny deterministic embedder to avoid a model
+download; production uses FastEmbed.
 """
 
 from __future__ import annotations
 
 import dataclasses
+import hashlib
+import re
 import tempfile
+import time
 
+import numpy as np
 from sqlalchemy import select
 
 from app.config import Settings, get_settings
 from app.db import init_db, make_engine, make_session_factory, session_scope
-from app.embeddings import get_embedder
+from app.embeddings.base import Embedder, l2_normalize
 from app.llm import get_extractor, get_verifier
 from app.models import Issue, SourceType, User
 from app.plans import PlanTier
@@ -24,84 +36,93 @@ from app.services import analysis as analysis_service
 from app.services import projects as project_service
 from app.services.billing import get_or_create_subscription
 from app.storage.blob import LocalDiskBlobStore
-from .cases import CASES, Case
-from .scoring import Benchmark, CaseResult, score_case
+from .corpus import build_corpus
+from .scoring import Benchmark, score_case
 
-# Per-1M-token pricing (input, output) for cost reporting.
-PRICING = {
-    "claude-opus-4-8": (5.00, 25.00),
-    "claude-sonnet-4-6": (3.00, 15.00),
-    "claude-haiku-4-5": (1.00, 5.00),
-}
+PRICING = {"claude-opus-4-8": (5.0, 25.0), "claude-sonnet-4-6": (3.0, 15.0),
+           "claude-haiku-4-5": (1.0, 5.0)}
 
 
-def _run_case(session_factory, settings, blob, embedder, extractor, verifier,
-              user_id: str, case: Case) -> list[dict]:
-    with session_scope(session_factory) as s:
-        user = s.get(User, user_id)
-        project = project_service.create_project(
-            s, blob, user, case.id, SourceType.PASTE, text=case.text
-        )
-        pid = project.id
-    with session_scope(session_factory) as s:
-        project = project_service.get_project(s, s.get(User, user_id), pid)
-        analysis_service.run_find(s, settings, blob, embedder, extractor, verifier,
-                                  project, s.get(User, user_id))
-    with session_scope(session_factory) as s:
-        issues = s.scalars(select(Issue).where(Issue.project_id == pid)).all()
-        return [{"title": i.title, "description": i.description, "category": i.category.value}
-                for i in issues]
+class _BenchEmbedder(Embedder):
+    """Evidence-only deterministic embedder for the benchmark (not scored)."""
+
+    def embed(self, texts: list[str]) -> np.ndarray:
+        out = np.zeros((len(texts), self.dim), dtype=np.float32)
+        for i, t in enumerate(texts):
+            for tok in re.findall(r"\w+", t.lower()):
+                out[i, int.from_bytes(hashlib.md5(tok.encode()).digest()[:8], "little") % self.dim] += 1
+        return l2_normalize(out)
 
 
-def run(settings: Settings | None = None, verbose: bool = True) -> Benchmark:
+def _usage(extractor, verifier) -> tuple[int, int]:
+    eu, vu = extractor.usage, verifier.usage
+    return (eu["input_tokens"] + vu["input_tokens"], eu["output_tokens"] + vu["output_tokens"])
+
+
+def run(settings: Settings | None = None) -> dict:
     settings = settings or get_settings()
+    if not settings.anthropic_api_key:
+        raise SystemExit("ANTHROPIC_API_KEY required for the benchmark")
+    in_per_m, out_per_m = PRICING.get(settings.anthropic_model, (5.0, 25.0))
+
+    case = build_corpus()
     tmp = tempfile.mkdtemp()
-    settings = dataclasses.replace(settings, database_url=f"sqlite+pysqlite:///{tmp}/eval.db",
+    settings = dataclasses.replace(settings, database_url=f"sqlite+pysqlite:///{tmp}/bench.db",
                                    auto_migrate=False)
     engine = make_engine(settings)
     init_db(engine)
     sf = make_session_factory(engine)
     blob = LocalDiskBlobStore(f"{tmp}/blobs")
-    embedder, extractor, verifier = get_embedder(settings), get_extractor(settings), get_verifier(settings)
-
-    offline = settings.llm_backend == "heuristic"
-    cases = [c for c in CASES if not (offline and c.llm_only)]
+    embedder = _BenchEmbedder()
+    extractor, verifier = get_extractor(settings), get_verifier(settings)
 
     with session_scope(sf) as s:
-        user = User(email="eval@bench.local", password_hash="x")
-        s.add(user)
+        u = User(email="bench@local", password_hash="x")
+        s.add(u)
         s.flush()
-        get_or_create_subscription(s, user.id).plan = PlanTier.PRO  # allow large docs / fix
-        user_id = user.id
+        get_or_create_subscription(s, u.id).plan = PlanTier.PRO
+        uid = u.id
 
-    results: list[CaseResult] = []
-    for case in cases:
-        issues = _run_case(sf, settings, blob, embedder, extractor, verifier, user_id, case)
-        results.append(score_case(case, issues))
+    print(f"corpus: {case.id} | {len(case.text.split()):,} words | "
+          f"{len(case.plants)} plants + {len(case.decoys)} decoys\n")
+    print(f"{'arm':<12}{'recall':>8}{'prec':>7}{'f1':>6}{'issues':>8}"
+          f"{'decoyX':>8}{'FP':>5}{'cost$':>8}{'sec':>7}")
 
-    bench = Benchmark(results)
-    if verbose:
-        _report(settings, bench, extractor)
-    return bench
+    rows = {}
+    for arm in ("claude_1m", "structured", "holistic", "hybrid"):
+        in0, out0 = _usage(extractor, verifier)
+        t0 = time.time()
+        issues = _run_arm(arm, sf, settings, blob, embedder, extractor, verifier, uid, case)
+        secs = time.time() - t0
+        din, dout = (a - b for a, b in zip(_usage(extractor, verifier), (in0, out0)))
+        cost = din / 1e6 * in_per_m + dout / 1e6 * out_per_m
+        bench = Benchmark([score_case(case, issues)])
+        rows[arm] = bench
+        print(f"{arm:<12}{bench.recall:>7.0%}{bench.precision:>7.0%}{bench.f1:>6.0%}"
+              f"{len(issues):>8}{bench.decoy_violations:>8}{bench.false_positives:>5}"
+              f"{cost:>8.3f}{secs:>7.0f}")
+    return rows
 
 
-def _report(settings, bench: Benchmark, extractor) -> None:
-    print(f"\n=== plot-hole-finder benchmark ({settings.llm_backend}"
-          f"{'/' + settings.anthropic_model if settings.llm_backend == 'claude' else ''}) ===")
-    print(f"{'case':<26}{'plants':>7}{'found':>7}{'issues':>7}{'decoyX':>7}{'FP':>5}")
-    for r in bench.results:
-        print(f"{r.case_id:<26}{r.plants:>7}{r.found:>7}{r.issues:>7}"
-              f"{r.decoy_violations:>7}{r.false_positives:>5}")
-    print(f"\nrecall={bench.recall:.0%}  precision={bench.precision:.0%}  "
-          f"f1={bench.f1:.0%}  decoy_violations={bench.decoy_violations}  "
-          f"false_positives={bench.false_positives}")
+def _run_arm(arm, sf, settings, blob, embedder, extractor, verifier, uid, case) -> list[dict]:
+    if arm == "claude_1m":
+        incs = verifier.single_pass(case.text)
+        return [{"title": f"{i.entity}: {i.key}", "description": i.explanation,
+                 "category": i.category} for i in incs]
 
-    usage = getattr(extractor, "usage", None)
-    if usage and usage["calls"]:
-        ip, op = PRICING.get(settings.anthropic_model, (3.0, 15.0))
-        cost = usage["input_tokens"] / 1e6 * ip + usage["output_tokens"] / 1e6 * op
-        print(f"claude: {usage['calls']} calls | in {usage['input_tokens']:,} / "
-              f"out {usage['output_tokens']:,} tok | cost ${cost:.4f}")
+    structured, holistic = {"structured": (True, False), "holistic": (False, True),
+                            "hybrid": (True, True)}[arm]
+    with session_scope(sf) as s:
+        proj = project_service.create_project(s, blob, s.get(User, uid), arm,
+                                              SourceType.PASTE, text=case.text)
+        pid = proj.id
+    with session_scope(sf) as s:
+        analysis_service.run_find(s, settings, blob, embedder, extractor, verifier,
+                                  project_service.get_project(s, s.get(User, uid), pid),
+                                  s.get(User, uid), structured=structured, holistic=holistic)
+    with session_scope(sf) as s:
+        return [{"title": i.title, "description": i.description, "category": i.category.value}
+                for i in s.scalars(select(Issue).where(Issue.project_id == pid))]
 
 
 if __name__ == "__main__":

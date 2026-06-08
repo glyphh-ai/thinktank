@@ -64,6 +64,9 @@ def run_find(
     project: Project,
     user: User,
     on_progress=None,
+    *,
+    structured: bool = True,
+    holistic: bool = True,
 ) -> AnalysisRun:
     def progress(step: str, fraction: float) -> None:
         if on_progress is not None:
@@ -89,21 +92,43 @@ def run_find(
         candidates = _generate_candidates(cortex, codebook, value_clean, entities, facts)
         progress("verifying", 0.7)
 
-        issues = 0
-        for cand in candidates:
-            evidence = _retrieve_evidence(session, embedder, project.id, cand)
-            # The verifier gets only the serializable fields (no ORM Fact objects).
-            public = {k: cand[k] for k in ("entity", "key", "value_a", "value_b")}
-            verdict = verifier.verify(public, [e["quote"] for e in evidence])
-            if not verdict.confirmed:
-                continue
-            _record_issue(session, run, project, cand, verdict)
-            issues += 1
+        recorded: set[tuple[str, str]] = set()
+        issues = structured_hits = 0
+
+        # Arm 1 (structured/cortex): exhaustive per-(entity,attribute) candidates,
+        # evidence-grounded and LLM-verified.
+        if structured:
+            for cand in candidates:
+                evidence = _retrieve_evidence(session, embedder, project.id, cand)
+                public = {k: cand[k] for k in ("entity", "key", "value_a", "value_b")}
+                verdict = verifier.verify(public, [e["quote"] for e in evidence])
+                if not verdict.confirmed:
+                    continue
+                _record_issue(session, run, project, cand, verdict)
+                recorded.add((cand["entity"].upper(), cand["key"].upper()))
+                structured_hits += 1
+                issues += 1
+
+        # Arm 2 (holistic): one LLM pass over the compressed world model to catch
+        # cross-entity / semantic / timeline / knowledge issues the slots miss.
+        global_hits = 0
+        if holistic:
+            world_model = _serialize_world_model(entities, facts)
+            for inc in verifier.review_world_model(world_model):
+                slot = (inc.entity.strip().upper(), inc.key.strip().upper())
+                if not inc.entity or slot in recorded:
+                    continue
+                _record_global_issue(session, run, project, embedder, inc)
+                recorded.add(slot)
+                global_hits += 1
+                issues += 1
+        progress("verifying", 0.9)
 
         run.stats = {
             "passages": len(passages), "extract_chunks": len(extracted),
             "entities": len(entities), "facts": len(facts),
             "candidates": len(candidates), "issues": issues,
+            "structured_hits": structured_hits, "global_hits": global_hits,
         }
         run.status = RunStatus.SUCCEEDED
         run.finished_at = _now()
@@ -343,6 +368,47 @@ def _retrieve_evidence(session, embedder, project_id, cand):
     return evidence
 
 
+def _serialize_world_model(entities, facts) -> str:
+    """Compact text view of the extracted world model for the holistic LLM pass.
+    Tiny relative to the prose, so it fits in context even for huge documents."""
+    by_entity: dict[str, list] = {}
+    for f in facts:
+        by_entity.setdefault(f.entity_id, []).append(f)
+    lines: list[str] = []
+    for ent in entities:
+        ent_facts = sorted(by_entity.get(ent.id, []), key=lambda f: f.narrative_time)
+        if not ent_facts:
+            continue
+        lines.append(f"{ent.canonical_name} ({ent.type.value}):")
+        for f in ent_facts:
+            tag = "event" if f.kind == FactKind.EVENT else f.key
+            lines.append(f"  t{f.narrative_time}: {tag}={f.value}")
+    return "\n".join(lines)
+
+
+def _record_global_issue(session, run, project, embedder, inc):
+    """Record a holistic-pass inconsistency, grounding it with RAG evidence."""
+    issue = Issue(
+        run_id=run.id, project_id=project.id, category=_category(inc.category),
+        severity=_severity(inc.severity), title=f"{inc.entity}: {inc.key} inconsistency",
+        description=inc.explanation, confidence=inc.confidence,
+    )
+    session.add(issue)
+    session.flush()
+    query = embedder.embed_one(f"{inc.entity} {inc.key} {inc.value_a} {inc.value_b}")
+    for role, value in ((EvidenceRole.STATE_A, inc.value_a), (EvidenceRole.STATE_B, inc.value_b)):
+        neighbors = search_passages(session, project.id, query, k=2)
+        passage = neighbors[0].passage if neighbors else None
+        session.add(IssueEvidence(
+            issue_id=issue.id, document_id=passage.document_id if passage else None,
+            role=role,
+            char_start=passage.char_start if passage else 0,
+            char_end=passage.char_end if passage else 0,
+            quote=(passage.text[:240] if passage else f"{inc.entity} {inc.key}={value}"),
+        ))
+    return issue
+
+
 def _record_issue(session, run, project, cand, verdict):
     issue = Issue(
         run_id=run.id, project_id=project.id, category=_category_for(cand["key"]),
@@ -392,3 +458,17 @@ def _category_for(key: str) -> IssueCategory:
     return {
         "AGE": IssueCategory.TIMELINE,
     }.get(key, IssueCategory.CONTINUITY)
+
+
+def _category(value: str) -> IssueCategory:
+    try:
+        return IssueCategory(value)
+    except ValueError:
+        return IssueCategory.CONTINUITY
+
+
+def _severity(value: str) -> Severity:
+    try:
+        return Severity(value)
+    except ValueError:
+        return Severity.MEDIUM

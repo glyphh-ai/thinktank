@@ -14,6 +14,9 @@ anthropic>=0.40
 pypdf>=4.0
 python-docx>=1.1
 
+# Embeddings (RAG evidence) -- the only embedder; downloads bge-small on first use
+fastembed>=0.3
+
 # Dev / test
 pytest>=8.0
 httpx>=0.27

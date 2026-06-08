@@ -23,28 +23,42 @@ from .routers import analysis, auth, billing, jobs, projects
 from .services.billing import get_billing_provider
 from .storage.blob import get_blob_store
 from .storage.email import get_email_sender
-from .worker import build_worker
+from .worker import Worker
 
 
-def create_app(settings: Settings | None = None, *, init: bool = True) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    *,
+    init: bool = True,
+    blob_store=None,
+    email_sender=None,
+    embedder=None,
+    extractor=None,
+    verifier=None,
+) -> FastAPI:
+    """Build the app. Adapters can be injected (tests pass stubs); otherwise the
+    real Claude/FastEmbed/etc. adapters are constructed from settings."""
     settings = settings or get_settings()
     app = FastAPI(title="plot-hole-finder", version="0.1.0")
 
-    # --- infra singletons on app.state ---
+    # --- infra singletons on app.state (injected or built from settings) ---
     engine = make_engine(settings)
     if init:
         auto_migrate(engine) if settings.auto_migrate else init_db(engine)
     app.state.settings = settings
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
-    app.state.blob_store = get_blob_store(settings)
-    app.state.email_sender = get_email_sender(settings)
-    app.state.embedder = get_embedder(settings)
-    app.state.extractor = get_extractor(settings)
-    app.state.verifier = get_verifier(settings)
+    app.state.blob_store = blob_store or get_blob_store(settings)
+    app.state.email_sender = email_sender or get_email_sender(settings)
+    app.state.embedder = embedder or get_embedder(settings)
+    app.state.extractor = extractor or get_extractor(settings)
+    app.state.verifier = verifier or get_verifier(settings)
     app.state.billing = get_billing_provider(settings)
     app.state.cache = get_cache(settings)
-    app.state.worker = build_worker(settings, app.state.session_factory)
+    app.state.worker = Worker(
+        app.state.session_factory, settings, blob_store=app.state.blob_store,
+        embedder=app.state.embedder, extractor=app.state.extractor, verifier=app.state.verifier,
+    )
 
     # In "thread" mode a daemon worker polls the queue inside the API process
     # (dev convenience). Prod uses "external" + `python -m app.worker`.
@@ -78,5 +92,11 @@ def create_app(settings: Settings | None = None, *, init: bool = True) -> FastAP
     return app
 
 
-# Module-level app for `uvicorn app.main:app`.
-app = create_app()
+def __getattr__(name: str):
+    # Lazily build the app for `uvicorn app.main:app` so merely importing this
+    # module (e.g. for create_app in tests) doesn't construct real adapters.
+    if name == "app":
+        global app
+        app = create_app()
+        return app
+    raise AttributeError(name)

@@ -81,13 +81,7 @@ class Settings:
     smtp_password: str = field(default_factory=lambda: _env("SMTP_PASSWORD", ""))
     smtp_use_tls: bool = field(default_factory=lambda: _bool("SMTP_USE_TLS", False))
 
-    # --- embeddings ---
-    # "hash" (dev, deterministic, offline) or "fastembed" (prod, bge-small).
-    embed_backend: str = field(default_factory=lambda: _env("EMBED_BACKEND", "hash"))
-
-    # --- extraction / verification LLM ---
-    # "heuristic" (dev, offline) or "claude" (prod, Anthropic API).
-    llm_backend: str = field(default_factory=lambda: _env("LLM_BACKEND", "heuristic"))
+    # --- extraction / verification LLM (Claude only; no fallback) ---
     anthropic_api_key: str = field(default_factory=lambda: _env("ANTHROPIC_API_KEY", ""))
     anthropic_model: str = field(default_factory=lambda: _env("ANTHROPIC_MODEL", "claude-opus-4-8"))
     # Extraction chunk size. Opus has a 1M-token window, so use large chunks to

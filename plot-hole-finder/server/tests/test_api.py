@@ -51,18 +51,20 @@ class RecordingEmail(EmailSender):
 
 @pytest.fixture
 def client(tmp_path):
+    from fakes import StubEmbedder, StubExtractor, StubVerifier
+
     settings = Settings(
         database_url=f"sqlite+pysqlite:///{tmp_path}/api.db",
         blob_local_root=str(tmp_path / "blobs"),
         jwt_secret="test-secret",
-        llm_backend="heuristic",
-        embed_backend="hash",
         email_backend="console",
         billing_backend="disabled",
     )
-    app = create_app(settings)
     mailbox = RecordingEmail()
-    app.state.email_sender = mailbox  # capture outgoing mail
+    # Inject deterministic test doubles for the pipeline plumbing (no Claude,
+    # no model download); quality is measured against real Claude in eval/.
+    app = create_app(settings, email_sender=mailbox, extractor=StubExtractor(),
+                     verifier=StubVerifier(), embedder=StubEmbedder())
     c = TestClient(app)
     c.mailbox = mailbox
     return c
