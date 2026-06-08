@@ -79,8 +79,8 @@ def run_find(
     try:
         _reset_derived(session, project.id)
         progress("extracting", 0.15)
-        chunks = _ingest(session, blob_store, embedder, extractor, project)
-        entities, facts = _persist_world_model(session, project, chunks)
+        passages, extracted = _ingest(session, settings, blob_store, embedder, extractor, project)
+        entities, facts = _persist_world_model(session, project, passages, extracted)
         project.status = ProjectStatus.ANALYZING
         session.flush()
         progress("analyzing", 0.5)
@@ -92,14 +92,17 @@ def run_find(
         issues = 0
         for cand in candidates:
             evidence = _retrieve_evidence(session, embedder, project.id, cand)
-            verdict = verifier.verify(cand, [e["quote"] for e in evidence])
+            # The verifier gets only the serializable fields (no ORM Fact objects).
+            public = {k: cand[k] for k in ("entity", "key", "value_a", "value_b")}
+            verdict = verifier.verify(public, [e["quote"] for e in evidence])
             if not verdict.confirmed:
                 continue
             _record_issue(session, run, project, cand, verdict)
             issues += 1
 
         run.stats = {
-            "chunks": len(chunks), "entities": len(entities), "facts": len(facts),
+            "passages": len(passages), "extract_chunks": len(extracted),
+            "entities": len(entities), "facts": len(facts),
             "candidates": len(candidates), "issues": issues,
         }
         run.status = RunStatus.SUCCEEDED
@@ -153,48 +156,90 @@ def run_fix(
 
 # --- pipeline steps ----------------------------------------------------------
 
-def _ingest(session, blob_store, embedder, extractor, project) -> list:
-    """Chunk every document, embed + persist passages, extract per chunk."""
-    enriched = []
+def _ingest(session, settings, blob_store, embedder, extractor, project):
+    """Two chunkings: small passages (embeddings + narrative grid) and large
+    chunks (extraction, exploiting the 1M context to cut call count)."""
+    passages: list[tuple] = []   # (doc, Chunk) in document order -> narrative grid
+    extracted: list[tuple] = []  # (doc, entities, facts-with-absolute-offsets)
     for doc in project.documents:
         text = document_text(blob_store, doc)
-        chunks = chunk_text(text)
-        if not chunks:
-            continue
-        vectors = embedder.embed([c.text for c in chunks])
-        for c, vec in zip(chunks, vectors):
-            session.add(PassageEmbedding(
-                project_id=project.id, document_id=doc.id, chunk_index=c.index,
-                char_start=c.char_start, char_end=c.char_end, text=c.text, embedding=vec,
-            ))
-            extraction = extractor.extract(c.text, c.char_start)
-            enriched.append((doc, c, extraction))
+
+        small = chunk_text(text, target_words=settings.passage_words)
+        if small:
+            vectors = embedder.embed([c.text for c in small])
+            for c, vec in zip(small, vectors):
+                session.add(PassageEmbedding(
+                    project_id=project.id, document_id=doc.id, chunk_index=c.index,
+                    char_start=c.char_start, char_end=c.char_end, text=c.text, embedding=vec,
+                ))
+                passages.append((doc, c))
+
+        for c in chunk_text(text, target_words=settings.extract_chunk_words):
+            ex = extractor.extract(c.text, c.char_start)
+            extracted.append((doc, ex.entities, _locate_facts(ex.facts, c)))
     session.flush()
-    return enriched
+    return passages, extracted
 
 
-def _persist_world_model(session, project, enriched):
-    """Upsert entities (by canonical name) and persist facts with chunk time."""
+def _locate_facts(facts, chunk):
+    """Resolve absolute char offsets for facts the LLM didn't position (offsets
+    left at 0) by searching the chunk text for the value -- reliable, and far
+    cheaper than asking the model for offsets."""
+    haystack = chunk.text.lower()
+    for f in facts:
+        if f.char_end > f.char_start:
+            continue  # heuristic extractor already provided absolute offsets
+        pos = haystack.find(f.value.lower())
+        if pos >= 0:
+            f.char_start = chunk.char_start + pos
+            f.char_end = f.char_start + len(f.value)
+        else:
+            f.char_start = f.char_end = chunk.char_start
+    return facts
+
+
+def _narrative_grid(passages):
+    """Map a (doc_id, char offset) to a global passage index for ordering."""
+    import bisect
+
+    by_doc: dict[str, list[tuple[int, int]]] = {}
+    for gidx, (doc, c) in enumerate(passages):
+        by_doc.setdefault(doc.id, []).append((c.char_start, gidx))
+
+    def position(doc_id: str, offset: int) -> int:
+        entries = by_doc.get(doc_id)
+        if not entries:
+            return 0
+        starts = [e[0] for e in entries]
+        i = max(0, bisect.bisect_right(starts, offset) - 1)
+        return entries[i][1]
+
+    return position
+
+
+def _persist_world_model(session, project, passages, extracted):
+    """Upsert entities (by canonical name) and persist facts; narrative_time comes
+    from the passage grid so it's fine-grained regardless of extraction chunk size."""
+    position = _narrative_grid(passages)
     entities: dict[str, Entity] = {}
     facts: list[Fact] = []
-    for doc, chunk, extraction in enriched:
-        for e in extraction.entities:
+    for doc, ents, fact_list in extracted:
+        for e in ents:
             if e.name not in entities:
                 ent = Entity(project_id=project.id, canonical_name=e.name,
                              type=_entity_type(e.type), aliases=e.aliases)
                 session.add(ent)
                 session.flush()
                 entities[e.name] = ent
-        for f in extraction.facts:
+        for f in fact_list:
             ent = entities.get(f.entity)
             fact = Fact(
                 project_id=project.id, entity_id=ent.id if ent else None, document_id=doc.id,
                 kind=_fact_kind(f.kind),
-                # Normalize so grouping is consistent across chunks and backends
-                # (Claude returns mixed case; the heuristic returns upper).
+                # Normalize so grouping is consistent across chunks and backends.
                 key=f.key.strip().upper(), value=f.value.strip().upper(), polarity=f.polarity,
-                narrative_time=chunk.index, char_start=f.char_start, char_end=f.char_end,
-                confidence=f.confidence,
+                narrative_time=position(doc.id, f.char_start),
+                char_start=f.char_start, char_end=f.char_end, confidence=f.confidence,
             )
             session.add(fact)
             facts.append(fact)

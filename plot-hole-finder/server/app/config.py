@@ -89,7 +89,13 @@ class Settings:
     # "heuristic" (dev, offline) or "claude" (prod, Anthropic API).
     llm_backend: str = field(default_factory=lambda: _env("LLM_BACKEND", "heuristic"))
     anthropic_api_key: str = field(default_factory=lambda: _env("ANTHROPIC_API_KEY", ""))
-    anthropic_model: str = field(default_factory=lambda: _env("ANTHROPIC_MODEL", "claude-sonnet-4-6"))
+    anthropic_model: str = field(default_factory=lambda: _env("ANTHROPIC_MODEL", "claude-opus-4-8"))
+    # Extraction chunk size. Opus has a 1M-token window, so use large chunks to
+    # cut call count/latency (output tokens dominate cost regardless of chunking).
+    extract_chunk_words: int = field(default_factory=lambda: int(_env("EXTRACT_CHUNK_WORDS", "15000")))
+    extract_max_tokens: int = field(default_factory=lambda: int(_env("EXTRACT_MAX_TOKENS", "8000")))
+    # Small passages for RAG evidence retrieval (independent of extraction chunks).
+    passage_words: int = field(default_factory=lambda: int(_env("PASSAGE_WORDS", "400")))
 
     # --- billing (Stripe) ---
     # "disabled" (dev) or "stripe" (prod).

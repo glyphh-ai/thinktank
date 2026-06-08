@@ -21,14 +21,18 @@ from .base import (
 )
 
 _EXTRACT_SYSTEM = (
-    "You extract a structured world-model from narrative prose for consistency "
-    "checking. Return ONLY JSON: {\"entities\":[{\"name\",\"type\","
-    "\"aliases\":[]}],\"facts\":[{\"entity\",\"kind\",\"key\",\"value\","
-    "\"char_start\",\"char_end\",\"polarity\",\"confidence\"}]}. "
-    "type in [character,object,location,concept]; kind in "
-    "[attribute,event,relation,reference,knowledge]. Offsets are relative to the "
-    "provided chunk. Capture transformation events (dyeing hair, deaths, an "
-    "object destroyed) as kind=event -- they license later state changes."
+    "You extract a compact world-model from a passage of narrative or legal text "
+    "for consistency checking. Return ONLY JSON: "
+    "{\"entities\":[{\"name\",\"type\"}],\"facts\":[{\"entity\",\"kind\",\"key\","
+    "\"value\"}]}. type in [character,object,location,concept]; kind in "
+    "[attribute,event,relation,knowledge]. "
+    "Extract ONLY facts that could later contradict: stable attributes (eye/hair "
+    "colour, age, height, title or role, possessions), locations, relationships, "
+    "knowledge a character holds, and transformation events that change an "
+    "attribute (dyeing hair, a death, an object destroyed). Use a stable "
+    "lowercase snake_case key (e.g. eye_color, age, location, role). Do NOT "
+    "extract atmosphere, mood, routine actions, or one-off descriptions. Emit one "
+    "fact per distinct attribute assertion; keep values short (1-3 words)."
 )
 
 _VERIFY_SYSTEM = (
@@ -46,6 +50,7 @@ class _ClaudeBase:
 
         self._client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         self._model = settings.anthropic_model
+        self._extract_max_tokens = getattr(settings, "extract_max_tokens", 8000)
         # Cumulative token accounting (for cost tracking / per-run stats).
         self.usage = {
             "calls": 0, "input_tokens": 0, "output_tokens": 0,
@@ -71,22 +76,20 @@ class _ClaudeBase:
 
 class ClaudeExtractor(_ClaudeBase, Extractor):
     def extract(self, chunk_text: str, char_offset: int) -> ChunkExtraction:
-        data = self._json(_EXTRACT_SYSTEM, chunk_text)
+        # Offsets are recomputed locally by the pipeline (the LLM is unreliable at
+        # exact offsets and they're the bulk of output cost), so we don't ask for
+        # them here -- char_start/char_end stay 0 and signal "locate me".
+        data = self._json(_EXTRACT_SYSTEM, chunk_text, max_tokens=self._extract_max_tokens)
         entities = [
             ExtractedEntity(name=e["name"], type=e.get("type", "character"),
                             aliases=e.get("aliases", []))
             for e in data.get("entities", [])
         ]
-        facts = []
-        for f in data.get("facts", []):
-            facts.append(ExtractedFact(
-                entity=f["entity"], kind=f.get("kind", "attribute"), key=f["key"],
-                value=str(f["value"]),
-                char_start=char_offset + int(f.get("char_start", 0)),
-                char_end=char_offset + int(f.get("char_end", 0)),
-                polarity=bool(f.get("polarity", True)),
-                confidence=float(f.get("confidence", 1.0)),
-            ))
+        facts = [
+            ExtractedFact(entity=f["entity"], kind=f.get("kind", "attribute"),
+                          key=f["key"], value=str(f["value"]))
+            for f in data.get("facts", [])
+        ]
         return ChunkExtraction(entities=entities, facts=facts)
 
 

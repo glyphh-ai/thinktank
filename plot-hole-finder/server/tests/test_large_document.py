@@ -77,8 +77,8 @@ def test_finds_contradiction_beyond_context_window(env):
         )
         stats = run.stats
 
-    # The document was split into many chunks (never one context) ...
-    assert stats["chunks"] > 200
+    # The document was split into many passages (never one context) ...
+    assert stats["passages"] > 200
     # ... yet the start/end contradiction was found.
     assert stats["issues"] >= 1
 
