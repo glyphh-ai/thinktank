@@ -77,20 +77,22 @@ class Extractor(ABC):
 
 class Verifier(ABC):
     @abstractmethod
+    def rolling_scan(self, chunks: list[str]) -> list[WorldModelInconsistency]:
+        """The detection engine: read chunks in order, maintain a running memory
+        of durable facts/constraints, and flag a chunk when it contradicts memory
+        with no event explaining it. Scales past the context window."""
+
+    @abstractmethod
     def single_pass(self, document: str) -> list[WorldModelInconsistency]:
-        """Recall arm: read raw text and surface candidate inconsistencies."""
+        """Recall arm / baseline: read raw text and surface candidates (eval)."""
 
     @abstractmethod
     def review_world_model(self, world_model: str) -> list[WorldModelInconsistency]:
-        """Recall arm: reason over the compressed world model (scales past
-        context; catches cross-entity / semantic / timeline / knowledge issues)."""
+        """Reason over a compressed world model (eval comparison arm)."""
 
     @abstractmethod
     def filter_candidates(self, candidates: list[dict], world_model: str) -> list[dict]:
-        """Precision filter: given candidate inconsistencies and the world model
-        (entities, facts, and licensing events over time), return only the
-        genuine ones -- dropping changes an in-story event explains. This is what
-        turns high-recall candidates into high-precision issues."""
+        """Precision filter over candidate inconsistencies (eval comparison arm)."""
 
     @abstractmethod
     def suggest_fix(self, issue: dict, evidence: list[str]) -> FixSuggestion:

@@ -54,9 +54,37 @@ class StubExtractor(Extractor):
         return ChunkExtraction(entities=list(entities.values()), facts=facts)
 
 
+_STUB_LICENSING = {"HAIR": {"DYE_HAIR"}, "EYE_COLOR": {"WEAR_CONTACTS"}}
+
+
 class StubVerifier(Verifier):
+    def rolling_scan(self, chunks: list[str]) -> list[WorldModelInconsistency]:
+        """Minimal cross-chunk attribute-contradiction detection (test double for
+        the real Claude rolling memory), with event-licensing."""
+        ex = StubExtractor()
+        last: dict[tuple, str] = {}
+        events: dict[str, set] = {}
+        out = []
+        for ch in chunks:
+            facts = ex.extract(ch, 0).facts
+            for f in facts:
+                if f.kind == "event":
+                    events.setdefault(f.entity, set()).add(f.key)
+            for f in facts:
+                if f.kind != "attribute":
+                    continue
+                prev = last.get((f.entity, f.key))
+                if prev is not None and prev != f.value and not (
+                        events.get(f.entity, set()) & _STUB_LICENSING.get(f.key, set())):
+                    out.append(WorldModelInconsistency(
+                        entity=f.entity, key=f.key, value_a=prev, value_b=f.value,
+                        category="continuity", severity="high",
+                        explanation=f"{f.entity} {f.key}: {prev} -> {f.value}"))
+                last[(f.entity, f.key)] = f.value
+        return out
+
     def single_pass(self, document: str) -> list[WorldModelInconsistency]:
-        return []  # recall arm is a no-op under the stub; quality is Claude-only
+        return []  # eval-only arm; no-op under the stub
 
     def review_world_model(self, world_model: str) -> list[WorldModelInconsistency]:
         return []

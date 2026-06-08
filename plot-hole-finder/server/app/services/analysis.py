@@ -1,31 +1,30 @@
-"""The analysis pipeline: extract -> index (facts + cortex + embeddings)
--> triage (glyphh) -> verify (LLM) -> issues.
+"""The analysis pipeline: rolling-memory detection over chunks.
 
-Find detects inconsistencies; Fix (Pro) proposes edits for confirmed issues.
-Designed to run as a background task; all heavy deps are injected so it runs
-fully offline in dev with the heuristic extractor + hashing embedder.
+Detection is Claude's: we read the document in chunks and let Claude maintain a
+running memory of durable facts/constraints, flagging a chunk when it contradicts
+memory with no event explaining it (``verifier.rolling_scan``). This is the
+approach that won the eval bake-off; the earlier extraction+glyphh-cortex path
+was both more complex and lower-recall, and has been removed. Passages are still
+embedded so each issue can be grounded with evidence (jump-to-passage).
+
+Scales past the context window because no single call sees the whole document.
+For very large documents the running memory needs a retrieval backend (so it
+isn't re-sent whole each chunk) -- see eval/README and DESIGN for that roadmap.
 """
 
 from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import numpy as np
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..config import Settings
 from ..embeddings import Embedder, search_passages
-from ..errors import Forbidden, NotFound
-from ..glyphh_bridge import glyphh as g
-from ..llm import Extractor, Verifier
+from ..errors import Forbidden
+from ..llm import Verifier, WorldModelInconsistency
 from ..models import (
     AnalysisRun,
-    Document,
-    Entity,
-    EntityType,
-    Fact,
-    FactKind,
     Issue,
     IssueCategory,
     IssueEvidence,
@@ -40,18 +39,10 @@ from ..models import (
     User,
 )
 from ..models.narrative import EvidenceRole
-from ..models.vectors import CortexLevel, HypervectorRecord
 from ..plans import limits_for
 from ..text import chunk_text
 from .billing import current_plan
 from .projects import document_text
-
-HV_DIM = 10_000
-# Event keys that legitimately license a change to a given attribute.
-_LICENSING = {
-    "EYE_COLOR": {"WEAR_CONTACTS"},
-    "HAIR": {"DYE_HAIR"},
-}
 
 
 def run_find(
@@ -59,15 +50,12 @@ def run_find(
     settings: Settings,
     blob_store,
     embedder: Embedder,
-    extractor: Extractor,
+    extractor,            # accepted for call-site compatibility; detection is rolling_scan
     verifier: Verifier,
     project: Project,
     user: User,
     on_progress=None,
-    *,
-    recall: bool = True,
-    structured: bool = True,
-    holistic: bool = True,
+    **_ignored,           # legacy arm flags (recall/structured/holistic) -- no longer used
 ) -> AnalysisRun:
     def progress(step: str, fraction: float) -> None:
         if on_progress is not None:
@@ -77,64 +65,34 @@ def run_find(
     run = AnalysisRun(project_id=project.id, kind=RunKind.FIND, status=RunStatus.RUNNING,
                       plan_at_run=plan, started_at=_now())
     session.add(run)
-    project.status = ProjectStatus.EXTRACTING
+    project.status = ProjectStatus.ANALYZING
     session.flush()
 
     try:
         _reset_derived(session, project.id)
-        progress("extracting", 0.15)
-        passages, extracted = _ingest(session, settings, blob_store, embedder, extractor, project)
-        entities, facts = _persist_world_model(session, project, passages, extracted)
-        project.status = ProjectStatus.ANALYZING
-        session.flush()
-        progress("analyzing", 0.5)
+        progress("reading", 0.1)
+        n_passages = _embed_passages(session, embedder, blob_store, project)
+        progress("scanning", 0.4)
 
-        cortex, codebook, value_clean = _build_cortex(session, project, entities, facts)
-        world_model = _serialize_world_model(entities, facts)
+        issues = n_chunks = 0
+        for text in _document_texts(blob_store, project):
+            chunks = chunk_text(text, target_words=settings.extract_chunk_words)
+            n_chunks += len(chunks)
+            for inc in verifier.rolling_scan([c.text for c in chunks]):
+                if not inc.entity:
+                    continue
+                _record_inc(session, run, project, embedder, inc)
+                issues += 1
+        progress("grounding", 0.9)
 
-        # --- RECALL: gather candidate inconsistencies from every enabled source ---
-        candidates: dict[tuple[str, str], dict] = {}
-
-        def add(entity, key, value_a, value_b, category, explanation=""):
-            slot = (str(entity).strip().upper(), str(key).strip().upper())
-            if entity and slot not in candidates:
-                candidates[slot] = {"entity": entity, "key": key, "value_a": value_a,
-                                    "value_b": value_b, "category": category,
-                                    "explanation": explanation}
-
-        if structured:
-            # cortex per-(entity,attribute) candidates (licensing pre-filtered)
-            for c in _generate_candidates(cortex, codebook, value_clean, entities, facts):
-                add(c["entity"], c["key"], c["value_a"], c["value_b"], "continuity")
-        if holistic:
-            for inc in verifier.review_world_model(world_model):
-                add(inc.entity, inc.key, inc.value_a, inc.value_b, inc.category, inc.explanation)
-        if recall:
-            for text in _document_texts(blob_store, project):
-                for chunk in chunk_text(text, target_words=settings.extract_chunk_words):
-                    for inc in verifier.single_pass(chunk.text):
-                        add(inc.entity, inc.key, inc.value_a, inc.value_b, inc.category,
-                            inc.explanation)
-        progress("verifying", 0.7)
-
-        # --- PRECISION: one filter pass drops anything an event explains ---
-        confirmed = verifier.filter_candidates(list(candidates.values()), world_model)
-        for c in confirmed:
-            _record_candidate_issue(session, run, project, embedder, c)
-        progress("verifying", 0.9)
-
-        run.stats = {
-            "passages": len(passages), "extract_chunks": len(extracted),
-            "entities": len(entities), "facts": len(facts),
-            "candidates": len(candidates), "issues": len(confirmed),
-        }
+        run.stats = {"passages": n_passages, "chunks": n_chunks, "issues": issues}
         run.status = RunStatus.SUCCEEDED
         run.finished_at = _now()
         project.status = ProjectStatus.READY
         session.add(UsageEvent(user_id=user.id, project_id=project.id,
                                metric=UsageMetric.WORDS_ANALYZED, amount=project.word_count))
         progress("done", 1.0)
-    except Exception as exc:  # mark the run failed, surface the message
+    except Exception as exc:
         run.status = RunStatus.FAILED
         run.error = str(exc)
         run.finished_at = _now()
@@ -177,233 +135,57 @@ def run_fix(
     return run
 
 
-# --- pipeline steps ----------------------------------------------------------
+# --- steps -------------------------------------------------------------------
 
-def _ingest(session, settings, blob_store, embedder, extractor, project):
-    """Two chunkings: small passages (embeddings + narrative grid) and large
-    chunks (extraction, exploiting the 1M context to cut call count)."""
-    passages: list[tuple] = []   # (doc, Chunk) in document order -> narrative grid
-    extracted: list[tuple] = []  # (doc, entities, facts-with-absolute-offsets)
-    for doc in project.documents:
-        text = document_text(blob_store, doc)
-
-        small = chunk_text(text, target_words=settings.passage_words)
-        if small:
-            vectors = embedder.embed([c.text for c in small])
-            for c, vec in zip(small, vectors):
-                session.add(PassageEmbedding(
-                    project_id=project.id, document_id=doc.id, chunk_index=c.index,
-                    char_start=c.char_start, char_end=c.char_end, text=c.text, embedding=vec,
-                ))
-                passages.append((doc, c))
-
-        for c in chunk_text(text, target_words=settings.extract_chunk_words):
-            ex = extractor.extract(c.text, c.char_start)
-            extracted.append((doc, ex.entities, _locate_facts(ex.facts, c)))
-    session.flush()
-    return passages, extracted
-
-
-def _locate_facts(facts, chunk):
-    """Resolve absolute char offsets for facts the LLM didn't position (offsets
-    left at 0) by searching the chunk text for the value -- reliable, and far
-    cheaper than asking the model for offsets."""
-    haystack = chunk.text.lower()
-    for f in facts:
-        if f.char_end > f.char_start:
-            continue  # heuristic extractor already provided absolute offsets
-        pos = haystack.find(f.value.lower())
-        if pos >= 0:
-            f.char_start = chunk.char_start + pos
-            f.char_end = f.char_start + len(f.value)
-        else:
-            f.char_start = f.char_end = chunk.char_start
-    return facts
-
-
-def _narrative_grid(passages):
-    """Map a (doc_id, char offset) to a global passage index for ordering."""
-    import bisect
-
-    by_doc: dict[str, list[tuple[int, int]]] = {}
-    for gidx, (doc, c) in enumerate(passages):
-        by_doc.setdefault(doc.id, []).append((c.char_start, gidx))
-
-    def position(doc_id: str, offset: int) -> int:
-        entries = by_doc.get(doc_id)
-        if not entries:
-            return 0
-        starts = [e[0] for e in entries]
-        i = max(0, bisect.bisect_right(starts, offset) - 1)
-        return entries[i][1]
-
-    return position
-
-
-def _persist_world_model(session, project, passages, extracted):
-    """Upsert entities (by canonical name) and persist facts; narrative_time comes
-    from the passage grid so it's fine-grained regardless of extraction chunk size."""
-    position = _narrative_grid(passages)
-    entities: dict[str, Entity] = {}
-    facts: list[Fact] = []
-    for doc, ents, fact_list in extracted:
-        for e in ents:
-            if e.name not in entities:
-                ent = Entity(project_id=project.id, canonical_name=e.name,
-                             type=_entity_type(e.type), aliases=e.aliases)
-                session.add(ent)
-                session.flush()
-                entities[e.name] = ent
-        for f in fact_list:
-            ent = entities.get(f.entity)
-            fact = Fact(
-                project_id=project.id, entity_id=ent.id if ent else None, document_id=doc.id,
-                kind=_fact_kind(f.kind),
-                # Normalize so grouping is consistent across chunks and backends.
-                key=f.key.strip().upper(), value=f.value.strip().upper(), polarity=f.polarity,
-                narrative_time=position(doc.id, f.char_start),
-                char_start=f.char_start, char_end=f.char_end, confidence=f.confidence,
-            )
-            session.add(fact)
-            facts.append(fact)
-    session.flush()
-    return list(entities.values()), facts
-
-
-def _build_cortex(session, project, entities, facts):
-    """Build (and persist) the glyphh cortex: roles -> segments -> layers."""
-    codebook = g.Codebook(HV_DIM, seed=1)
-    values_by_key: dict[str, set[str]] = {}
-    for f in facts:
-        if f.kind == FactKind.ATTRIBUTE:
-            values_by_key.setdefault(f.key, set()).add(f.value)
-    value_clean = {
-        key: g.value_cleanup(codebook, sorted(vals)) for key, vals in values_by_key.items()
-    }
-
-    cortex = g.Cortex(project.id, HV_DIM)
-    by_entity = {e.id: e for e in entities}
-    for ent in entities:
-        layer = g.Layer(ent.canonical_name, HV_DIM)
-        # group this entity's attribute facts into per-chunk segments
-        segs: dict[int, "g.Segment"] = {}
-        for f in facts:
-            if f.entity_id != ent.id or f.kind != FactKind.ATTRIBUTE:
-                continue
-            seg = segs.get(f.narrative_time)
-            if seg is None:
-                seg = g.Segment(f"{ent.canonical_name}@{f.narrative_time}", HV_DIM,
-                                narrative_time=f.narrative_time)
-                segs[f.narrative_time] = seg
-            seg.add(g.make_role(codebook, f.key, f.value))
-        for seg in segs.values():
-            layer.add(seg)
-        if layer.segments:
-            cortex.add(layer)
-            session.add(HypervectorRecord(project_id=project.id, level=CortexLevel.LAYER,
-                                          label=ent.canonical_name, dim=HV_DIM, data=layer.vector))
-    session.add(HypervectorRecord(project_id=project.id, level=CortexLevel.CORTEX,
-                                  label=project.id, dim=HV_DIM, data=cortex.vector))
-    session.flush()
-    return cortex, codebook, value_clean
-
-
-def _generate_candidates(cortex, codebook, value_clean, entities, facts):
-    """glyphh triage (contested attrs) + structured localization + licensing."""
-    by_name = {e.canonical_name: e for e in entities}
-    candidates = []
-    for name, layer in cortex.layers.items():
-        ent = by_name[name]
-        for key, vclean in value_clean.items():
-            contested = layer.contested(codebook, key, vclean)
-            if len(contested) <= 1:
-                continue  # cheap signal says this slot is consistent
-            groups = _localize(ent, key, facts)
-            if len(groups) <= 1:
-                continue
-            ordered = sorted(groups.items(), key=lambda kv: kv[1][0].narrative_time)
-            (val_a, side_a), (val_b, side_b) = ordered[0], ordered[-1]
-            if _has_licensing_event(ent, key, side_a[0].narrative_time, side_b[0].narrative_time, facts):
-                continue  # legitimate change -- an event explains it
-            candidates.append({
-                "entity": name, "key": key, "value_a": val_a, "value_b": val_b,
-                "fact_a": side_a[0], "fact_b": side_b[-1],
-            })
-    return candidates
-
-
-def _localize(entity, key, facts):
-    groups: dict[str, list[Fact]] = {}
-    for f in facts:
-        if f.entity_id == entity.id and f.kind == FactKind.ATTRIBUTE and f.key == key:
-            groups.setdefault(f.value, []).append(f)
-    return groups
-
-
-def _has_licensing_event(entity, key, t_a, t_b, facts) -> bool:
-    licensing = _LICENSING.get(key, set())
-    lo, hi = sorted((t_a, t_b))
-    for f in facts:
-        if (f.entity_id == entity.id and f.kind == FactKind.EVENT and f.key in licensing
-                and lo <= f.narrative_time <= hi):
-            return True
-    return False
-
-
-def _document_texts(blob_store, project):
+def _document_texts(blob_store, project) -> list[str]:
     return [document_text(blob_store, doc) for doc in project.documents]
 
 
-def _serialize_world_model(entities, facts) -> str:
-    """Compact text view of the extracted world model for the holistic LLM pass.
-    Tiny relative to the prose, so it fits in context even for huge documents."""
-    by_entity: dict[str, list] = {}
-    for f in facts:
-        by_entity.setdefault(f.entity_id, []).append(f)
-    lines: list[str] = []
-    for ent in entities:
-        ent_facts = sorted(by_entity.get(ent.id, []), key=lambda f: f.narrative_time)
-        if not ent_facts:
+def _embed_passages(session, embedder, blob_store, project) -> int:
+    """Embed small passages for evidence retrieval (jump-to-passage)."""
+    count = 0
+    for doc in project.documents:
+        chunks = chunk_text(document_text(blob_store, doc), target_words=400)
+        if not chunks:
             continue
-        lines.append(f"{ent.canonical_name} ({ent.type.value}):")
-        for f in ent_facts:
-            tag = "event" if f.kind == FactKind.EVENT else f.key
-            lines.append(f"  t{f.narrative_time}: {tag}={f.value}")
-    return "\n".join(lines)
+        vectors = embedder.embed([c.text for c in chunks])
+        for c, vec in zip(chunks, vectors):
+            session.add(PassageEmbedding(
+                project_id=project.id, document_id=doc.id, chunk_index=c.index,
+                char_start=c.char_start, char_end=c.char_end, text=c.text, embedding=vec,
+            ))
+            count += 1
+    session.flush()
+    return count
 
 
-def _record_candidate_issue(session, run, project, embedder, c: dict):
-    """Record a confirmed candidate as an Issue, grounded with RAG evidence."""
-    entity, key = c.get("entity", ""), c.get("key", "")
-    va, vb = c.get("value_a", ""), c.get("value_b", "")
+def _record_inc(session, run, project, embedder, inc: WorldModelInconsistency):
+    """Record a detected inconsistency as an Issue, grounded with RAG evidence."""
+    va, vb = inc.value_a, inc.value_b
     issue = Issue(
-        run_id=run.id, project_id=project.id, category=_category(c.get("category", "continuity")),
-        severity=_severity(c.get("severity", "medium")),
-        title=f"{entity}: {key} ({va} -> {vb})" if va or vb else f"{entity}: {key}",
-        description=c.get("explanation", ""), confidence=float(c.get("confidence", 0.8)),
+        run_id=run.id, project_id=project.id, category=_category(inc.category),
+        severity=_severity(inc.severity),
+        title=f"{inc.entity}: {inc.key} ({va} -> {vb})" if (va or vb) else f"{inc.entity}: {inc.key}",
+        description=inc.explanation, confidence=inc.confidence,
     )
     session.add(issue)
     session.flush()
     for role, value in ((EvidenceRole.STATE_A, va), (EvidenceRole.STATE_B, vb)):
-        # Retrieve each side independently so the two spans land on the two
-        # different passages (not the same top hit twice).
         neighbors = search_passages(session, project.id,
-                                    embedder.embed_one(f"{entity} {key} {value}"), k=2)
+                                    embedder.embed_one(f"{inc.entity} {inc.key} {value}"), k=2)
         passage = neighbors[0].passage if neighbors else None
         session.add(IssueEvidence(
             issue_id=issue.id, document_id=passage.document_id if passage else None, role=role,
             char_start=passage.char_start if passage else 0,
             char_end=passage.char_end if passage else 0,
-            quote=(passage.text[:240] if passage else f"{entity} {key}={value}"),
+            quote=(passage.text[:240] if passage else f"{inc.entity} {inc.key}={value}"),
         ))
     return issue
 
 
-# --- helpers -----------------------------------------------------------------
-
 def _reset_derived(session, project_id):
     """Clear prior derived data so re-runs are idempotent."""
-    for model in (Fact, Entity, PassageEmbedding, HypervectorRecord):
+    for model in (Issue, PassageEmbedding):
         for row in session.scalars(select(model).where(model.project_id == project_id)):
             session.delete(row)
     session.flush()
@@ -411,26 +193,6 @@ def _reset_derived(session, project_id):
 
 def _now():
     return datetime.now(timezone.utc)
-
-
-def _entity_type(t: str) -> EntityType:
-    try:
-        return EntityType(t)
-    except ValueError:
-        return EntityType.CONCEPT
-
-
-def _fact_kind(k: str) -> FactKind:
-    try:
-        return FactKind(k)
-    except ValueError:
-        return FactKind.ATTRIBUTE
-
-
-def _category_for(key: str) -> IssueCategory:
-    return {
-        "AGE": IssueCategory.TIMELINE,
-    }.get(key, IssueCategory.CONTINUITY)
 
 
 def _category(value: str) -> IssueCategory:

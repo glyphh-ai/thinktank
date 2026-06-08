@@ -74,19 +74,29 @@ tests/         storage bones + full API e2e
 
 ## The pipeline (`services/analysis.py`)
 
-1. **Ingest** — chunk each document; embed chunks → `PassageEmbedding` (RAG).
-2. **Extract** — per chunk → entities + facts (`Entity`, `Fact`).
-3. **Cortex** — build & persist the glyphh hierarchy (segments→layers→cortex).
-4. **Triage** — layer-level *contested-attribute* probe (cheap glyphh signal).
-5. **Localize + license** — group facts by value; skip changes a transformation
-   event explains.
-6. **Verify** — pull evidence passages, LLM confirms/rates/explains.
-7. **Record** — `Issue` + `IssueEvidence` (jump-to-passage).
+Detection is **rolling memory** — Claude reads the document in chunks, maintains a
+running memory of durable facts/constraints, and flags a chunk when it
+contradicts memory with no event explaining it (`verifier.rolling_scan`). This
+won the eval bake-off (see `eval/README.md`); the earlier extraction + glyphh
+cortex path was more complex and lower-recall and was removed from the product.
 
-## Vectors (two stores by design)
+1. **Embed passages** — chunk each document small; embed → `PassageEmbedding` (RAG
+   evidence index).
+2. **Rolling scan** — chunk large; Claude maintains running memory across chunks
+   and emits inconsistencies. Scales past the context window (no call sees the
+   whole doc).
+3. **Record** — each inconsistency → `Issue` + `IssueEvidence` grounded with RAG
+   (jump-to-passage).
 
-- RAG embeddings → pgvector `vector(384)` on PG (+ HNSW index), bytes on SQLite.
-- glyphh hypervectors → int8 bytes, rehydrated into the in-process cortex.
+> At very large scale the running memory needs a retrieval backend (so it isn't
+> re-sent whole each chunk) — that's the next engineering step, not a new
+> algorithm. Detection quality is Claude's; the product value is scale, ingestion,
+> evidence/UX, and domain evals.
+
+## Vectors
+
+- RAG passage embeddings → pgvector `vector(384)` on PG (+ HNSW index), bytes on
+  SQLite. (The glyphh cortex is no longer in the detection path.)
 
 ## Background jobs
 
