@@ -71,6 +71,23 @@ The baseline **cannot run** past 1M tokens; the pipeline chunk-extracts, compres
 to a tiny world model, and the holistic pass catches the violation across ~1.66M
 tokens.
 
+## Cross-chunk architecture bake-off (`python -m eval.crosschunk`)
+
+The in-context corpus sliced into small chunks so every plot hole spans chunk
+boundaries — comparing approaches that all read in chunks:
+
+```
+arm                 recall   prec   decoyX   cost$
+chunked_baseline      61%    63%       7    0.23   (no memory across chunks)
+rolling_memory       100%   100%       0    0.39   (Claude maintains memory.md)
+pipeline              50%   100%       0    0.41   (extract -> world model -> review)
+```
+
+**Rolling memory (the Agent-SDK memory-tool pattern) wins** — best recall, perfect
+precision, and the simplest design. The bespoke extraction+cortex pipeline came
+last on recall: the rigid extraction schema drops facts, so the world model is
+lossy. Letting Claude keep a running memory beats hand-built extraction.
+
 ## Verdict
 
 | Regime | Best approach |
