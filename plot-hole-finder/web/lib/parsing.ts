@@ -17,6 +17,15 @@ export class UnsupportedDocumentError extends Error {
 
 const ext = (filename: string) => path.extname(filename || "").toLowerCase();
 
+const MIME: Record<string, string> = {
+  ".txt": "text/plain", ".md": "text/markdown", ".csv": "text/csv", ".json": "application/json",
+  ".html": "text/html", ".htm": "text/html", ".xml": "application/xml", ".pdf": "application/pdf",
+  ".epub": "application/epub+zip", ".rtf": "application/rtf", ".doc": "application/msword",
+  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+};
+
+export const mimeFor = (filename: string): string => MIME[ext(filename)] ?? "application/octet-stream";
+
 export async function extractText(filename: string, data: Uint8Array): Promise<string> {
   const e = ext(filename);
   if (TEXT_EXT.has(e)) return new TextDecoder("utf-8", { fatal: false }).decode(data);

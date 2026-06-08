@@ -25,6 +25,8 @@ export interface RunAgentArgs {
   model?: string;
   approver?: Approver;
   maxTurns?: number;
+  maxBudgetUsd?: number; // hard cost cap (hardening)
+  signal?: AbortSignal; // cancel/interrupt the run
 }
 
 function shortToolName(name: string): string {
@@ -32,12 +34,12 @@ function shortToolName(name: string): string {
 }
 
 export async function* runAgent(args: RunAgentArgs): AsyncGenerator<AgentEvent> {
-  const { store, projectId, prompt, mode, model, approver, maxTurns } = args;
+  const { store, projectId, prompt, mode, model, approver, maxTurns, maxBudgetUsd, signal } = args;
   const server = createSdkMcpServer({ name: MCP_SERVER_NAME, tools: buildTools(store, projectId) });
 
-  let stream: AsyncGenerator<unknown>;
+  let q: { interrupt(): Promise<void> } & AsyncGenerator<unknown>;
   try {
-    stream = query({
+    q = query({
       prompt,
       options: {
         model,
@@ -46,12 +48,16 @@ export async function* runAgent(args: RunAgentArgs): AsyncGenerator<AgentEvent> 
         permissionMode: toSdkPermissionMode(mode),
         canUseTool: buildCanUseTool(mode, approver),
         maxTurns: maxTurns ?? 80,
+        ...(maxBudgetUsd !== undefined ? { maxBudgetUsd } : {}),
       },
-    }) as AsyncGenerator<unknown>;
+    }) as unknown as { interrupt(): Promise<void> } & AsyncGenerator<unknown>;
   } catch (err) {
     yield { type: "error", message: err instanceof Error ? err.message : String(err) };
     return;
   }
+
+  if (signal) signal.addEventListener("abort", () => void q.interrupt().catch(() => {}), { once: true });
+  const stream = q;
 
   try {
     for await (const msg of stream) {

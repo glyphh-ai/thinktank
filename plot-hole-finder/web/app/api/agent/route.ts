@@ -1,41 +1,52 @@
-// Server endpoint: runs the agent loop for a request and streams normalized
-// events as SSE. (No-DB for now: seeds an in-memory store from the request; the
-// Drizzle/Postgres store is the next step. UI is intentionally not built yet.)
+// Interactive agent endpoint: runs the Claude Agent SDK loop over a project's
+// document (durable store) and streams normalized events as SSE. Abortable.
 
+import { requireUser } from "@/lib/http";
+import { AppError } from "@/lib/errors";
+import { getProject } from "@/lib/projects";
+import { DrizzleStore } from "@/lib/store/drizzle";
 import { runAgent } from "@/lib/agent/runner";
 import type { UiPermissionMode } from "@/lib/agent/permissions";
-import { InMemoryStore } from "@/lib/store/memory";
+import { config } from "@/lib/config";
 
-export const runtime = "nodejs"; // the Agent SDK spawns a Node subprocess
+export const runtime = "nodejs";
 
 const MODES: UiPermissionMode[] = ["ask", "plan", "auto", "bypass"];
 
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
-  const projectId: string = body.projectId ?? "demo";
-  const documentText: string = body.documentText ?? "";
-  const prompt: string = body.prompt ?? "Analyze this document for plot holes and timeline/sequencing problems.";
-  const model: string | undefined = body.model;
-  const mode: UiPermissionMode = MODES.includes(body.mode) ? body.mode : "ask";
-
-  if (!documentText.trim()) {
-    return new Response(JSON.stringify({ error: "documentText is required" }), {
-      status: 400, headers: { "content-type": "application/json" },
-    });
+  let user: { id: string; email: string };
+  try {
+    user = await requireUser(req);
+  } catch (err) {
+    const e = err as AppError;
+    return Response.json({ error: e.code ?? "unauthorized", message: e.message }, { status: e.statusCode ?? 401 });
   }
 
-  const store = new InMemoryStore({ id: projectId, documentText });
+  const b = await req.json().catch(() => ({}));
+  const projectId: string = b.projectId;
+  const prompt: string = b.prompt ?? "Analyze this document for plot holes and timeline/sequencing problems.";
+  const model: string = b.model ?? config.anthropicModel;
+  const mode: UiPermissionMode = MODES.includes(b.mode) ? b.mode : "ask";
+
+  try {
+    await getProject(user.id, projectId); // ownership / existence
+  } catch (err) {
+    const e = err as AppError;
+    return Response.json({ error: e.code ?? "not_found", message: e.message }, { status: e.statusCode ?? 404 });
+  }
+
+  const store = new DrizzleStore();
   const encoder = new TextEncoder();
+  const ac = new AbortController();
+  req.signal.addEventListener("abort", () => ac.abort());
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const send = (event: unknown) =>
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+      const send = (event: unknown) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
       try {
-        for await (const ev of runAgent({ store, projectId, prompt, mode, model })) {
+        for await (const ev of runAgent({ store, projectId, prompt, mode, model, signal: ac.signal })) {
           send(ev);
         }
-        // Final snapshot so the client can render issues/timeline/notes/doc.
         send({
           type: "snapshot",
           issues: await store.listIssues(projectId),
@@ -50,6 +61,7 @@ export async function POST(req: Request) {
         controller.close();
       }
     },
+    cancel() { ac.abort(); },
   });
 
   return new Response(stream, {
