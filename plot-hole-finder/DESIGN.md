@@ -106,6 +106,64 @@ exactly where the structured store is weakest:
 HDC narrows the candidate space; the LLM verifier provides precision and
 explanation. Good division of labor.
 
+#### 5a. HDC architecture: roles → segments → layers → cortex
+
+The HDC store is a **hierarchical HRR** (multi-resolution VSA memory) that gives
+similarity at every level, used for coarse-to-fine *routing*.
+
+- **role** = one typed assertion: `EYE_COLOR ⊗ BROWN`, `LOCATION ⊗ castle`,
+  `KNOWS ⊗ fact_42` (key ⊗ value bind).
+- **segment** = an entity-state snapshot at a narrative time (or a scene):
+  bundle of roles. **The unbind level — the per-role contradiction probe lives
+  here.**
+- **layer** = an entity's full timeline (or a chapter): bundle of segments.
+- **cortex** = the whole work: bundle of layers.
+
+The same leaf segments can feed **two trees** — an *entity* tree (primary;
+contradictions are per-entity-attribute) and a *textual* chapter tree
+(secondary; setup↔payoff resonance). Shared leaves, two indexes.
+
+**Rule 1 — bundle raw, unbind only at the leaf.** Sim-at-every-level holds only
+if children are bundled raw (`layer = Σ segᵢ`), so a bundle stays cosine-close to
+its parts. Binding children to id keys (`Σ idᵢ ⊗ segᵢ`) buys addressability but
+*destroys* that similarity. So we bundle raw and recover items via a **cleanup
+item-memory** (hypervector → id), not id-unbinding.
+
+**Rule 2 — upper levels are a map, not a filing cabinet.** Stacked superposition
+degrades SNR; reliable unbinding tops out ~a few hundred items at D=10k. So
+retrieval/unbinding happens **only at segment level** (small fan-in). Layer and
+cortex are **routing-only** — similarity survives bundling far better than
+unbinding does. The cortex is a navigable index, *not* an oracle: it locates the
+neighborhood; the structured store + LLM verifier make the actual call.
+
+**Rule 3 — store both at each node:** (1) the raw superposition vector (for
+cosine against siblings/parents) and (2) the child cleanup memory / pointer list
+(for drill-down). Hybrid = up-level similarity *and* addressability above the
+leaf. Normalize across fan-in so cross-level cosine is calibrated.
+
+**Per-level operations:**
+
+- *role:* unbind key → cleanup → compare to expected value = the contradiction
+  test.
+- *segment:* cosine(segₐ, seg_b) = same configuration?; per-role probe = flag.
+- *layer:* cosine = entity/chapter resonance; self-consistency = mean cleanup
+  confidence of constituent roles (drops when a contradicting role folds in → a
+  drift signal).
+- *cortex:* cosine = whole-work similarity (versioning, duplicate-scene); coarse
+  router into layers.
+
+**Wins:** *incrementality* — bundling is associative/online, so an edit updates
+one segment and re-bundles its layer + cortex (localized, no full reindex);
+*principled decomposition* — when a segment binds several unknowns, a **resonator
+network** factors the product back into roles/values better than sequential
+unbind.
+
+**Success criterion for the cortex:** it must beat plain SQL grouping on the
+*fuzzy, untyped, paraphrase-level* facts the schema misses, plus cross-entity /
+setup-payoff resonance `GROUP BY` can't express. If the structured store catches
+everything, the cortex is dead weight — measure it on recall of the
+un-bucketable.
+
 ### 6. Verify (expensive, narrow)
 
 Each candidate → LLM verifier with RAG-retrieved evidence passages: confirm or
