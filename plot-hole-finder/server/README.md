@@ -1,72 +1,86 @@
 # plot-hole-finder server
 
-Python backend. This commit lays the **storage bones** for the SaaS: the data
-model (auth, billing, projects, the extracted world model, results, usage,
-vectors) plus swappable infra for blobs and email. Service layer (FastAPI routes,
-auth/JWT logic, Stripe handlers, the analysis pipeline) sits on top of this next.
+Python/FastAPI backend: auth, billing, project upload, and the analysis pipeline
+(extract → glyphh cortex triage → RAG evidence → LLM verify → issues).
 
-Runs entirely on **SQLite + local disk + console email** in dev — no Postgres,
-R2, or SMTP required. Swaps to **Postgres/pgvector + R2 + SMTP** in prod via env.
-
-## Layout
-
-```
-app/
-  config.py            env-driven settings, dev-safe defaults
-  db.py                engine/session; create_all (dev) / Alembic (prod)
-  plans.py             FREE / BASIC / PRO catalog + limits
-  models/
-    base.py            Base, mixins, portable Embedding + Bipolar column types
-    user.py            User, VerificationToken (email PIN / reset), RefreshToken
-    billing.py         Subscription, StripeEvent (idempotent webhook log)
-    project.py         Project, Document (blob-backed)
-    narrative.py       Entity, Fact, AnalysisRun, Issue, IssueEvidence
-    usage.py           UsageEvent ledger + sum_usage()
-    vectors.py         PassageEmbedding (pgvector), HypervectorRecord (glyphh)
-  storage/
-    blob.py            BlobStore: LocalDiskBlobStore (dev) / R2BlobStore (prod)
-    email.py           EmailSender: Console / File (dev) / SMTP (prod) + templates
-tests/
-  test_storage_bones.py
-```
+Runs **fully offline in dev** (SQLite + local disk + console email + heuristic
+extractor + hashing embedder + disabled billing). Flips to **Postgres/pgvector +
+R2 + Resend + Claude + Stripe** in prod via env — no code changes.
 
 ## Quickstart
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q
+cp .env.example .env          # optional; sensible dev defaults work without it
+python -m pytest -q           # 19 tests, no network needed
+uvicorn app.main:app --reload # http://localhost:8000/docs
 ```
 
-## Vector storage (two stores, by design)
+## Configuration (env)
 
-- **RAG embeddings** → `PassageEmbedding.embedding` uses pgvector from day one:
-  a real `vector(1024)` column + ANN index on Postgres, transparently stored as
-  float32 bytes on SQLite so dev needs no extension.
-- **glyphh HDC hypervectors** → `HypervectorRecord.data` is int8 bytes
-  (D≈10k, bipolar). These are rehydrated into the in-process cortex, never
-  ANN-queried in SQL, so they are intentionally *not* pgvector.
+`.env` is auto-loaded (gitignored). Each concern has an offline dev default and a
+prod backend selected by an env var:
 
-## Dev → prod via env
+| Concern | Dev default | Prod | Selector |
+| --- | --- | --- | --- |
+| DB | SQLite | Postgres/pgvector | `DATABASE_URL` |
+| Embeddings | hashing | FastEmbed `bge-small` | `EMBED_BACKEND=fastembed` |
+| Extraction/verify | heuristic | Claude | `LLM_BACKEND=claude` + `ANTHROPIC_API_KEY` |
+| Email | console | Resend / SMTP | `EMAIL_BACKEND=resend` |
+| Blobs | local disk | R2 | `BLOB_BACKEND=r2` |
+| Billing | disabled | Stripe | `BILLING_BACKEND=stripe` |
 
-| Concern | Dev default | Prod |
+## API
+
+| Method | Path | Notes |
 | --- | --- | --- |
-| DB | `sqlite+pysqlite:///./var/app.db` | `postgresql+psycopg://…` (`DATABASE_URL`) |
-| Blobs | local disk (`./var/blobs`) | R2 (`BLOB_BACKEND=r2`, `R2_*`) |
-| Email | console (prints PIN) | Resend (`EMAIL_BACKEND=resend`, `RESEND_API_KEY`) |
+| POST | `/auth/register` | creates user, emails a 6-digit PIN |
+| POST | `/auth/verify-email` | confirm PIN |
+| POST | `/auth/resend-pin` | re-send PIN |
+| POST | `/auth/login` | → access + refresh JWTs |
+| POST | `/auth/refresh` | rotate refresh token |
+| POST | `/auth/logout` | revoke refresh token |
+| POST | `/auth/forgot-password` / `/auth/reset-password` | emailed reset link |
+| GET | `/auth/me` | current user + plan |
+| POST | `/projects` | create from pasted text |
+| POST | `/projects/upload` | create from file (multipart) |
+| GET/DELETE | `/projects` , `/projects/{id}` | list / fetch / delete |
+| POST | `/projects/{id}/analyze` | run find pipeline |
+| POST | `/projects/{id}/fix` | Pro: suggest fixes |
+| GET | `/projects/{id}/issues` / `/runs` | results |
+| POST | `/billing/checkout` / `/portal` | Stripe Checkout / portal |
+| POST | `/billing/webhook` | Stripe events (idempotent) |
 
-### Email backends
+Plan limits (projects, words/doc, fix access) are enforced on create/analyze;
+`current_plan()` derives the tier from the user's active subscription.
 
-`console` (default, dev) prints the PIN to the log; `file` writes `.eml`s;
-`smtp` targets local Mailpit/MailHog or any SMTP host; `resend` uses the Resend
-HTTP API. For Resend, set `EMAIL_BACKEND=resend`, `RESEND_API_KEY`, and
-`EMAIL_FROM` to an address on a domain you've verified in Resend (or
-`onboarding@resend.dev` for quick tests).
-| Billing | disabled | Stripe (`STRIPE_*`) |
+## Layout
 
-## Plans
+```
+app/
+  config.py  db.py  plans.py  security.py  text.py  errors.py  deps.py  main.py
+  models/      ORM (users, billing, projects, narrative, usage, vectors)
+  storage/     blob (local/R2) + email (console/file/smtp/resend)
+  embeddings/  Embedder (hash/fastembed), pgvector-aware search
+  llm/         Extractor/Verifier (heuristic/claude)
+  services/    auth, projects, billing, analysis (the pipeline)
+  routers/     auth, projects, analysis, billing
+  glyphh_bridge.py   imports the ../engine cortex
+tests/         storage bones + full API e2e
+```
 
-| Tier | Projects | Words/project | Find | Fix |
-| --- | --- | --- | --- | --- |
-| Free | 1 | 3,000 | ✅ | ❌ |
-| Basic | 20 | 300,000 | ✅ | ❌ |
-| Pro | 200 | 600,000 | ✅ | ✅ (50/mo, included) |
+## The pipeline (`services/analysis.py`)
+
+1. **Ingest** — chunk each document; embed chunks → `PassageEmbedding` (RAG).
+2. **Extract** — per chunk → entities + facts (`Entity`, `Fact`).
+3. **Cortex** — build & persist the glyphh hierarchy (segments→layers→cortex).
+4. **Triage** — layer-level *contested-attribute* probe (cheap glyphh signal).
+5. **Localize + license** — group facts by value; skip changes a transformation
+   event explains.
+6. **Verify** — pull evidence passages, LLM confirms/rates/explains.
+7. **Record** — `Issue` + `IssueEvidence` (jump-to-passage).
+
+## Vectors (two stores by design)
+
+- RAG embeddings → pgvector `vector(384)` on PG, bytes on SQLite.
+- glyphh hypervectors → int8 bytes, rehydrated into the in-process cortex.

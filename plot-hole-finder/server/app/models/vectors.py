@@ -15,8 +15,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, Bipolar, Embedding, PrimaryKey, Timestamps
 
-# Embedding model used for RAG retrieval; pin the dimension here.
-EMBEDDING_DIM = 1024
+# Embedding dimension for RAG retrieval. Matches the small model
+# (bge-small-en-v1.5 / all-MiniLM-L6-v2 family = 384). Fixed here because the
+# pgvector column dimension is set at DDL time.
+EMBEDDING_DIM = 384
 
 
 class PassageEmbedding(Base, PrimaryKey, Timestamps):

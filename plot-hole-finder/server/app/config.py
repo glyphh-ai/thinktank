@@ -11,6 +11,22 @@ import os
 from dataclasses import dataclass, field
 
 
+def load_env_file(path: str = ".env") -> None:
+    """Minimal .env loader (no dependency). Existing env vars win."""
+    if not os.path.exists(path):
+        return
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            os.environ.setdefault(key.strip(), value.strip())
+
+
+load_env_file()
+
+
 def _env(key: str, default: str) -> str:
     return os.environ.get(key, default)
 
@@ -62,11 +78,27 @@ class Settings:
     smtp_password: str = field(default_factory=lambda: _env("SMTP_PASSWORD", ""))
     smtp_use_tls: bool = field(default_factory=lambda: _bool("SMTP_USE_TLS", False))
 
+    # --- embeddings ---
+    # "hash" (dev, deterministic, offline) or "fastembed" (prod, bge-small).
+    embed_backend: str = field(default_factory=lambda: _env("EMBED_BACKEND", "hash"))
+
+    # --- extraction / verification LLM ---
+    # "heuristic" (dev, offline) or "claude" (prod, Anthropic API).
+    llm_backend: str = field(default_factory=lambda: _env("LLM_BACKEND", "heuristic"))
+    anthropic_api_key: str = field(default_factory=lambda: _env("ANTHROPIC_API_KEY", ""))
+    anthropic_model: str = field(default_factory=lambda: _env("ANTHROPIC_MODEL", "claude-sonnet-4-6"))
+
     # --- billing (Stripe) ---
+    # "disabled" (dev) or "stripe" (prod).
+    billing_backend: str = field(default_factory=lambda: _env("BILLING_BACKEND", "disabled"))
     stripe_secret_key: str = field(default_factory=lambda: _env("STRIPE_SECRET_KEY", ""))
     stripe_webhook_secret: str = field(default_factory=lambda: _env("STRIPE_WEBHOOK_SECRET", ""))
     stripe_price_basic: str = field(default_factory=lambda: _env("STRIPE_PRICE_BASIC", ""))
     stripe_price_pro: str = field(default_factory=lambda: _env("STRIPE_PRICE_PRO", ""))
+
+    # --- urls (links in emails, Stripe redirects, CORS) ---
+    frontend_url: str = field(default_factory=lambda: _env("FRONTEND_URL", "http://localhost:3000"))
+    cors_origins: str = field(default_factory=lambda: _env("CORS_ORIGINS", "http://localhost:3000"))
 
     @property
     def is_postgres(self) -> bool:
