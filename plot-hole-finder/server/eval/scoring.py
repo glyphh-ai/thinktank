@@ -47,6 +47,8 @@ def _matches_plant(plant: Plant, issue: dict) -> bool:
     text = _issue_text(issue)
     if plant.entity.lower() not in text:
         return False
+    if plant.keywords:  # causal cases: match explicit terms describing the gap
+        return any(k.lower() in text for k in plant.keywords)
     tokens = _SYNONYMS.get(plant.key, {_key_token(plant.key)})
     return any(t in text for t in tokens) or plant.category == issue.get("category")
 
@@ -55,6 +57,8 @@ def _matches_decoy(decoy: Decoy, issue: dict) -> bool:
     text = _issue_text(issue)
     if decoy.entity.lower() not in text:
         return False
+    if decoy.keywords:
+        return any(k.lower() in text for k in decoy.keywords)
     return any(t in text for t in _SYNONYMS.get(decoy.key, {_key_token(decoy.key)}))
 
 

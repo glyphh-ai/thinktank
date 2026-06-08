@@ -19,12 +19,14 @@ class Plant:
     entity: str
     key: str        # attribute that contradicts, e.g. "eye_color"
     category: str = "continuity"
+    keywords: list[str] = field(default_factory=list)  # for causal cases, match terms
 
 
 @dataclass
 class Decoy:
     entity: str
     key: str        # a change that an in-story event licenses -> must not flag
+    keywords: list[str] = field(default_factory=list)
 
 
 @dataclass
