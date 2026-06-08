@@ -193,8 +193,14 @@ Severity-ranked issues, each with both passages, jump-to-offset, and a category
   via a task queue (arq/Celery + Redis) or DB-backed tasks for the demo.
   Progress streamed to the client (SSE/WebSocket).
 - **LLM:** Claude (Anthropic API) for extraction + verification.
-- **Data:** Postgres + pgvector (structured facts *and* vectors in one DB).
-  HDC vectors via `torchhd`, persisted alongside.
+- **Data:** Postgres + **pgvector** in production (structured facts *and*
+  vectors in one DB); **SQLite for local dev** (structured tables + a brute-force
+  vector fallback) so the engine runs with zero infra. Persistence is behind a
+  store interface so dev/prod swap cleanly.
+- **HDC store:** the purpose-built `glyphh` engine (pure numpy, see
+  [`engine/`](engine/)) — roles → segments → layers → cortex. Hypervectors and
+  per-node cleanup memories persist alongside the facts (blob/bytea in dev,
+  bytea/pgvector in prod).
 - **Front end:** Next.js (App Router) — upload, live progress, results browser
   with evidence highlighting and jump-to-passage.
 
