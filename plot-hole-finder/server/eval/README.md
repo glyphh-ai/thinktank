@@ -53,9 +53,32 @@ hybrid         100%   100%  100%     29       0     0   0.646   113
 
 **Reading it honestly:** on a document that *fits in context*, the plain
 single-pass baseline ties the hybrid at 100/100 for ~1/3 the cost and ~1/4 the
-latency — the pipeline adds no quality there. The pipeline can only win in the
-regime the baseline cannot run: **documents beyond the context window**, which
-this corpus does not exercise. Conclusion: default to the baseline for
-in-context documents; reserve the chunked hybrid for over-context inputs. The
-beyond-context benchmark is the decisive test still to run.
+latency — the pipeline adds no quality there.
+
+## Beyond the context window (`python -m eval.beyond_context`)
+
+The decisive test: a causal plot hole whose halves are **>1M tokens apart** (a
+vault sealed forever / key melted / lock welded, opened ~1M tokens later).
+
+```
+document: 887,719 words = 1,681,027 tokens (OVER the 1M context window)
+[baseline] single pass: FAILED — 400 "prompt is too long: 1681330 > 1000000 maximum"
+[pipeline] 23 chunks -> 9-fact world model -> holistic review:
+           plot hole detected: YES (1/1) | 88s | $8.50
+```
+
+The baseline **cannot run** past 1M tokens; the pipeline chunk-extracts, compresses
+to a tiny world model, and the holistic pass catches the violation across ~1.66M
+tokens.
+
+## Verdict
+
+| Regime | Best approach |
+| --- | --- |
+| Fits in context (≤1M tokens) | **single Claude pass** — ties the pipeline, cheaper, faster |
+| Beyond context (>1M tokens)  | **the pipeline** — the baseline cannot run; pipeline detects (1/1) |
+
+The pipeline earns its existence exactly where the project began: *well beyond
+the context window.* The product should route adaptively — single-pass when it
+fits, chunk-and-reason when it doesn't.
 
