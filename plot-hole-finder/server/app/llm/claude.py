@@ -46,6 +46,11 @@ class _ClaudeBase:
 
         self._client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         self._model = settings.anthropic_model
+        # Cumulative token accounting (for cost tracking / per-run stats).
+        self.usage = {
+            "calls": 0, "input_tokens": 0, "output_tokens": 0,
+            "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0,
+        }
 
     def _json(self, system: str, user: str, max_tokens: int = 4096) -> dict:
         msg = self._client.messages.create(
@@ -54,6 +59,12 @@ class _ClaudeBase:
             system=system,
             messages=[{"role": "user", "content": user}],
         )
+        u = msg.usage
+        self.usage["calls"] += 1
+        self.usage["input_tokens"] += u.input_tokens
+        self.usage["output_tokens"] += u.output_tokens
+        self.usage["cache_read_input_tokens"] += getattr(u, "cache_read_input_tokens", 0) or 0
+        self.usage["cache_creation_input_tokens"] += getattr(u, "cache_creation_input_tokens", 0) or 0
         text = "".join(block.text for block in msg.content if block.type == "text")
         return json.loads(_strip_fences(text))
 
