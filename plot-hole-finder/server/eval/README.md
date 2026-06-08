@@ -76,17 +76,22 @@ tokens.
 The in-context corpus sliced into small chunks so every plot hole spans chunk
 boundaries — comparing approaches that all read in chunks:
 
+The in-context corpus sliced small (every plot hole spans chunk boundaries),
+comparing approaches that read in chunks. The `pipeline` arm is now the product's
+**retrieval-backed memory** engine (`scan_chunk` + `MemoryFact` store).
+
 ```
-arm                 recall   prec   decoyX   cost$
-chunked_baseline      61%    63%       7    0.23   (no memory across chunks)
-rolling_memory       100%   100%       0    0.39   (Claude maintains memory.md)
-pipeline              50%   100%       0    0.41   (extract -> world model -> review)
+arm                 recall   prec   decoyX   notes
+chunked_baseline      75%    87%       4     no memory across chunks
+rolling_memory        96%    94%       2     flat memory.md (re-sent whole; O(n^2), no scale)
+pipeline              96%    88%       4     retrieval-backed memory (scales past context)
 ```
 
-**Rolling memory (the Agent-SDK memory-tool pattern) wins** — best recall, perfect
-precision, and the simplest design. The bespoke extraction+cortex pipeline came
-last on recall: the rigid extraction schema drops facts, so the world model is
-lossy. Letting Claude keep a running memory beats hand-built extraction.
+The retrieval-backed engine matches flat memory on recall and is close on
+precision, **and it scales** (memory is retrieved, not re-sent). Naive chunking
+(no memory) trails on both. **Numbers are noisy run-to-run** (the LLM is
+nondeterministic — flat memory swung 100→96% recall across runs); treat single
+runs as indicative, average several for claims.
 
 ## Verdict
 
