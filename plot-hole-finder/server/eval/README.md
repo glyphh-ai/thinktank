@@ -40,3 +40,22 @@ key — the honest way to score when no public ground truth exists. Size it up
   "role" matches an issue that says "profession".
 
 Also reports **cost** (real token usage × model pricing) and **latency** per arm.
+
+## Results snapshot (Opus 4.8, 16.6k-word corpus, 28 plants + 9 decoys)
+
+```
+arm           recall   prec    f1  issues  decoyX   FP   cost$   sec
+claude_1m      100%   100%  100%     28       0     0   0.223    25
+structured      68%   100%   81%     19       0     0   0.318    52
+holistic        75%    88%   81%     24       3     3   0.414    82
+hybrid         100%   100%  100%     29       0     0   0.646   113
+```
+
+**Reading it honestly:** on a document that *fits in context*, the plain
+single-pass baseline ties the hybrid at 100/100 for ~1/3 the cost and ~1/4 the
+latency — the pipeline adds no quality there. The pipeline can only win in the
+regime the baseline cannot run: **documents beyond the context window**, which
+this corpus does not exercise. Conclusion: default to the baseline for
+in-context documents; reserve the chunked hybrid for over-context inputs. The
+beyond-context benchmark is the decisive test still to run.
+
