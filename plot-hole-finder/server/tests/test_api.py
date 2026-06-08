@@ -156,6 +156,39 @@ def test_upgrade_unlocks_limits_and_fix(client):
     assert any(i["suggested_fix"] for i in issues)
 
 
+def test_docx_upload_parses_and_analyzes(client):
+    from pathlib import Path
+
+    token = _register_and_login(client)
+    docx = (Path(__file__).parent / "fixtures" / "sample.docx").read_bytes()
+    r = client.post(
+        "/projects/upload",
+        headers=_auth(token),
+        data={"name": "Legal Doc"},
+        files={"file": ("sample.docx", docx,
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document")},
+    )
+    assert r.status_code == 201, r.text
+    project_id = r.json()["id"]
+    assert r.json()["word_count"] > 0  # text was extracted from the .docx
+
+    r = client.post(f"/projects/{project_id}/analyze", headers=_auth(token))
+    assert r.status_code == 202, r.text
+    assert r.json()["result"]["issues"] >= 1  # Elena's eye-colour contradiction
+
+
+def test_unsupported_upload_rejected(client):
+    token = _register_and_login(client)
+    r = client.post(
+        "/projects/upload",
+        headers=_auth(token),
+        data={"name": "Bad"},
+        files={"file": ("archive.zip", b"PK\x03\x04", "application/zip")},
+    )
+    assert r.status_code == 422
+    assert r.json()["error"] == "unsupported_document"
+
+
 def test_password_reset_flow(client):
     email, pw = "reset@me.com", "supersecret"
     _register_and_login(client, email, pw)

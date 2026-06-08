@@ -53,7 +53,9 @@ class Document(Base, PrimaryKey, Timestamps):
     source_type: Mapped[SourceType] = mapped_column(
         Enum(SourceType, native_enum=False, length=16), nullable=False
     )
-    blob_key: Mapped[str] = mapped_column(String(1024), nullable=False)  # key in BlobStore
+    blob_key: Mapped[str] = mapped_column(String(1024), nullable=False)  # original bytes
+    # Extracted plain text (PDFs/Word are parsed at upload); paste reuses blob_key.
+    text_blob_key: Mapped[str | None] = mapped_column(String(1024))
     byte_size: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     word_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     sha256: Mapped[str | None] = mapped_column(String(64), index=True)  # dedupe / integrity

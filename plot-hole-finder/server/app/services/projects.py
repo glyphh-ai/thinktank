@@ -17,6 +17,7 @@ from ..models import (
     UsageMetric,
     User,
 )
+from ..parsing import extract_text, mime_for
 from ..plans import limits_for
 from ..storage.blob import BlobStore
 from ..text import word_count
@@ -54,14 +55,17 @@ def create_project(
         data = text.encode("utf-8")
         filename = filename or "pasted.txt"
         mime = "text/plain"
+        body_text = text
     else:
         if not file_bytes:
             raise ValidationError("uploaded file is empty")
         data = file_bytes
         filename = filename or "upload.txt"
-        mime = "text/plain"
+        mime = mime_for(filename)
+        body_text = extract_text(filename, data)  # parse PDF/Word -> plain text
 
-    body_text = data.decode("utf-8", errors="replace")
+    if not body_text.strip():
+        raise ValidationError("no readable text could be extracted from the document")
     wc = word_count(body_text)
     if wc > limits.max_words_per_project:
         raise PlanLimitExceeded(
@@ -84,6 +88,12 @@ def create_project(
     key = _blob_key(user.id, project.id, document.id)
     blob_store.put(key, data, mime)
     document.blob_key = key
+    if source_type == SourceType.PASTE:
+        document.text_blob_key = key  # already plain text
+    else:
+        text_key = f"{key}.txt"  # keep the original bytes; store parsed text alongside
+        blob_store.put(text_key, body_text.encode("utf-8"), "text/plain")
+        document.text_blob_key = text_key
 
     session.add(UsageEvent(user_id=user.id, project_id=project.id,
                            metric=UsageMetric.PROJECTS_CREATED, amount=1))
@@ -112,4 +122,6 @@ def delete_project(session: Session, blob_store: BlobStore, user: User, project_
 
 
 def document_text(blob_store: BlobStore, document: Document) -> str:
-    return blob_store.get(document.blob_key).decode("utf-8", errors="replace")
+    # Prefer the parsed-text blob; fall back to the original (e.g. legacy rows).
+    key = document.text_blob_key or document.blob_key
+    return blob_store.get(key).decode("utf-8", errors="replace")
