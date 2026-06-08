@@ -58,6 +58,37 @@ _STUB_LICENSING = {"HAIR": {"DYE_HAIR"}, "EYE_COLOR": {"WEAR_CONTACTS"}}
 
 
 class StubVerifier(Verifier):
+    def scan_chunk(self, chunk_text: str, known_facts: list[dict]) -> "ScanResult":
+        from app.llm.base import ScanResult
+
+        ex = StubExtractor()
+        facts = ex.extract(chunk_text, 0).facts
+        state = {(f["entity"], f["key"]): f["value"]
+                 for f in known_facts if f.get("kind") != "event"}
+        events: dict[str, set] = {}
+        for f in known_facts:
+            if f.get("kind") == "event":
+                events.setdefault(f["entity"], set()).add(f["key"])
+        for f in facts:
+            if f.kind == "event":
+                events.setdefault(f.entity, set()).add(f.key)
+
+        new_facts, issues = [], []
+        for f in facts:
+            kind = "event" if f.kind == "event" else "state"
+            new_facts.append({"entity": f.entity, "key": f.key, "value": f.value, "kind": kind})
+            if f.kind != "attribute":
+                continue
+            prev = state.get((f.entity, f.key))
+            if prev is not None and prev != f.value and not (
+                    events.get(f.entity, set()) & _STUB_LICENSING.get(f.key, set())):
+                issues.append(WorldModelInconsistency(
+                    entity=f.entity, key=f.key, value_a=prev, value_b=f.value,
+                    category="continuity", severity="high",
+                    explanation=f"{f.entity} {f.key}: {prev} -> {f.value}"))
+            state[(f.entity, f.key)] = f.value
+        return ScanResult(new_facts=new_facts, issues=issues)
+
     def rolling_scan(self, chunks: list[str]) -> list[WorldModelInconsistency]:
         """Minimal cross-chunk attribute-contradiction detection (test double for
         the real Claude rolling memory), with event-licensing."""

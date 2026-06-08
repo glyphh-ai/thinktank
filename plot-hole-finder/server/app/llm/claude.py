@@ -16,6 +16,7 @@ from .base import (
     ExtractedFact,
     Extractor,
     FixSuggestion,
+    ScanResult,
     Verifier,
     VerifierVerdict,
     WorldModelInconsistency,
@@ -86,6 +87,21 @@ _BASELINE_SYSTEM = _FRAMING + (
 )
 
 
+_SCAN_SYSTEM = _FRAMING + (
+    "You scan a long document chunk by chunk. You are given the NEXT CHUNK and "
+    "KNOWN FACTS already established about the entities it mentions. Do two things: "
+    "(1) extract durable NEW FACTS from the chunk -- stable attributes, states, "
+    "relationships, and transformation events that license later changes (dyeing "
+    "hair, a death, an object destroyed/rebuilt). Use short snake_case keys and "
+    "short values; mark each kind 'state' or 'event'. (2) Report ISSUES where the "
+    "chunk contradicts a known fact with NO event explaining it; if an event "
+    "explains the change, record the event in new_facts and do NOT flag it. "
+    "Return ONLY JSON: {\"new_facts\":[{\"entity\",\"key\",\"value\",\"kind\"}],"
+    "\"issues\":[{\"entity\",\"key\",\"value_a\",\"value_b\",\"category\":"
+    "\"continuity|timeline|character|knowledge|broken_reference\",\"severity\":"
+    "\"low|medium|high\",\"explanation\"}]}."
+)
+
 _ROLLING_SYSTEM = _FRAMING + (
     "You scan a long document chunk by chunk to find plot holes. You keep a "
     "running MEMORY of durable facts and constraints established so far (e.g. a "
@@ -153,6 +169,19 @@ class ClaudeExtractor(_ClaudeBase, Extractor):
 
 
 class ClaudeVerifier(_ClaudeBase, Verifier):
+    def scan_chunk(self, chunk_text: str, known_facts: list[dict]) -> ScanResult:
+        user = json.dumps({"known_facts": known_facts, "chunk": chunk_text})
+        d = self._json(_SCAN_SYSTEM, user, max_tokens=self._extract_max_tokens)
+        new_facts = [{"entity": str(f.get("entity", "")), "key": str(f.get("key", "")),
+                      "value": str(f.get("value", "")), "kind": f.get("kind", "state")}
+                     for f in d.get("new_facts", []) if f.get("entity")]
+        issues = [WorldModelInconsistency(
+            entity=str(i.get("entity", "")), key=str(i.get("key", "")),
+            value_a=str(i.get("value_a", "")), value_b=str(i.get("value_b", "")),
+            category=i.get("category", "continuity"), severity=i.get("severity", "medium"),
+            explanation=i.get("explanation", "")) for i in d.get("issues", [])]
+        return ScanResult(new_facts=new_facts, issues=issues)
+
     def filter_candidates(self, candidates: list[dict], world_model: str) -> list[dict]:
         if not candidates:
             return []

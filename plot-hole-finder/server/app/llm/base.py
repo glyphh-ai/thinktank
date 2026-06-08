@@ -75,12 +75,24 @@ class Extractor(ABC):
         """Extract entities and facts from one chunk; offsets are absolute."""
 
 
+@dataclass
+class ScanResult:
+    new_facts: list[dict]                       # durable facts to persist
+    issues: list[WorldModelInconsistency]       # contradictions vs retrieved memory
+
+
 class Verifier(ABC):
     @abstractmethod
+    def scan_chunk(self, chunk_text: str, known_facts: list[dict]) -> ScanResult:
+        """The scalable detection step: given a chunk and the facts retrieved for
+        the entities it mentions, return durable new facts to remember plus any
+        inconsistencies (a contradiction with a known fact and no explaining
+        event). Memory is retrieved, not re-sent, so this scales past context."""
+
+    @abstractmethod
     def rolling_scan(self, chunks: list[str]) -> list[WorldModelInconsistency]:
-        """The detection engine: read chunks in order, maintain a running memory
-        of durable facts/constraints, and flag a chunk when it contradicts memory
-        with no event explaining it. Scales past the context window."""
+        """Flat running memory over all chunks at once (eval comparison arm; does
+        not scale -- memory is re-sent each chunk)."""
 
     @abstractmethod
     def single_pass(self, document: str) -> list[WorldModelInconsistency]:

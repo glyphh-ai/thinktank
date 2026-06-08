@@ -28,6 +28,7 @@ from ..models import (
     Issue,
     IssueCategory,
     IssueEvidence,
+    MemoryFact,
     PassageEmbedding,
     Project,
     ProjectStatus,
@@ -74,18 +75,34 @@ def run_find(
         n_passages = _embed_passages(session, embedder, blob_store, project)
         progress("scanning", 0.4)
 
-        issues = n_chunks = 0
+        # Retrieval-backed rolling memory: per chunk, retrieve only the facts for
+        # entities mentioned in that chunk, scan, persist new facts. Memory is
+        # never re-sent whole, so this scales past the context window.
+        known_entities: set[str] = set()
+        issues = n_chunks = n_facts = 0
         for text in _document_texts(blob_store, project):
-            chunks = chunk_text(text, target_words=settings.extract_chunk_words)
-            n_chunks += len(chunks)
-            for inc in verifier.rolling_scan([c.text for c in chunks]):
-                if not inc.entity:
-                    continue
-                _record_inc(session, run, project, embedder, inc)
-                issues += 1
+            for chunk in chunk_text(text, target_words=settings.extract_chunk_words):
+                n_chunks += 1
+                lowered = chunk.text.lower()
+                mentioned = [e for e in known_entities if e.lower() in lowered]
+                known = _retrieve_facts(session, project.id, mentioned)
+                result = verifier.scan_chunk(chunk.text, known)
+                for f in result.new_facts:
+                    session.add(MemoryFact(
+                        project_id=project.id, entity=f["entity"][:255], key=f["key"][:128],
+                        value=f["value"][:1024], kind=f.get("kind", "state"),
+                        chunk_index=chunk.index))
+                    known_entities.add(f["entity"])
+                    n_facts += 1
+                session.flush()
+                for inc in result.issues:
+                    if inc.entity:
+                        _record_inc(session, run, project, embedder, inc)
+                        issues += 1
         progress("grounding", 0.9)
 
-        run.stats = {"passages": n_passages, "chunks": n_chunks, "issues": issues}
+        run.stats = {"passages": n_passages, "chunks": n_chunks,
+                     "facts": n_facts, "issues": issues}
         run.status = RunStatus.SUCCEEDED
         run.finished_at = _now()
         project.status = ProjectStatus.READY
@@ -141,6 +158,20 @@ def _document_texts(blob_store, project) -> list[str]:
     return [document_text(blob_store, doc) for doc in project.documents]
 
 
+def _retrieve_facts(session, project_id, entities, limit: int = 500) -> list[dict]:
+    """Retrieve stored facts for the entities mentioned in the current chunk.
+    Bounded, entity-indexed -> this is what keeps memory from being re-sent whole."""
+    if not entities:
+        return []
+    rows = session.scalars(
+        select(MemoryFact)
+        .where(MemoryFact.project_id == project_id, MemoryFact.entity.in_(entities))
+        .order_by(MemoryFact.chunk_index.desc())
+        .limit(limit)
+    ).all()
+    return [{"entity": r.entity, "key": r.key, "value": r.value, "kind": r.kind} for r in rows]
+
+
 def _embed_passages(session, embedder, blob_store, project) -> int:
     """Embed small passages for evidence retrieval (jump-to-passage)."""
     count = 0
@@ -185,7 +216,7 @@ def _record_inc(session, run, project, embedder, inc: WorldModelInconsistency):
 
 def _reset_derived(session, project_id):
     """Clear prior derived data so re-runs are idempotent."""
-    for model in (Issue, PassageEmbedding):
+    for model in (Issue, PassageEmbedding, MemoryFact):
         for row in session.scalars(select(model).where(model.project_id == project_id)):
             session.delete(row)
     session.flush()

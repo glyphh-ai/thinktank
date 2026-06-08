@@ -4,6 +4,12 @@ FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
 
+# LibreOffice is the universal fallback converter for office formats
+# (.doc/.odt/.rtf/.ppt/.pptx/.xls/...). --no-install-recommends keeps it leaner.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libreoffice-writer libreoffice-calc libreoffice-impress \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Install deps first for layer caching.

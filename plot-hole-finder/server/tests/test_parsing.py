@@ -26,6 +26,31 @@ def test_docx_extraction_includes_tables():
     assert "Exhibit A" in text  # table cells are pulled (legal docs use tables)
 
 
+def test_html_extraction():
+    html = b"<html><head><style>x{}</style></head><body><h1>Title</h1>" \
+           b"<p>Elena's eyes were green.</p></body></html>"
+    text = extract_text("page.html", html)
+    assert "Elena's eyes were green." in text
+    assert "<" not in text and "style" not in text
+
+
+def test_csv_is_text():
+    assert "alice" in extract_text("data.csv", b"name,age\nalice,30")
+
+
+def test_office_via_libreoffice():
+    import shutil
+
+    if not (shutil.which("soffice") or shutil.which("libreoffice")):
+        pytest.skip("LibreOffice not installed")
+    rtf = rb"{\rtf1\ansi\deff0{\fonttbl{\f0 Arial;}}Marcus had black hair.\par}"
+    try:
+        text = extract_text("note.rtf", rtf)
+    except UnsupportedDocument:
+        pytest.skip("LibreOffice present but non-functional in this environment")
+    assert "black hair" in text.lower()
+
+
 def test_unsupported_extension():
     with pytest.raises(UnsupportedDocument):
         extract_text("archive.zip", b"PK\x03\x04")
