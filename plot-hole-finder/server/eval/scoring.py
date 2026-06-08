@@ -26,11 +26,24 @@ def _key_token(key: str) -> str:
     return key.replace("_", " ").split()[0]  # "eye_color" -> "eye"
 
 
+# A planted attribute can be described with synonyms in the issue text; the plant
+# names the concept, so any synonym of it counts as a hit (this isn't gaming the
+# score -- "role" and "profession" are the same attribute).
+_SYNONYMS = {
+    "role": {"role", "profession", "occupation", "job", "title", "position"},
+    "eye_color": {"eye", "eyes"},
+    "age": {"age", "years", "old"},
+    "hair": {"hair"},
+    "location": {"location", "place", "whereabouts"},
+}
+
+
 def _matches_plant(plant: Plant, issue: dict) -> bool:
     text = _issue_text(issue)
     if plant.entity.lower() not in text:
         return False
-    return _key_token(plant.key) in text or plant.category == issue.get("category")
+    tokens = _SYNONYMS.get(plant.key, {_key_token(plant.key)})
+    return any(t in text for t in tokens) or plant.category == issue.get("category")
 
 
 def _matches_decoy(decoy: Decoy, issue: dict) -> bool:
