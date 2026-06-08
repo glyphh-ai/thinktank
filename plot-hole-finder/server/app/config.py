@@ -50,10 +50,12 @@ class Settings:
     r2_bucket: str = field(default_factory=lambda: _env("R2_BUCKET", ""))
 
     # --- email ---
-    # "console" (dev, prints), "file" (dev, writes .eml), or "smtp" (prod).
+    # "console" (dev, prints), "file" (dev, writes .eml), "resend" (prod, HTTP
+    # API), or "smtp" (prod / local Mailpit).
     email_backend: str = field(default_factory=lambda: _env("EMAIL_BACKEND", "console"))
     email_from: str = field(default_factory=lambda: _env("EMAIL_FROM", "noreply@plot-hole-finder.dev"))
     email_file_dir: str = field(default_factory=lambda: _env("EMAIL_FILE_DIR", "./var/mail"))
+    resend_api_key: str = field(default_factory=lambda: _env("RESEND_API_KEY", ""))
     smtp_host: str = field(default_factory=lambda: _env("SMTP_HOST", "localhost"))
     smtp_port: int = field(default_factory=lambda: int(_env("SMTP_PORT", "1025")))
     smtp_user: str = field(default_factory=lambda: _env("SMTP_USER", ""))

@@ -40,6 +40,8 @@ from app.storage.blob import LocalDiskBlobStore
 from app.storage.email import (
     ConsoleEmailSender,
     FileEmailSender,
+    ResendEmailSender,
+    get_email_sender,
     verification_pin_message,
 )
 
@@ -207,3 +209,20 @@ def test_email_console_and_file_backends(tmp_path, capsys):
     eml = list((tmp_path / "mail").glob("*.eml"))
     assert len(eml) == 1
     assert "123456" in eml[0].read_text()
+
+
+def test_resend_backend_selection_and_payload():
+    settings = Settings(email_backend="resend", resend_api_key="re_test_key")
+    sender = get_email_sender(settings)
+    assert isinstance(sender, ResendEmailSender)
+
+    msg = verification_pin_message(settings, "user@example.com", "123456")
+    payload = ResendEmailSender._payload(msg)
+    assert payload["to"] == ["user@example.com"]
+    assert payload["from"] == settings.email_from
+    assert "123456" in payload["text"]
+
+
+def test_resend_requires_api_key():
+    with pytest.raises(ValueError):
+        ResendEmailSender("")

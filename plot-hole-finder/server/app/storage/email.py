@@ -72,6 +72,54 @@ class FileEmailSender(EmailSender):
             fh.write(bytes(mime))
 
 
+class ResendEmailSender(EmailSender):
+    """Prod: send via the Resend HTTP API (https://resend.com).
+
+    Uses the stdlib HTTP client so there's no extra dependency. ``from`` must be
+    an address on a domain you've verified in Resend (for quick tests, Resend
+    provides ``onboarding@resend.dev``).
+    """
+
+    ENDPOINT = "https://api.resend.com/emails"
+
+    def __init__(self, api_key: str, endpoint: str | None = None):
+        if not api_key:
+            raise ValueError("RESEND_API_KEY is required for the resend email backend")
+        self.api_key = api_key
+        self.endpoint = endpoint or self.ENDPOINT
+
+    @staticmethod
+    def _payload(message: EmailMessage) -> dict:
+        return {
+            "from": message.from_addr,
+            "to": [message.to],
+            "subject": message.subject,
+            "text": message.body,
+        }
+
+    def send(self, message: EmailMessage) -> None:
+        import json
+        import urllib.error
+        import urllib.request
+
+        data = json.dumps(self._payload(message)).encode("utf-8")
+        req = urllib.request.Request(
+            self.endpoint,
+            data=data,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                resp.read()
+        except urllib.error.HTTPError as exc:  # surface Resend's error body
+            detail = exc.read().decode("utf-8", "replace")
+            raise RuntimeError(f"Resend send failed ({exc.code}): {detail}") from exc
+
+
 class SmtpEmailSender(EmailSender):
     """Prod (or local MailHog/Mailpit): send via SMTP."""
 
@@ -96,6 +144,8 @@ class SmtpEmailSender(EmailSender):
 
 def get_email_sender(settings: Settings | None = None) -> EmailSender:
     settings = settings or get_settings()
+    if settings.email_backend == "resend":
+        return ResendEmailSender(settings.resend_api_key)
     if settings.email_backend == "smtp":
         return SmtpEmailSender(settings)
     if settings.email_backend == "file":

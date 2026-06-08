@@ -52,7 +52,15 @@ python -m pytest -q
 | --- | --- | --- |
 | DB | `sqlite+pysqlite:///./var/app.db` | `postgresql+psycopg://…` (`DATABASE_URL`) |
 | Blobs | local disk (`./var/blobs`) | R2 (`BLOB_BACKEND=r2`, `R2_*`) |
-| Email | console (prints PIN) | SMTP (`EMAIL_BACKEND=smtp`, `SMTP_*`) |
+| Email | console (prints PIN) | Resend (`EMAIL_BACKEND=resend`, `RESEND_API_KEY`) |
+
+### Email backends
+
+`console` (default, dev) prints the PIN to the log; `file` writes `.eml`s;
+`smtp` targets local Mailpit/MailHog or any SMTP host; `resend` uses the Resend
+HTTP API. For Resend, set `EMAIL_BACKEND=resend`, `RESEND_API_KEY`, and
+`EMAIL_FROM` to an address on a domain you've verified in Resend (or
+`onboarding@resend.dev` for quick tests).
 | Billing | disabled | Stripe (`STRIPE_*`) |
 
 ## Plans
