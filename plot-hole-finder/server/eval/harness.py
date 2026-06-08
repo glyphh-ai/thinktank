@@ -110,8 +110,9 @@ def _run_arm(arm, sf, settings, blob, embedder, extractor, verifier, uid, case) 
         return [{"title": f"{i.entity}: {i.key}", "description": i.explanation,
                  "category": i.category} for i in incs]
 
-    structured, holistic = {"structured": (True, False), "holistic": (False, True),
-                            "hybrid": (True, True)}[arm]
+    flags = {"structured": dict(recall=False, structured=True, holistic=False),
+             "holistic": dict(recall=False, structured=False, holistic=True),
+             "hybrid": dict(recall=True, structured=True, holistic=True)}[arm]
     with session_scope(sf) as s:
         proj = project_service.create_project(s, blob, s.get(User, uid), arm,
                                               SourceType.PASTE, text=case.text)
@@ -119,7 +120,7 @@ def _run_arm(arm, sf, settings, blob, embedder, extractor, verifier, uid, case) 
     with session_scope(sf) as s:
         analysis_service.run_find(s, settings, blob, embedder, extractor, verifier,
                                   project_service.get_project(s, s.get(User, uid), pid),
-                                  s.get(User, uid), structured=structured, holistic=holistic)
+                                  s.get(User, uid), **flags)
     with session_scope(sf) as s:
         return [{"title": i.title, "description": i.description, "category": i.category.value}
                 for i in s.scalars(select(Issue).where(Issue.project_id == pid))]

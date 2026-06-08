@@ -10,6 +10,9 @@ email-validator>=2.0
 # LLM (prod extraction/verification)
 anthropic>=0.40
 
+# Embeddings (the only embedder; downloads bge-small on first use)
+fastembed>=0.3
+
 # Document parsing (txt/pdf/docx; .doc needs LibreOffice on the host)
 pypdf>=4.0
 python-docx>=1.1

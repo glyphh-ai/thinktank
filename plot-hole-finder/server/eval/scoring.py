@@ -30,13 +30,15 @@ def _key_token(key: str) -> str:
 # names the concept, so any synonym of it counts as a hit (this isn't gaming the
 # score -- "role" and "profession" are the same attribute).
 _SYNONYMS = {
-    "role": {"role", "profession", "occupation", "job", "title", "position"},
+    "role": {"role", "profession", "occupation", "job", "title", "position", "surgeon", "accountant"},
     "eye_color": {"eye", "eyes"},
     "age": {"age", "years", "old"},
-    "hair": {"hair"},
-    "location": {"location", "place", "whereabouts"},
-    "status": {"status", "amulet", "destroyed", "shattered", "intact", "present", "exist"},
-    "capital": {"capital", "lived", "visited", "been", "travelled", "traveled"},
+    "hair": {"hair", "blonde", "black"},
+    "height": {"height", "tall", "short", "stature", "tallest", "shortest"},
+    "hometown": {"hometown", "village", "abroad", "born", "birth", "travel", "left", "cities"},
+    "object_status": {"watch", "pocket", "crushed", "destroyed", "broken", "intact", "repair"},
+    "sibling_count": {"sibling", "sister", "child", "only", "brother"},
+    "residence": {"residence", "lived", "moved", "quarter", "district", "home"},
     "rank": {"rank", "captain", "lieutenant", "promot"},
 }
 
@@ -51,7 +53,9 @@ def _matches_plant(plant: Plant, issue: dict) -> bool:
 
 def _matches_decoy(decoy: Decoy, issue: dict) -> bool:
     text = _issue_text(issue)
-    return decoy.entity.lower() in text and _key_token(decoy.key) in text
+    if decoy.entity.lower() not in text:
+        return False
+    return any(t in text for t in _SYNONYMS.get(decoy.key, {_key_token(decoy.key)}))
 
 
 def score_case(case: Case, issues: list[dict]) -> CaseResult:

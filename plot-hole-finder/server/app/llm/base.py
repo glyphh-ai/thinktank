@@ -77,15 +77,21 @@ class Extractor(ABC):
 
 class Verifier(ABC):
     @abstractmethod
-    def verify(self, candidate: dict, evidence: list[str]) -> VerifierVerdict:
-        """Judge a candidate inconsistency given retrieved evidence passages."""
+    def single_pass(self, document: str) -> list[WorldModelInconsistency]:
+        """Recall arm: read raw text and surface candidate inconsistencies."""
+
+    @abstractmethod
+    def review_world_model(self, world_model: str) -> list[WorldModelInconsistency]:
+        """Recall arm: reason over the compressed world model (scales past
+        context; catches cross-entity / semantic / timeline / knowledge issues)."""
+
+    @abstractmethod
+    def filter_candidates(self, candidates: list[dict], world_model: str) -> list[dict]:
+        """Precision filter: given candidate inconsistencies and the world model
+        (entities, facts, and licensing events over time), return only the
+        genuine ones -- dropping changes an in-story event explains. This is what
+        turns high-recall candidates into high-precision issues."""
 
     @abstractmethod
     def suggest_fix(self, issue: dict, evidence: list[str]) -> FixSuggestion:
         """Propose an edit that resolves the issue (Pro 'fix this for me')."""
-
-    @abstractmethod
-    def review_world_model(self, world_model: str) -> list[WorldModelInconsistency]:
-        """Holistic pass: reason over the whole compressed world model and surface
-        inconsistencies the per-slot structured checks miss (cross-entity,
-        semantic, timeline, knowledge). This is the LLM arm of the hybrid."""

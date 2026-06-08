@@ -55,22 +55,19 @@ class StubExtractor(Extractor):
 
 
 class StubVerifier(Verifier):
-    def verify(self, candidate: dict, evidence: list[str]) -> VerifierVerdict:
-        a, b = candidate.get("value_a", ""), candidate.get("value_b", "")
-        confirmed = bool(a) and bool(b) and a != b
-        return VerifierVerdict(
-            confirmed=confirmed, severity="high",
-            title=f"{candidate.get('entity')}'s {candidate.get('key', '').lower()} "
-                  f"changes ({a} -> {b})",
-            explanation=f"{candidate.get('entity')} {candidate.get('key')}: {a} vs {b}.",
-            confidence=0.9 if confirmed else 0.0,
-        )
+    def single_pass(self, document: str) -> list[WorldModelInconsistency]:
+        return []  # recall arm is a no-op under the stub; quality is Claude-only
+
+    def review_world_model(self, world_model: str) -> list[WorldModelInconsistency]:
+        return []
+
+    def filter_candidates(self, candidates: list[dict], world_model: str) -> list[dict]:
+        # Pass through: structured candidates already had licensing pre-filtered,
+        # so confirm those with two distinct values.
+        return [c for c in candidates if c.get("value_a") != c.get("value_b")]
 
     def suggest_fix(self, issue: dict, evidence: list[str]) -> FixSuggestion:
         return FixSuggestion(text=f"Make {issue.get('entity')} consistent.")
-
-    def review_world_model(self, world_model: str) -> list[WorldModelInconsistency]:
-        return []  # holistic arm is a no-op under the stub; quality is Claude-only
 
 
 class StubEmbedder(Embedder):

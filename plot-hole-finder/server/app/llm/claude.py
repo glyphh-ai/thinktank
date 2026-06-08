@@ -47,12 +47,17 @@ _EXTRACT_SYSTEM = _FRAMING + (
     "fact per distinct attribute assertion; keep values short (1-3 words)."
 )
 
-_VERIFY_SYSTEM = (
-    "You are a fact-checker for narrative continuity. Given a candidate "
-    "inconsistency and evidence passages, decide if it is a genuine plot hole "
-    "(no in-story event explains it). Return ONLY JSON: {\"confirmed\":bool,"
-    "\"severity\":\"low|medium|high\",\"title\":str,\"explanation\":str,"
-    "\"confidence\":number}."
+_FILTER_SYSTEM = _FRAMING + (
+    "You are the precision filter for a plot-hole detector. You are given the "
+    "extracted world-model (entities, facts, and events over narrative time t) "
+    "and a list of CANDIDATE inconsistencies from high-recall detectors. Return "
+    "ONLY the candidates that are GENUINE plot holes: a real contradiction with "
+    "no in-story event that explains it. DROP any candidate an event legitimately "
+    "explains (a dyed haircut, a promotion, an object rebuilt, a character moving "
+    "house), duplicates, and non-issues. Return ONLY JSON: "
+    "{\"confirmed\":[{\"entity\",\"key\",\"value_a\",\"value_b\","
+    "\"category\":\"continuity|timeline|character|knowledge|broken_reference\","
+    "\"severity\":\"low|medium|high\",\"explanation\"}]}."
 )
 
 _REVIEW_SYSTEM = _FRAMING + (
@@ -134,14 +139,12 @@ class ClaudeExtractor(_ClaudeBase, Extractor):
 
 
 class ClaudeVerifier(_ClaudeBase, Verifier):
-    def verify(self, candidate: dict, evidence: list[str]) -> VerifierVerdict:
-        user = json.dumps({"candidate": candidate, "evidence": evidence})
-        d = self._json(_VERIFY_SYSTEM, user, max_tokens=1024)
-        return VerifierVerdict(
-            confirmed=bool(d["confirmed"]), severity=d.get("severity", "medium"),
-            title=d.get("title", ""), explanation=d.get("explanation", ""),
-            confidence=float(d.get("confidence", 0.0)),
-        )
+    def filter_candidates(self, candidates: list[dict], world_model: str) -> list[dict]:
+        if not candidates:
+            return []
+        user = json.dumps({"world_model": world_model, "candidates": candidates})
+        d = self._json(_FILTER_SYSTEM, user, max_tokens=4096)
+        return d.get("confirmed", [])
 
     def suggest_fix(self, issue: dict, evidence: list[str]) -> FixSuggestion:
         user = json.dumps({"issue": issue, "evidence": evidence})

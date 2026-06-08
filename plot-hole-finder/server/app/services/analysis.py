@@ -65,6 +65,7 @@ def run_find(
     user: User,
     on_progress=None,
     *,
+    recall: bool = True,
     structured: bool = True,
     holistic: bool = True,
 ) -> AnalysisRun:
@@ -89,46 +90,43 @@ def run_find(
         progress("analyzing", 0.5)
 
         cortex, codebook, value_clean = _build_cortex(session, project, entities, facts)
-        candidates = _generate_candidates(cortex, codebook, value_clean, entities, facts)
+        world_model = _serialize_world_model(entities, facts)
+
+        # --- RECALL: gather candidate inconsistencies from every enabled source ---
+        candidates: dict[tuple[str, str], dict] = {}
+
+        def add(entity, key, value_a, value_b, category, explanation=""):
+            slot = (str(entity).strip().upper(), str(key).strip().upper())
+            if entity and slot not in candidates:
+                candidates[slot] = {"entity": entity, "key": key, "value_a": value_a,
+                                    "value_b": value_b, "category": category,
+                                    "explanation": explanation}
+
+        if structured:
+            # cortex per-(entity,attribute) candidates (licensing pre-filtered)
+            for c in _generate_candidates(cortex, codebook, value_clean, entities, facts):
+                add(c["entity"], c["key"], c["value_a"], c["value_b"], "continuity")
+        if holistic:
+            for inc in verifier.review_world_model(world_model):
+                add(inc.entity, inc.key, inc.value_a, inc.value_b, inc.category, inc.explanation)
+        if recall:
+            for text in _document_texts(blob_store, project):
+                for chunk in chunk_text(text, target_words=settings.extract_chunk_words):
+                    for inc in verifier.single_pass(chunk.text):
+                        add(inc.entity, inc.key, inc.value_a, inc.value_b, inc.category,
+                            inc.explanation)
         progress("verifying", 0.7)
 
-        recorded: set[tuple[str, str]] = set()
-        issues = structured_hits = 0
-
-        # Arm 1 (structured/cortex): exhaustive per-(entity,attribute) candidates,
-        # evidence-grounded and LLM-verified.
-        if structured:
-            for cand in candidates:
-                evidence = _retrieve_evidence(session, embedder, project.id, cand)
-                public = {k: cand[k] for k in ("entity", "key", "value_a", "value_b")}
-                verdict = verifier.verify(public, [e["quote"] for e in evidence])
-                if not verdict.confirmed:
-                    continue
-                _record_issue(session, run, project, cand, verdict)
-                recorded.add((cand["entity"].upper(), cand["key"].upper()))
-                structured_hits += 1
-                issues += 1
-
-        # Arm 2 (holistic): one LLM pass over the compressed world model to catch
-        # cross-entity / semantic / timeline / knowledge issues the slots miss.
-        global_hits = 0
-        if holistic:
-            world_model = _serialize_world_model(entities, facts)
-            for inc in verifier.review_world_model(world_model):
-                slot = (inc.entity.strip().upper(), inc.key.strip().upper())
-                if not inc.entity or slot in recorded:
-                    continue
-                _record_global_issue(session, run, project, embedder, inc)
-                recorded.add(slot)
-                global_hits += 1
-                issues += 1
+        # --- PRECISION: one filter pass drops anything an event explains ---
+        confirmed = verifier.filter_candidates(list(candidates.values()), world_model)
+        for c in confirmed:
+            _record_candidate_issue(session, run, project, embedder, c)
         progress("verifying", 0.9)
 
         run.stats = {
             "passages": len(passages), "extract_chunks": len(extracted),
             "entities": len(entities), "facts": len(facts),
-            "candidates": len(candidates), "issues": issues,
-            "structured_hits": structured_hits, "global_hits": global_hits,
+            "candidates": len(candidates), "issues": len(confirmed),
         }
         run.status = RunStatus.SUCCEEDED
         run.finished_at = _now()
@@ -352,20 +350,8 @@ def _has_licensing_event(entity, key, t_a, t_b, facts) -> bool:
     return False
 
 
-def _retrieve_evidence(session, embedder, project_id, cand):
-    """Pull source passages for the two sides (RAG evidence layer)."""
-    evidence = []
-    for fact in (cand["fact_a"], cand["fact_b"]):
-        passage = session.scalar(
-            select(PassageEmbedding).where(
-                PassageEmbedding.project_id == project_id,
-                PassageEmbedding.char_start <= fact.char_start,
-                PassageEmbedding.char_end >= fact.char_end,
-            )
-        )
-        quote = passage.text if passage else f"{cand['entity']} {cand['key']}={fact.value}"
-        evidence.append({"quote": quote, "fact": fact})
-    return evidence
+def _document_texts(blob_store, project):
+    return [document_text(blob_store, doc) for doc in project.documents]
 
 
 def _serialize_world_model(entities, facts) -> str:
@@ -386,42 +372,29 @@ def _serialize_world_model(entities, facts) -> str:
     return "\n".join(lines)
 
 
-def _record_global_issue(session, run, project, embedder, inc):
-    """Record a holistic-pass inconsistency, grounding it with RAG evidence."""
+def _record_candidate_issue(session, run, project, embedder, c: dict):
+    """Record a confirmed candidate as an Issue, grounded with RAG evidence."""
+    entity, key = c.get("entity", ""), c.get("key", "")
+    va, vb = c.get("value_a", ""), c.get("value_b", "")
     issue = Issue(
-        run_id=run.id, project_id=project.id, category=_category(inc.category),
-        severity=_severity(inc.severity), title=f"{inc.entity}: {inc.key} inconsistency",
-        description=inc.explanation, confidence=inc.confidence,
+        run_id=run.id, project_id=project.id, category=_category(c.get("category", "continuity")),
+        severity=_severity(c.get("severity", "medium")),
+        title=f"{entity}: {key} ({va} -> {vb})" if va or vb else f"{entity}: {key}",
+        description=c.get("explanation", ""), confidence=float(c.get("confidence", 0.8)),
     )
     session.add(issue)
     session.flush()
-    query = embedder.embed_one(f"{inc.entity} {inc.key} {inc.value_a} {inc.value_b}")
-    for role, value in ((EvidenceRole.STATE_A, inc.value_a), (EvidenceRole.STATE_B, inc.value_b)):
-        neighbors = search_passages(session, project.id, query, k=2)
+    for role, value in ((EvidenceRole.STATE_A, va), (EvidenceRole.STATE_B, vb)):
+        # Retrieve each side independently so the two spans land on the two
+        # different passages (not the same top hit twice).
+        neighbors = search_passages(session, project.id,
+                                    embedder.embed_one(f"{entity} {key} {value}"), k=2)
         passage = neighbors[0].passage if neighbors else None
         session.add(IssueEvidence(
-            issue_id=issue.id, document_id=passage.document_id if passage else None,
-            role=role,
+            issue_id=issue.id, document_id=passage.document_id if passage else None, role=role,
             char_start=passage.char_start if passage else 0,
             char_end=passage.char_end if passage else 0,
-            quote=(passage.text[:240] if passage else f"{inc.entity} {inc.key}={value}"),
-        ))
-    return issue
-
-
-def _record_issue(session, run, project, cand, verdict):
-    issue = Issue(
-        run_id=run.id, project_id=project.id, category=_category_for(cand["key"]),
-        severity=Severity(verdict.severity), title=verdict.title or cand["entity"],
-        description=verdict.explanation, confidence=verdict.confidence,
-    )
-    session.add(issue)
-    session.flush()
-    for role, fact in ((EvidenceRole.STATE_A, cand["fact_a"]), (EvidenceRole.STATE_B, cand["fact_b"])):
-        session.add(IssueEvidence(
-            issue_id=issue.id, document_id=fact.document_id, role=role,
-            char_start=fact.char_start, char_end=fact.char_end,
-            quote=f"{cand['entity']} {cand['key']}={fact.value}",
+            quote=(passage.text[:240] if passage else f"{entity} {key}={value}"),
         ))
     return issue
 
