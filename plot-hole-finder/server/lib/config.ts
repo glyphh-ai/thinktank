@@ -24,4 +24,15 @@ export const config = {
   stripePricePro: env("STRIPE_PRICE_PRO"),
   billingEnabled: env("BILLING_BACKEND", "disabled") === "stripe",
   jobLeaseSeconds: Number(env("JOB_LEASE_SECONDS", "900")),
+  // Agent run guardrails (cost/turn caps so a massive-doc pass can't run away).
+  agentMaxTurns: Number(env("AGENT_MAX_TURNS", "200")),
+  agentMaxBudgetUsd: Number(env("AGENT_MAX_BUDGET_USD", "25")),
+  // Rate limits (fixed window).
+  rateLimitWindowSeconds: Number(env("RATE_LIMIT_WINDOW", "60")),
+  authRateLimit: Number(env("AUTH_RATE_LIMIT", "20")),
+  agentRateLimit: Number(env("AGENT_RATE_LIMIT", "30")),
+  mcpRateLimit: Number(env("MCP_RATE_LIMIT", "120")),
+  // Allowed Host header values for MCP DNS-rebinding protection (comma-sep).
+  // Empty disables the check (dev). Set in prod, e.g. "api.example.com".
+  mcpAllowedHosts: env("MCP_ALLOWED_HOSTS").split(",").map((h) => h.trim()).filter(Boolean),
 } as const;

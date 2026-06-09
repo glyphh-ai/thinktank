@@ -1,22 +1,26 @@
 // Redis client (lazy) + a cache/rate-limit layer with an in-memory fallback so
 // the app runs without Redis in dev but uses Redis when REDIS_URL is set.
 
-import type Redis from "ioredis";
+import IORedis, { type Redis } from "ioredis";
 import { config } from "./config";
 
 let _redis: Redis | null | undefined;
 
 export function getRedis(): Redis | null {
   if (_redis === undefined) {
-    if (!config.redisUrl) {
-      _redis = null;
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const IORedis = require("ioredis");
-      _redis = new IORedis(config.redisUrl, { maxRetriesPerRequest: 3, lazyConnect: false });
-    }
+    _redis = config.redisUrl
+      ? new IORedis(config.redisUrl, { maxRetriesPerRequest: 3, lazyConnect: false })
+      : null;
   }
   return _redis ?? null;
+}
+
+export async function closeRedis(): Promise<void> {
+  if (_redis) {
+    await _redis.quit().catch(() => {});
+  }
+  _redis = undefined;
+  _cache = undefined;
 }
 
 export interface Cache {

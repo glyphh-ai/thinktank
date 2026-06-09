@@ -5,15 +5,18 @@ import Fastify, { type FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 import { AppError } from "@/lib/errors";
+import { closeDb, pingDb } from "@/lib/db";
+import { closeRedis, getRedis } from "@/lib/redis";
 import { authRoutes } from "./routes/auth";
 import { projectRoutes } from "./routes/projects";
 import { jobRoutes } from "./routes/jobs";
 import { billingRoutes } from "./routes/billing";
 import { agentRoutes } from "./routes/agent";
 import { mcpRoutes } from "./routes/mcp";
+import { closeQueue } from "../jobs/queue";
 
-export async function buildApp(): Promise<FastifyInstance> {
-  const app = Fastify({ logger: true, bodyLimit: 50 * 1024 * 1024 });
+export async function buildApp(opts: { logger?: boolean } = {}): Promise<FastifyInstance> {
+  const app = Fastify({ logger: opts.logger ?? true, bodyLimit: 50 * 1024 * 1024 });
 
   // JSON parser that also retains the raw bytes (needed for Stripe webhook
   // signature verification).
@@ -44,7 +47,26 @@ export async function buildApp(): Promise<FastifyInstance> {
     return reply.code(500).send({ error: "internal_error", message: "internal error" });
   });
 
+  // Liveness: process is up. Readiness: dependencies (Postgres + Redis) reachable.
   app.get("/health", async () => ({ ok: true }));
+  app.get("/ready", async (_req, reply) => {
+    const checks: Record<string, "ok" | string> = {};
+    try { await pingDb(); checks.db = "ok"; }
+    catch (err) { checks.db = err instanceof Error ? err.message : "error"; }
+    const redis = getRedis();
+    if (!redis) checks.redis = "not configured";
+    else {
+      try { await redis.ping(); checks.redis = "ok"; }
+      catch (err) { checks.redis = err instanceof Error ? err.message : "error"; }
+    }
+    const ready = checks.db === "ok" && (checks.redis === "ok" || checks.redis === "not configured");
+    return reply.code(ready ? 200 : 503).send({ ready, checks });
+  });
+
+  // Close shared connections (Postgres pool, caches, BullMQ queue) on shutdown.
+  app.addHook("onClose", async () => {
+    await Promise.allSettled([closeQueue(), closeRedis(), closeDb()]);
+  });
 
   await app.register(authRoutes);
   await app.register(projectRoutes);

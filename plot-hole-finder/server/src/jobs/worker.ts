@@ -4,12 +4,17 @@
 // background worker with retries, progress, and automatic lock renewal rather
 // than inside an HTTP request.
 
-import { Worker, type Job } from "bullmq";
+import { UnrecoverableError, Worker, type Job } from "bullmq";
 import { config } from "@/lib/config";
 import { DrizzleStore } from "@/lib/store/drizzle";
 import { runAgent } from "@/lib/agent/runner";
 import { ANALYSIS_QUEUE, jobConnection } from "./connection";
-import type { AnalysisJobData } from "./queue";
+import { cancelKey, type AnalysisJobData } from "./queue";
+
+// Extends UnrecoverableError so a cancelled job is not retried by BullMQ.
+export class JobCancelledError extends UnrecoverableError {
+  constructor() { super("job cancelled"); this.name = "JobCancelledError"; }
+}
 
 const ANALYZE_PROMPT =
   "Analyze this document for plot holes, continuity errors, and timeline/sequencing problems. " +
@@ -24,6 +29,11 @@ const FIX_PROMPT =
 async function processJob(job: Job<AnalysisJobData>) {
   const { type, projectId, prompt, model } = job.data;
   const store = new DrizzleStore();
+  const redis = jobConnection();
+
+  // Cooperative cancellation: trips the AbortSignal runAgent forwards to interrupt().
+  const ac = new AbortController();
+  const cancelled = async () => (await redis.get(cancelKey(job.id!))) !== null;
 
   let tools = 0;
   let issues = 0;
@@ -36,7 +46,10 @@ async function processJob(job: Job<AnalysisJobData>) {
     // analyze never edits (read-only); fix runs unattended so edits are allowed.
     mode: type === "fix" ? "auto" : "ask",
     model: model ?? config.anthropicModel,
-    maxTurns: 200,
+    // Hard guardrails so a massive-doc pass can't run away on turns or cost.
+    maxTurns: config.agentMaxTurns,
+    maxBudgetUsd: config.agentMaxBudgetUsd,
+    signal: ac.signal,
   })) {
     if (ev.type === "tool_use") {
       tools++;
@@ -46,6 +59,12 @@ async function processJob(job: Job<AnalysisJobData>) {
         pct: Math.min(95, 5 + tools),
         step: `${ev.name} (${tools} tool calls, ${issues} issues)`,
       });
+      // Check for a cancellation request between tool calls.
+      if (await cancelled()) {
+        ac.abort();
+        await redis.del(cancelKey(job.id!));
+        throw new JobCancelledError();
+      }
     } else if (ev.type === "error") {
       throw new Error(ev.message);
     }

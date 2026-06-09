@@ -19,3 +19,10 @@ export function jobConnection(): IORedis {
   }
   return _conn;
 }
+
+export async function closeJobConnection(): Promise<void> {
+  if (_conn) {
+    await _conn.quit().catch(() => {});
+    _conn = undefined;
+  }
+}

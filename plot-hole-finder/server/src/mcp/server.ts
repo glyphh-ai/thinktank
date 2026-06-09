@@ -17,13 +17,26 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { z } from "zod";
 import { MCP_SERVER_NAME, plotHoleTools } from "@/lib/agent/tool-defs";
 import { userFromAuthHeader } from "@/lib/auth/service";
+import { config } from "@/lib/config";
 import { getProject } from "@/lib/projects";
 import { DrizzleStore } from "@/lib/store/drizzle";
-import { AppError, Unauthorized, ValidationError } from "@/lib/errors";
+import { AppError, Forbidden, Unauthorized, ValidationError } from "@/lib/errors";
 
 export interface McpScope {
   userId: string;
   projectId: string;
+}
+
+/**
+ * DNS-rebinding protection: reject Host headers not in the allowlist (the SDK's
+ * built-in option is deprecated in favor of external middleware like this).
+ * Empty allowlist disables the check (dev).
+ */
+export function assertAllowedHost(host: string | undefined): void {
+  if (config.mcpAllowedHosts.length === 0) return;
+  const bare = (host ?? "").split(":")[0]!.toLowerCase();
+  const ok = config.mcpAllowedHosts.some((h) => bare === h.split(":")[0]!.toLowerCase());
+  if (!ok) throw new Forbidden("host not allowed");
 }
 
 /** Authenticate the request and resolve the project scope, or throw AppError. */
@@ -77,6 +90,7 @@ export async function handleMcpRequest(
 ): Promise<void> {
   let scope: McpScope;
   try {
+    assertAllowedHost(req.headers.host);
     scope = await resolveScope(opts.authHeader, opts.projectId);
   } catch (err) {
     const e = err instanceof AppError ? err : new Unauthorized("unauthorized");

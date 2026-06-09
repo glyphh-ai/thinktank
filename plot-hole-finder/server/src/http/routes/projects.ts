@@ -1,14 +1,17 @@
 // Project routes: create from text or upload, list/get, read issues/timeline,
-// and enqueue analyze/fix jobs onto the BullMQ queue.
+// and enqueue/cancel analyze/fix jobs on the BullMQ queue.
 
 import type { FastifyInstance } from "fastify";
+import { z } from "zod";
 import { currentPlan } from "@/lib/billing";
-import { Forbidden, ValidationError } from "@/lib/errors";
+import { Forbidden, NotFound, ValidationError } from "@/lib/errors";
 import { limitsFor } from "@/lib/plans";
 import { createProject, getProject, listProjects } from "@/lib/projects";
 import { DrizzleStore } from "@/lib/store/drizzle";
-import { enqueueAnalysis } from "../../jobs/queue";
-import { jsonBody, requireUser } from "../context";
+import { cancelJob, enqueueAnalysis } from "../../jobs/queue";
+import { parseBody, requireUser } from "../context";
+
+const createSchema = z.object({ name: z.string().max(200).default(""), text: z.string().min(1) });
 
 export async function projectRoutes(app: FastifyInstance) {
   app.get("/api/projects", async (req) => {
@@ -18,7 +21,7 @@ export async function projectRoutes(app: FastifyInstance) {
 
   app.post("/api/projects", async (req, reply) => {
     const user = await requireUser(req);
-    const { name, text } = jsonBody<{ name: string; text: string }>(req);
+    const { name, text } = parseBody(req, createSchema);
     return reply.code(201).send(await createProject(user.id, name, { text }));
   });
 
@@ -58,8 +61,8 @@ export async function projectRoutes(app: FastifyInstance) {
     const user = await requireUser(req);
     const { id } = req.params as { id: string };
     await getProject(user.id, id);
-    const { jobId, state } = await enqueueAnalysis({ type: "analyze", userId: user.id, projectId: id });
-    return reply.code(202).send({ jobId, status: state });
+    const { jobId, state, deduped } = await enqueueAnalysis({ type: "analyze", userId: user.id, projectId: id });
+    return reply.code(202).send({ jobId, status: state, deduped });
   });
 
   app.post("/api/projects/:id/fix", async (req, reply) => {
@@ -69,7 +72,16 @@ export async function projectRoutes(app: FastifyInstance) {
     if (!limitsFor(await currentPlan(user.id)).canFix) {
       throw new Forbidden("fix-this-for-me requires the Pro plan");
     }
-    const { jobId, state } = await enqueueAnalysis({ type: "fix", userId: user.id, projectId: id });
-    return reply.code(202).send({ jobId, status: state });
+    const { jobId, state, deduped } = await enqueueAnalysis({ type: "fix", userId: user.id, projectId: id });
+    return reply.code(202).send({ jobId, status: state, deduped });
+  });
+
+  // Cancel an in-flight or queued job for one of the caller's projects.
+  app.post("/api/jobs/:id/cancel", async (req) => {
+    const user = await requireUser(req);
+    const { id } = req.params as { id: string };
+    const res = await cancelJob(id);
+    if (!res || res.userId !== user.id) throw new NotFound("job not found");
+    return { jobId: id, status: "cancelling", was: res.state };
   });
 }

@@ -3,6 +3,8 @@
 // (or ?project=). The MCP SDK transport owns the raw response from here.
 
 import type { FastifyInstance, FastifyRequest } from "fastify";
+import { config } from "@/lib/config";
+import { clientIp, enforceRateLimit } from "../context";
 import { handleMcpRequest } from "../../mcp/server";
 
 function scopeOf(req: FastifyRequest) {
@@ -13,6 +15,14 @@ function scopeOf(req: FastifyRequest) {
 }
 
 export async function mcpRoutes(app: FastifyInstance) {
+  // Throttle by project (or client IP pre-auth) so MCP calls can't flood the
+  // backend. Runs before hijack so a 429 is a normal JSON response.
+  app.addHook("onRequest", async (req) => {
+    if (!req.url.startsWith("/mcp")) return;
+    const { projectId } = scopeOf(req);
+    await enforceRateLimit("mcp", projectId ?? clientIp(req), config.mcpRateLimit);
+  });
+
   app.post("/mcp", async (req, reply) => {
     reply.hijack();
     const { authHeader, projectId } = scopeOf(req);

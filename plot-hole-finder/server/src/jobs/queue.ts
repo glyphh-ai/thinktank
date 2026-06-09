@@ -3,7 +3,7 @@
 // rolling-memory pass survives request timeouts and can be retried/observed.
 
 import { Queue, type JobsOptions } from "bullmq";
-import { ANALYSIS_QUEUE, jobConnection } from "./connection";
+import { ANALYSIS_QUEUE, closeJobConnection, jobConnection } from "./connection";
 
 export type JobType = "analyze" | "fix";
 
@@ -44,12 +44,36 @@ export function analysisQueue(): Queue<AnalysisJobData> {
   return _queue;
 }
 
+// Redis key a worker polls to cooperatively cancel an in-flight run.
+export const cancelKey = (jobId: string) => `cancel:job:${jobId}`;
+
+/** Close the queue and its Redis connection (graceful shutdown). */
+export async function closeQueue(): Promise<void> {
+  if (_queue) {
+    await _queue.close().catch(() => {});
+    _queue = undefined;
+  }
+  await closeJobConnection();
+}
+
+/**
+ * Enqueue an analyze/fix run, deduplicating against any in-flight job for the
+ * same project+type. Runs are expensive (a full rolling-memory pass over a
+ * massive doc), so we never stack a second one — we return the existing job.
+ */
 export async function enqueueAnalysis(
   data: AnalysisJobData,
   opts?: JobsOptions,
-): Promise<{ jobId: string; state: string }> {
-  const job = await analysisQueue().add(data.type, data, opts);
-  return { jobId: job.id!, state: await job.getState() };
+): Promise<{ jobId: string; state: string; deduped: boolean }> {
+  const queue = analysisQueue();
+  const inflight = await queue.getJobs(["active", "waiting", "delayed", "paused"]);
+  const existing = inflight.find(
+    (j) => j.data.projectId === data.projectId && j.data.type === data.type,
+  );
+  if (existing) return { jobId: existing.id!, state: await existing.getState(), deduped: true };
+
+  const job = await queue.add(data.type, data, opts);
+  return { jobId: job.id!, state: await job.getState(), deduped: false };
 }
 
 /** Reads job status. Ownership is enforced by the caller against `userId`. */
@@ -71,4 +95,25 @@ export async function jobStatus(jobId: string): Promise<JobStatus | null> {
     userId: job.data.userId,
     projectId: job.data.projectId,
   };
+}
+
+/**
+ * Cancel a job. Waiting/delayed jobs are removed outright; an active job is
+ * signalled via a Redis flag the worker polls (BullMQ can't force-kill a running
+ * processor). Returns null if the job doesn't exist, else its owner for the
+ * caller's ownership check.
+ */
+export async function cancelJob(jobId: string): Promise<{ userId: string; state: string } | null> {
+  const queue = analysisQueue();
+  const job = await queue.getJob(jobId);
+  if (!job) return null;
+  const userId = job.data.userId;
+  const state = await job.getState();
+  if (state === "active") {
+    // Cooperative: worker checks this flag each iteration and aborts.
+    await jobConnection().set(cancelKey(jobId), "1", "EX", 3600);
+  } else if (state === "waiting" || state === "delayed" || state === "prioritized") {
+    await job.remove();
+  }
+  return { userId, state };
 }

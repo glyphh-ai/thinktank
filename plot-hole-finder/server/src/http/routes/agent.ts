@@ -12,7 +12,7 @@ import { getProject } from "@/lib/projects";
 import { DrizzleStore } from "@/lib/store/drizzle";
 import { runAgent } from "@/lib/agent/runner";
 import type { UiPermissionMode } from "@/lib/agent/permissions";
-import { requireUser, sendError } from "../context";
+import { enforceRateLimit, requireUser, sendError } from "../context";
 
 const MODES: UiPermissionMode[] = ["ask", "plan", "auto", "bypass"];
 
@@ -28,6 +28,7 @@ export async function agentRoutes(app: FastifyInstance) {
     let user;
     try {
       user = await requireUser(req);
+      await enforceRateLimit("agent", user.id, config.agentRateLimit);
     } catch (err) {
       return sendError(reply, err);
     }
@@ -58,7 +59,10 @@ export async function agentRoutes(app: FastifyInstance) {
     const send = (event: unknown) => reply.raw.write(`data: ${JSON.stringify(event)}\n\n`);
 
     try {
-      for await (const ev of runAgent({ store, projectId, prompt, mode, model, signal: ac.signal })) {
+      for await (const ev of runAgent({
+        store, projectId, prompt, mode, model, signal: ac.signal,
+        maxTurns: config.agentMaxTurns, maxBudgetUsd: config.agentMaxBudgetUsd,
+      })) {
         send(ev);
       }
       send({
