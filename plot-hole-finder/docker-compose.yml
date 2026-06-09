@@ -1,0 +1,61 @@
+# Local prod-like stack: TS app + worker + Postgres/pgvector + Redis.
+#
+#   docker compose up --build
+#
+# Secrets/overrides come from the environment or a .env in this directory
+# (e.g. ANTHROPIC_API_KEY=...).
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: plothole
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d plothole"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment: &app_env
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/plothole
+      REDIS_URL: redis://redis:6379/0
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-4-8}
+      JWT_SECRET: ${JWT_SECRET:-dev-insecure-change-me}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-console}
+      BILLING_BACKEND: ${BILLING_BACKEND:-disabled}
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    ports: ["3000:3000"]
+
+  worker:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: ["pnpm", "worker"]
+    environment: *app_env
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+volumes:
+  pgdata:
