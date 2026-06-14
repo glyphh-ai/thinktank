@@ -35,6 +35,32 @@ coordinate where a rule isn't enough and a weight/lookup is required: the
 empirical answer to "where, if anywhere, is probability irreducible." It sits
 *below* the type line, exactly as the architecture predicts.
 
+## Teaching the first program (build-time)
+
+```
+python prime-lattice/teach.py        # alphabet -> sounds -> form 1000 words -> lexicon.json
+python prime-lattice/compounding.py  # show connectivity compounds
+```
+
+`teach.py` is the first program: it knows how to take **letters** and their
+**sounds** and **form words** in the lattice. Teaching seeds the alphabet (26
+primes) and the phonology (digraph + context-aware grapheme→phoneme rules),
+then forms 1000 real words, persisting them as `lexicon.json` — the
+deterministic db the runtime reads. No model in the loop.
+
+First run: **655/1000 words formed cleanly**; 345 hit a junction where
+letters+sounds under-determine the word.
+
+**The point about scale.** Those rules are hand-written stand-ins. The design
+is for **LLMs to author the programs/resolutions at build time** (constrained,
+then frozen) — the 345 strained words are precisely the LLM's work queue.
+
+**Connectivity compounds.** `compounding.py` proves it: the 345 strained words
+collapse to **4 gap-signatures** (≈102 junctions repaired per authored rule).
+One LLM-authored resolution (`s`→/z/ between vowels) propagates through every
+word sharing that prime. Build-time work is **sublinear** in words; each new
+word reuses resolutions already in the lattice. That is the compounding.
+
 ## Honest open edges (next stakes)
 
 1. **Promotion criterion** is just a frequency threshold today; real version =
