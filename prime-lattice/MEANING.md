@@ -89,3 +89,27 @@ do selectional restrictions and entailments, taught from one corpus, get reused
 by the next (like vocabulary's 91%)? If yes, generation coherence and reasoning
 both come cheap. Memory is what lets a situation persist long enough to reason
 over — turning isolated comprehension into a conversation with state.
+
+## 3. Behavior evolution — self-rewriting programs
+
+The shift: knowledge lives in PROGRAMS (data), not frozen weights, so current
+state can REWRITE it. Behavior evolves and persists; it is learned, not
+prompted. (An LLM is frozen weights + ephemeral prompting — conditioning, never
+learning. This is the one structural difference.)
+
+Safety comes from the type/instance split = episodic→semantic consolidation:
+
+- **instances rewrite constantly** (situations, entities, state) — the fold;
+  cheap, safe, transient. Moment-to-moment behavior.
+- **types rewrite rarely** (concepts, frames, inference) — guarded
+  CONSOLIDATION: accumulated episodic evidence rewrites the shared knowledge.
+  One observation updates state; a *pattern* updates knowledge.
+
+The rewrite rule (the central unsolved mechanism) has three parts:
+1. **trigger** — what evidence justifies rewriting a type (consolidation threshold)
+2. **objective** — rewritten toward what (predictive success / consistency / goal)
+3. **gate** — validate-before-commit + rollback, on top of schema-on-write +
+   provenance, so a bad rewrite cannot corrupt the lattice.
+
+Where this beats an LLM: continual, persistent, AUDITABLE learning from
+experience — not generation.
