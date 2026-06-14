@@ -1,0 +1,134 @@
+{
+ "frames1": {
+  "think": [
+   [
+    "ANIMATE",
+    "ABSTRACT"
+   ],
+   [
+    "ANIMATE",
+    "ANIMATE"
+   ]
+  ],
+  "come": [
+   [
+    "ANIMATE",
+    "NONE"
+   ],
+   [
+    "EVENT",
+    "NONE"
+   ]
+  ],
+  "see": [
+   [
+    "ANIMATE",
+    "ANIMATE"
+   ],
+   [
+    "ANIMATE",
+    "COMMUNICATION"
+   ],
+   [
+    "ANIMATE",
+    "NONE"
+   ]
+  ],
+  "said": [
+   [
+    "ANIMATE",
+    "COMMUNICATION"
+   ]
+  ],
+  "went": [
+   [
+    "ABSTRACT",
+    "NONE"
+   ],
+   [
+    "ANIMATE",
+    "NONE"
+   ],
+   [
+    "ANIMATE",
+    "PLACE"
+   ]
+  ],
+  "tell": [
+   [
+    "ANIMATE",
+    "ANIMATE"
+   ],
+   [
+    "ANIMATE",
+    "COMMUNICATION"
+   ]
+  ],
+  "won": [
+   [
+    "ANIMATE",
+    "NONE"
+   ]
+  ],
+  "got": [
+   [
+    "ANIMATE",
+    "NONE"
+   ],
+   [
+    "ANIMATE",
+    "PHYSICAL"
+   ],
+   [
+    "PHYSICAL",
+    "ABSTRACT"
+   ]
+  ],
+  "know": [
+   [
+    "ANIMATE",
+    "ABSTRACT"
+   ],
+   [
+    "ANIMATE",
+    "NONE"
+   ]
+  ],
+  "get": [
+   [
+    "ANIMATE",
+    "ABSTRACT"
+   ],
+   [
+    "ANIMATE",
+    "ANIMATE"
+   ],
+   [
+    "ANIMATE",
+    "NONE"
+   ]
+  ],
+  "don": [
+   [
+    "ANIMATE",
+    "NONE"
+   ]
+  ],
+  "go": [
+   [
+    "ANIMATE",
+    "NONE"
+   ],
+   [
+    "ANIMATE",
+    "PLACE"
+   ]
+  ]
+ },
+ "stats": {
+  "total": 48,
+  "known": 48,
+  "exact": 23,
+  "assimilated": 43
+ }
+}

@@ -1,0 +1,874 @@
+{
+ "corpus1_frames": {
+  "c1:think:0": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:think:1": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c1:think:2": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:think:3": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c1:come:0": {
+   "subj": "EVENT",
+   "obj": "NONE"
+  },
+  "c1:come:1": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:come:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:come:3": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:see:0": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c1:see:1": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:see:2": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:see:3": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:said:0": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c1:said:1": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c1:said:2": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c1:said:3": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c1:went:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:went:1": {
+   "subj": "ABSTRACT",
+   "obj": "NONE"
+  },
+  "c1:went:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:went:3": {
+   "subj": "ANIMATE",
+   "obj": "PLACE"
+  },
+  "c1:tell:0": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:tell:1": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:tell:2": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:tell:3": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c1:won:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:won:1": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:won:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:won:3": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:got:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:got:1": {
+   "subj": "ANIMATE",
+   "obj": "PHYSICAL"
+  },
+  "c1:got:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:got:3": {
+   "subj": "PHYSICAL",
+   "obj": "ABSTRACT"
+  },
+  "c1:know:0": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c1:know:1": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c1:know:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:know:3": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c1:get:0": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c1:get:1": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c1:get:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:get:3": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:don:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:don:1": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:don:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:don:3": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:go:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c1:go:1": {
+   "subj": "ANIMATE",
+   "obj": "PLACE"
+  },
+  "c1:go:2": {
+   "subj": "ANIMATE",
+   "obj": "PLACE"
+  },
+  "c1:go:3": {
+   "subj": "ANIMATE",
+   "obj": "PLACE"
+  }
+ },
+ "corpus2_usage": {
+  "c2:know:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:know:1": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:know:2": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:know:3": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c2:got:0": {
+   "subj": "ABSTRACT",
+   "obj": "NONE"
+  },
+  "c2:got:1": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:got:2": {
+   "subj": "ABSTRACT",
+   "obj": "NONE"
+  },
+  "c2:got:3": {
+   "subj": "ANIMATE",
+   "obj": "BODY"
+  },
+  "c2:see:0": {
+   "subj": "ANIMATE",
+   "obj": "EVENT"
+  },
+  "c2:see:1": {
+   "subj": "ANIMATE",
+   "obj": "PHYSICAL"
+  },
+  "c2:see:2": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:see:3": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:go:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:go:1": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:go:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:go:3": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c2:don:0": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:don:1": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:don:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:don:3": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:went:0": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:went:1": {
+   "subj": "BODY",
+   "obj": "BODY"
+  },
+  "c2:went:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:went:3": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:tell:0": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:tell:1": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:tell:2": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:tell:3": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:come:0": {
+   "subj": "ANIMATE",
+   "obj": "PLACE"
+  },
+  "c2:come:1": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:come:2": {
+   "subj": "ANIMATE",
+   "obj": "BODY"
+  },
+  "c2:come:3": {
+   "subj": "ANIMATE",
+   "obj": "PLACE"
+  },
+  "c2:get:0": {
+   "subj": "ANIMATE",
+   "obj": "PLACE"
+  },
+  "c2:get:1": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:get:2": {
+   "subj": "PHYSICAL",
+   "obj": "PLACE"
+  },
+  "c2:get:3": {
+   "subj": "ANIMATE",
+   "obj": "PHYSICAL"
+  },
+  "c2:said:0": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:said:1": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:said:2": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:said:3": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:think:0": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:think:1": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:think:2": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  },
+  "c2:think:3": {
+   "subj": "ANIMATE",
+   "obj": "COMMUNICATION"
+  },
+  "c2:won:0": {
+   "subj": "ANIMATE",
+   "obj": "ANIMATE"
+  },
+  "c2:won:1": {
+   "subj": "ABSTRACT",
+   "obj": "NONE"
+  },
+  "c2:won:2": {
+   "subj": "ANIMATE",
+   "obj": "ABSTRACT"
+  },
+  "c2:won:3": {
+   "subj": "ANIMATE",
+   "obj": "NONE"
+  }
+ },
+ "items1": [
+  {
+   "id": "c1:think:0",
+   "verb": "think",
+   "sentence": "how brave they ll all think me at home"
+  },
+  {
+   "id": "c1:think:1",
+   "verb": "think",
+   "sentence": "do you think you could manage it"
+  },
+  {
+   "id": "c1:think:2",
+   "verb": "think",
+   "sentence": "and what an ignorant little girl she ll think me for asking"
+  },
+  {
+   "id": "c1:think:3",
+   "verb": "think",
+   "sentence": "dinah ll miss me very much to night i should think"
+  },
+  {
+   "id": "c1:come:0",
+   "verb": "come",
+   "sentence": "would the fall never come to an end"
+  },
+  {
+   "id": "c1:come:1",
+   "verb": "come",
+   "sentence": "come there s no use in crying like that"
+  },
+  {
+   "id": "c1:come:2",
+   "verb": "come",
+   "sentence": "it ll be no use their putting their heads down and saying come up again dear"
+  },
+  {
+   "id": "c1:come:3",
+   "verb": "come",
+   "sentence": "please come back and finish your story"
+  },
+  {
+   "id": "c1:see:0",
+   "verb": "see",
+   "sentence": "no it ll never do to ask perhaps i shall see it written up somewhere"
+  },
+  {
+   "id": "c1:see:1",
+   "verb": "see",
+   "sentence": "let me see i ll give them a new pair of boots every christmas"
+  },
+  {
+   "id": "c1:see:2",
+   "verb": "see",
+   "sentence": "and oh i wish you could see her after the birds"
+  },
+  {
+   "id": "c1:see:3",
+   "verb": "see",
+   "sentence": "i wonder if i shall ever see you any more"
+  },
+  {
+   "id": "c1:said:0",
+   "verb": "said",
+   "sentence": "said alice i must be shutting up like a telescope"
+  },
+  {
+   "id": "c1:said:1",
+   "verb": "said",
+   "sentence": "said alice to herself rather sharply i advise you to leave off this minute"
+  },
+  {
+   "id": "c1:said:2",
+   "verb": "said",
+   "sentence": "she ate a little bit and said anxiously to herself which way"
+  },
+  {
+   "id": "c1:said:3",
+   "verb": "said",
+   "sentence": "as she said these words her foot slipped and in another moment splash"
+  },
+  {
+   "id": "c1:went:0",
+   "verb": "went",
+   "sentence": "and she went on planning to herself how she would manage it"
+  },
+  {
+   "id": "c1:went:1",
+   "verb": "went",
+   "sentence": "and yesterday things went on just as usual"
+  },
+  {
+   "id": "c1:went:2",
+   "verb": "went",
+   "sentence": "he went on turning to alice"
+  },
+  {
+   "id": "c1:went:3",
+   "verb": "went",
+   "sentence": "alice went timidly up to the door and knocked"
+  },
+  {
+   "id": "c1:tell:0",
+   "verb": "tell",
+   "sentence": "stop this moment i tell you"
+  },
+  {
+   "id": "c1:tell:1",
+   "verb": "tell",
+   "sentence": "now tell me pat what s that in the window"
+  },
+  {
+   "id": "c1:tell:2",
+   "verb": "tell",
+   "sentence": "do as i tell you you coward"
+  },
+  {
+   "id": "c1:tell:3",
+   "verb": "tell",
+   "sentence": "tell us all about it"
+  },
+  {
+   "id": "c1:won:0",
+   "verb": "won",
+   "sentence": "won t she be savage if i ve kept her waiting"
+  },
+  {
+   "id": "c1:won:1",
+   "verb": "won",
+   "sentence": "we won t talk about her any more if you d rather not"
+  },
+  {
+   "id": "c1:won:2",
+   "verb": "won",
+   "sentence": "i won t indeed"
+  },
+  {
+   "id": "c1:won:3",
+   "verb": "won",
+   "sentence": "and they all crowded round it panting and asking but who has won"
+  },
+  {
+   "id": "c1:got:0",
+   "verb": "got",
+   "sentence": "let me think was i the same when i got up this morning"
+  },
+  {
+   "id": "c1:got:1",
+   "verb": "got",
+   "sentence": "what else have you got in your pocket"
+  },
+  {
+   "id": "c1:got:2",
+   "verb": "got",
+   "sentence": "but i ve got to see that the mouse doesn t get out"
+  },
+  {
+   "id": "c1:got:3",
+   "verb": "got",
+   "sentence": "well it s got no business there at any rate go and take it away"
+  },
+  {
+   "id": "c1:know:0",
+   "verb": "know",
+   "sentence": "i ll try if i know all the things i used to know"
+  },
+  {
+   "id": "c1:know:1",
+   "verb": "know",
+   "sentence": "so she began o mouse do you know the way out of this pool"
+  },
+  {
+   "id": "c1:know:2",
+   "verb": "know",
+   "sentence": "a little bright eyed terrier you know with oh such long curly brown hair"
+  },
+  {
+   "id": "c1:know:3",
+   "verb": "know",
+   "sentence": "this is the driest thing i know"
+  },
+  {
+   "id": "c1:get:0",
+   "verb": "get",
+   "sentence": "i shall never get to twenty at that rate"
+  },
+  {
+   "id": "c1:get:1",
+   "verb": "get",
+   "sentence": "she ll get me executed as sure as ferrets are ferrets"
+  },
+  {
+   "id": "c1:get:2",
+   "verb": "get",
+   "sentence": "come here directly and get ready for your walk"
+  },
+  {
+   "id": "c1:get:3",
+   "verb": "get",
+   "sentence": "but i ve got to see that the mouse doesn t get out"
+  },
+  {
+   "id": "c1:don:0",
+   "verb": "don",
+   "sentence": "well perhaps not said alice in a soothing tone don t be angry about it"
+  },
+  {
+   "id": "c1:don:1",
+   "verb": "don",
+   "sentence": "don t let me hear the name again"
+  },
+  {
+   "id": "c1:don:2",
+   "verb": "don",
+   "sentence": "i m sure i don t want to stay in here any longer"
+  },
+  {
+   "id": "c1:don:3",
+   "verb": "don",
+   "sentence": "they ll do well enough don t be particular here bill"
+  },
+  {
+   "id": "c1:go:0",
+   "verb": "go",
+   "sentence": "well it s got no business there at any rate go and take it away"
+  },
+  {
+   "id": "c1:go:1",
+   "verb": "go",
+   "sentence": "it was bill i fancy who s to go down the chimney"
+  },
+  {
+   "id": "c1:go:2",
+   "verb": "go",
+   "sentence": "bill s to go down here bill"
+  },
+  {
+   "id": "c1:go:3",
+   "verb": "go",
+   "sentence": "the master says you re to go down the chimney"
+  }
+ ],
+ "items2": [
+  {
+   "id": "c2:know:0",
+   "verb": "know",
+   "sentence": "you ought dinah you know you ought"
+  },
+  {
+   "id": "c2:know:1",
+   "verb": "know",
+   "sentence": "do you know what to morrow is kitty"
+  },
+  {
+   "id": "c2:know:2",
+   "verb": "know",
+   "sentence": "how do you know she wasn t thirsty too"
+  },
+  {
+   "id": "c2:know:3",
+   "verb": "know",
+   "sentence": "didn t you know that"
+  },
+  {
+   "id": "c2:got:0",
+   "verb": "got",
+   "sentence": "only it got so cold and it snowed so they had to leave off"
+  },
+  {
+   "id": "c2:got:1",
+   "verb": "got",
+   "sentence": "what have you got to say for yourself"
+  },
+  {
+   "id": "c2:got:2",
+   "verb": "got",
+   "sentence": "i m sure it s got oh"
+  },
+  {
+   "id": "c2:got:3",
+   "verb": "got",
+   "sentence": "to which the queen replied you haven t got any whiskers"
+  },
+  {
+   "id": "c2:see:0",
+   "verb": "see",
+   "sentence": "never mind kitty we ll go and see the bonfire to morrow"
+  },
+  {
+   "id": "c2:see:1",
+   "verb": "see",
+   "sentence": "i do so wish i could see that bit"
+  },
+  {
+   "id": "c2:see:2",
+   "verb": "see",
+   "sentence": "i daresay you ll see her soon said the rose"
+  },
+  {
+   "id": "c2:see:3",
+   "verb": "see",
+   "sentence": "alice couldn t see who was sitting beyond the beetle but a hoarse voice spoke next"
+  },
+  {
+   "id": "c2:go:0",
+   "verb": "go",
+   "sentence": "never mind kitty we ll go and see the bonfire to morrow"
+  },
+  {
+   "id": "c2:go:1",
+   "verb": "go",
+   "sentence": "i d far rather go without them than eat them"
+  },
+  {
+   "id": "c2:go:2",
+   "verb": "go",
+   "sentence": "and at the end of five i shall go"
+  },
+  {
+   "id": "c2:go:3",
+   "verb": "go",
+   "sentence": "go on with the list"
+  },
+  {
+   "id": "c2:don:0",
+   "verb": "don",
+   "sentence": "now don t interrupt me"
+  },
+  {
+   "id": "c2:don:1",
+   "verb": "don",
+   "sentence": "now don t make any more excuses but listen"
+  },
+  {
+   "id": "c2:don:2",
+   "verb": "don",
+   "sentence": "now don t smile my dear i m asking it seriously"
+  },
+  {
+   "id": "c2:don:3",
+   "verb": "don",
+   "sentence": "mind you come up the regular way don t get blown up"
+  },
+  {
+   "id": "c2:went:0",
+   "verb": "went",
+   "sentence": "she went on holding up one finger"
+  },
+  {
+   "id": "c2:went:1",
+   "verb": "went",
+   "sentence": "her paw went into your eye"
+  },
+  {
+   "id": "c2:went:2",
+   "verb": "went",
+   "sentence": "she went on talking more to herself than the kitten"
+  },
+  {
+   "id": "c2:went:3",
+   "verb": "went",
+   "sentence": "the horror of that moment the king went on i shall never never forget"
+  },
+  {
+   "id": "c2:tell:0",
+   "verb": "tell",
+   "sentence": "i m going to tell you all your faults"
+  },
+  {
+   "id": "c2:tell:1",
+   "verb": "tell",
+   "sentence": "but i can tell you the names of some of them"
+  },
+  {
+   "id": "c2:tell:2",
+   "verb": "tell",
+   "sentence": "please would you tell me what you call yourself"
+  },
+  {
+   "id": "c2:tell:3",
+   "verb": "tell",
+   "sentence": "i ll tell you if you ll move a little further on the fawn said"
+  },
+  {
+   "id": "c2:come:0",
+   "verb": "come",
+   "sentence": "now we come to the passage"
+  },
+  {
+   "id": "c2:come:1",
+   "verb": "come",
+   "sentence": "mind you come up the regular way don t get blown up"
+  },
+  {
+   "id": "c2:come:2",
+   "verb": "come",
+   "sentence": "come to my arms my beamish boy"
+  },
+  {
+   "id": "c2:come:3",
+   "verb": "come",
+   "sentence": "where do you come from"
+  },
+  {
+   "id": "c2:get:0",
+   "verb": "get",
+   "sentence": "how nice it would be if we could only get through into looking glass house"
+  },
+  {
+   "id": "c2:get:1",
+   "verb": "get",
+   "sentence": "mind you come up the regular way don t get blown up"
+  },
+  {
+   "id": "c2:get:2",
+   "verb": "get",
+   "sentence": "all the ashes will get into it there now i think you re tidy enough"
+  },
+  {
+   "id": "c2:get:3",
+   "verb": "get",
+   "sentence": "i really must get a thinner pencil"
+  },
+  {
+   "id": "c2:said:0",
+   "verb": "said",
+   "sentence": "said the king rubbing his nose which had been hurt by the fall"
+  },
+  {
+   "id": "c2:said:1",
+   "verb": "said",
+   "sentence": "you will though the queen said if you don t make a memorandum of it"
+  },
+  {
+   "id": "c2:said:2",
+   "verb": "said",
+   "sentence": "we can talk said the tiger lily when there s anybody worth talking to"
+  },
+  {
+   "id": "c2:said:3",
+   "verb": "said",
+   "sentence": "as well as you can said the tiger lily"
+  },
+  {
+   "id": "c2:think:0",
+   "verb": "think",
+   "sentence": "all the ashes will get into it there now i think you re tidy enough"
+  },
+  {
+   "id": "c2:think:1",
+   "verb": "think",
+   "sentence": "she went on rather surprised at not being able to think of the word"
+  },
+  {
+   "id": "c2:think:2",
+   "verb": "think",
+   "sentence": "think again it said that won t do"
+  },
+  {
+   "id": "c2:think:3",
+   "verb": "think",
+   "sentence": "i think that might help a little"
+  },
+  {
+   "id": "c2:won:0",
+   "verb": "won",
+   "sentence": "and you won t hurt me though i am an insect"
+  },
+  {
+   "id": "c2:won:1",
+   "verb": "won",
+   "sentence": "think again it said that won t do"
+  },
+  {
+   "id": "c2:won:2",
+   "verb": "won",
+   "sentence": "alice alice i won t forget it again"
+  },
+  {
+   "id": "c2:won:3",
+   "verb": "won",
+   "sentence": "i only hope the boat won t tipple over"
+  }
+ ]
+}
