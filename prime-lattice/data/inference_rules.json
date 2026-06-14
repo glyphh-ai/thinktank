@@ -1,0 +1,92 @@
+[
+ {
+  "name": "is_a transitivity",
+  "if": [
+   [
+    "X",
+    "is_a",
+    "Y"
+   ],
+   [
+    "Y",
+    "is_a",
+    "Z"
+   ]
+  ],
+  "then": [
+   "X",
+   "is_a",
+   "Z"
+  ]
+ },
+ {
+  "name": "hypernym is_a",
+  "if": [
+   [
+    "X",
+    "hyper",
+    "Y"
+   ]
+  ],
+  "then": [
+   "X",
+   "is_a",
+   "Y"
+  ]
+ },
+ {
+  "name": "part inheritance",
+  "if": [
+   [
+    "X",
+    "part_of",
+    "Y"
+   ],
+   [
+    "Y",
+    "located_in",
+    "Z"
+   ]
+  ],
+  "then": [
+   "X",
+   "located_in",
+   "Z"
+  ]
+ },
+ {
+  "name": "orbit transitivity",
+  "if": [
+   [
+    "X",
+    "orbits",
+    "Y"
+   ],
+   [
+    "Y",
+    "orbits",
+    "Z"
+   ]
+  ],
+  "then": [
+   "X",
+   "indirectly_orbits",
+   "Z"
+  ]
+ },
+ {
+  "name": "made_of -> contains",
+  "if": [
+   [
+    "X",
+    "made_of",
+    "Y"
+   ]
+  ],
+  "then": [
+   "X",
+   "contains",
+   "Y"
+  ]
+ }
+]

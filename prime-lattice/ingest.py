@@ -74,12 +74,41 @@ def ingest_generation(store):
                         substrate=ids, agent="gen")])
 
 
+def ingest_relations(store):
+    rels = json.load(open("data/gen_relations.json"))
+    store.put_many([Node("prime", "sem-prime", "REL", agent="seed")])
+    syn, hyp = [], []
+    for noun, d in rels.items():
+        if not isinstance(d, dict):
+            continue
+        for a in d.get("syn", []):
+            syn.append(Node("program", "synonym", f"{a}=>{noun}", type="relation",
+                           agent="rel", substrate=[node_id("prime", "sem-prime", "REL")],
+                           pathways={"alias": a, "canonical": noun}))
+        if d.get("hyper"):
+            hyp.append(Node("program", "hypernym", noun, type="relation",
+                           agent="rel", substrate=[node_id("prime", "sem-prime", "REL")],
+                           pathways={"hyper": d["hyper"]}))
+    store.put_many(syn + hyp)
+
+
+def ingest_inference(store):
+    store.put_many([Node("prime", "sem-prime", "RULE", agent="seed")])
+    rules = json.load(open("data/inference_rules.json"))
+    store.put_many([Node("program", "inference", r["name"], type="rule", agent="inf",
+                        substrate=[node_id("prime", "sem-prime", "RULE")],
+                        pathways={"rule": r}) for r in rules])
+
+
 def main():
     store = open_lattice()
     before = stats(store)
     ingest_lexicon(store)
     ingest_generation(store)
+    ingest_relations(store)
+    ingest_inference(store)
     wiki_brain.build(store, json.load(open("data/wiki_facts.json")))
+    wiki_brain.build(store, json.load(open("data/wiki_astro_facts.json")))
     after = stats(store)
     print("=" * 64)
     print("INGEST -> persistent lattice (lattice.db)")

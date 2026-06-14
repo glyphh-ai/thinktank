@@ -88,15 +88,15 @@ class Brain:
             if ordn in ql and "planet" in ql:
                 hits = [s for s, r, o in self.T if r == "position_from_sun" and o == ordn]
                 return f"The {ordn} planet from the Sun is {', '.join(hits)}." if hits else "Not learned."
-        if any(w in ql for w in ("describe", "tell me about", "what is", "what's")) and ent:
-            return self.describe(ent)
+        if "made of" in ql and ent:
+            o = [o for s, r, o in self.facts_of(ent) if r == "made_of"]
+            return f"{ent.title()} is made of {', '.join(o)}." if o else f"I didn't learn what {ent} is made of."
         if "orbit" in ql:
             tgt = "the sun" if "sun" in ql else ent
             hits = sorted({s for s, r, o in self.T if r == "orbits" and (tgt in o or o in (tgt or ""))})
             return ", ".join(hits) + " orbit " + (tgt or "?") if hits else "Nothing I learned orbits that."
-        if "made of" in ql and ent:
-            o = [o for s, r, o in self.facts_of(ent) if r == "made_of"]
-            return f"{ent.title()} is made of {', '.join(o)}." if o else f"I didn't learn what {ent} is made of."
+        if any(w in ql for w in ("describe", "tell me about", "what is", "what's")) and ent:
+            return self.describe(ent)
         for ordn in ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth"):
             if ordn in ql and "planet" in ql:
                 hits = [s for s, r, o in self.T if r == "position_from_sun" and o == ordn]
