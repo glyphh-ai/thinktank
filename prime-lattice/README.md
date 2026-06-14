@@ -125,6 +125,34 @@ generic interpreter composes meaning bottom-up:
 Built by the same `primes → programs → system` pipeline — a new tower (new
 sem-primes + shared primes), same machinery.
 
+## Composition + the brain (controller)
+
+```
+python prime-lattice/emotion.py    # affect, on the same NSM primes
+python prime-lattice/compose.py    # bind towers into a situation
+python prime-lattice/brain.py      # the controller: inherit + dispatch by type
+```
+
+`emotion.py` — affect as a tower (NSM emotion explications, shared primes).
+`compose.py` — the composition system binds reader+comprehend+emotion into one
+situation: *"the dog bit the cat" → cat feels ANGER (because dog BITE cat)* —
+capability no single tower has.
+`brain.py` — the **controller**. It implements nothing; it **inherits typed
+capabilities** advertised by the systems in the lattice and **auto-composes a
+pipeline by matching types** (`text→structure→meaning→appraisal→affect`). Add a
+system + capability node and the brain inherits the new behaviour with zero code
+change. The controller is itself a system in the lattice.
+
+## The whole prototype (one architecture)
+
+```
+primes ── programs ── systems ── composition ── controller (brain)
+  ▲                                                   │ inherits + dispatches by type
+  └──────────── one lattice, schema-on-write ─────────┘
+towers built so far: phonics · grammar · math · semantics ·
+comprehension(inverse) · emotion · composition · brain
+```
+
 ## Honest open edges (next stakes)
 
 1. **Promotion criterion** is just a frequency threshold today; real version =
