@@ -113,3 +113,37 @@ The rewrite rule (the central unsolved mechanism) has three parts:
 
 Where this beats an LLM: continual, persistent, AUDITABLE learning from
 experience — not generation.
+
+## 4. Reversible consolidation + order dependence (how humans learn)
+
+This is Piaget (assimilation vs accommodation) + memory reconsolidation, made
+auditable. Two properties fall out — features only because knowledge is
+discrete, versioned, and provenance-tracked (an LLM can have neither):
+
+**Reversibility — consolidation is bidirectional.**
+- consolidate a type on accumulated positive evidence;
+- REVERT it when it produces bad outcomes enough times.
+- Episodic memory keeps the originals; types carry version + provenance, so a
+  single reframe can be rolled back surgically (belief revision / non-monotonic
+  reasoning). An LLM cannot selectively un-learn one generalization; entangled
+  weights make it impossible. Here it is a feature.
+
+**Order materially matters — strong path dependence.**
+- each example immediately rewrites the types that condition the next, so same
+  inputs in a different order -> a different lattice (unlike batch-SGD LLMs).
+- Feature: design the curriculum (primes -> simple frames -> complex) to
+  bootstrap good foundations.
+- Risk: a bad early reframe anchors everything after it (cognitive bias).
+- Reversibility is the partial cure: path-dependent but self-correcting.
+
+Hard parts (all the same learning-knot, pointed backward):
+1. reversion needs an outcome signal + credit assignment (which reframe caused
+   the bad outcome?).
+2. entrenchment ripples: reverting a deep type invalidates dependents — but the
+   substrate edges make the ripple TRACEABLE, not silent rot.
+3. evaluation depends on the whole learning history -> control the order to
+   reproduce behavior.
+
+Design additions: versioned types; per-type outcome tracking; bidirectional
+consolidate/revert; learning order as a first-class, auditable trajectory;
+dependency-aware reversion via substrate edges.
