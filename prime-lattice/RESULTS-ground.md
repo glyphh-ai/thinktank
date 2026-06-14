@@ -40,6 +40,29 @@ will surface extraction errors and ambiguity the agents must resolve); and
 deeper composition (2-fact chains; real understanding needs longer, cross-story
 inference). Those are the next stakes.
 
+## Harder task: handoffs + distractors (hard.py)
+
+Made it genuinely harder for the *reasoning*: objects are taken, **given** to
+someone (3-slot relation), who then carries them elsewhere — answers need a
+**3+ fact chain** through **distractor** sentences.
+
+| decomposer | stories | understanding |
+|---|---|---|
+| reference parser | 200 | 100% |
+| **3 real agents** | 30 | **100% (30/30)** |
+
+**The finding:** more hops and distractors did **not** lower accuracy. The
+agents extracted the 3-slot `give X to Y` relations cleanly and the composer
+followed the chains through the noise. So the difficulty is **not** in hop-count
+or distractors on controlled language.
+
+**Implication:** real hardness lives in *natural-language messiness* —
+coreference ("he gave it to her"), paraphrase, implicit facts, world knowledge,
+genuine ambiguity — which only appears in **real open-domain corpora**. Getting
+an honest number **below 100%** requires that regime, where the toy CFG parser
+cannot keep up and the agents must also do the parsing/comprehension
+(LLM-as-tower), not just slot extraction. That is the next, real test.
+
 ## Reproduce
 
 ```
