@@ -1,0 +1,8 @@
+{
+  "cat": {"pos":"noun","meaning":{"t":"concept","label":"cat","sem":["ANIMATE","LIVE","SMALL","MOVE","SLEEP","SIT","SEE"]}},
+  "dog": {"pos":"noun","meaning":{"t":"concept","label":"dog","sem":["ANIMATE","LIVE","MOVE","SEE","SLEEP","KIND"]}},
+  "big": {"pos":"adj","meaning":{"t":"mod","sem":["BIG"]}},
+  "bit": {"pos":"verb","meaning":{"t":"verb","name":"BITE","roles":["agent","patient"]},"valence":"bad"},
+  "saw": {"pos":"verb","meaning":{"t":"verb","name":"SEE","roles":["agent","patient"]},"valence":"neutral"},
+  "won": {"pos":"verb","meaning":{"t":"verb","name":"WIN","roles":["agent"]},"valence":"good"}
+}
