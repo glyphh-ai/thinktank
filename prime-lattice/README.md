@@ -110,6 +110,21 @@ couldn't before, with **zero code change**. That is the thesis in one run:
 *primes + lattice + agents at scale → the complete deterministic system*, and
 every single rule lives in the lattice, not the code.
 
+## Comprehension — the inverse tower (structure → meaning)
+
+```
+python prime-lattice/comprehend.py
+```
+
+The reader *expands* productions (form → structure); comprehension *inverts*
+them (structure → meaning) — compositional semantics. Every grammar production
+has a paired **semantic rule** (its inverse), and the inverse pairing lives in
+the lattice (each semrule's substrate includes the production it inverts). One
+generic interpreter composes meaning bottom-up:
+`the big cat saw a dog → SEE(agent=cat[BIG,KIND,LIVE,SMALL,MOVE], patient=dog[…])`.
+Built by the same `primes → programs → system` pipeline — a new tower (new
+sem-primes + shared primes), same machinery.
+
 ## Honest open edges (next stakes)
 
 1. **Promotion criterion** is just a frequency threshold today; real version =
