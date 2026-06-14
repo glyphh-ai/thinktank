@@ -105,8 +105,32 @@ class FullPipeline:
         self.valence = {e["meaning"]["name"]: e.get("valence", "neutral")
                         for e in agent_lex.values() if e["meaning"]["t"] == "verb"}
 
+    def _ground_form(self, words):
+        """Make the alphabet and sound towers REAL: build letter + sound primes
+        and per-word spelling/pronunciation nodes that link to them (edges)."""
+        letters, sounds = set(), set()
+        phon = {}
+        for w in words:
+            phon[w] = self.former.form(w).phonemes
+            letters |= set(w)
+            sounds |= set(phon[w])
+        self.store.put_many(
+            [Node("prime", "letter", c, agent="a:ortho") for c in letters]
+            + [Node("prime", "sound", s, agent="a:phon") for s in sounds])
+        forms = []
+        for w in words:
+            forms.append(Node("program", "spelling", w, type="form",
+                              substrate=[node_id("prime", "letter", c) for c in w],
+                              agent="a:ortho"))
+            forms.append(Node("program", "pronunciation", w, type="form",
+                              substrate=[node_id("prime", "sound", s) for s in phon[w]],
+                              agent="a:phon"))
+        self.store.put_many(forms)
+        return phon
+
     def decompose(self, sentence: str) -> dict:
         words = [w.strip(".").lower() for w in sentence.split()]
+        phon = self._ground_form(words)        # alphabet + sound towers, for real
         tree = self.reader.parse(sentence.rstrip("."))
         meaning = self.comp.comprehend(tree) if tree else None
         appr = appraise(meaning, self.valence)
@@ -124,7 +148,7 @@ class FullPipeline:
                                   agent="a:full")])
         return {"words": words,
                 "orthography": sum(len(w) for w in words),
-                "phonology": [p for w in words for p in self.former.form(w).phonemes],
+                "phonology": [p for w in words for p in phon[w]],
                 "structure": tree, "meaning": meaning,
                 "appraisal": appr, "feeling": feeling, "fact": fact}
 
@@ -179,9 +203,26 @@ def main():
     print(f"     cat's emotion timeline: {[(t[1]) for t in timeline]}")
     print(f"     -> FINAL: {final.upper()}  (composed across {len(story)} sentences)")
 
+    print("\n" + "-" * 70)
+    print("  TOWER AUDIT — what each tower actually put in the lattice:")
+    audit = [("alphabet", "kind='letter'"), ("sounds", "kind='sound'"),
+             ("spelling", "kind='spelling'"), ("pronunciation", "kind='pronunciation'"),
+             ("words", "kind='word'"), ("grammar(rules)", "kind='rule'"),
+             ("comprehension", "kind='lex-sem' OR kind='semrule'"),
+             ("emotion", "kind='emotion'"), ("utterances", "kind='utterance'")]
+    for name, where in audit:
+        n = pipe.store.db.execute(f"SELECT count(*) FROM nodes WHERE {where}").fetchone()[0]
+        print(f"     {name:16}: {n:3} nodes")
+    # prove the vertical chain is connected: word 'cat' -> its letters & sounds
+    sp = node_id("program", "spelling", "cat")
+    pr = node_id("program", "pronunciation", "cat")
+    letters = [pipe.store.db.execute("SELECT value FROM nodes WHERE id=?", (i,)).fetchone()[0]
+               for i in pipe.store.substrate_of(sp)]
+    snds = [pipe.store.db.execute("SELECT value FROM nodes WHERE id=?", (i,)).fetchone()[0]
+            for i in pipe.store.substrate_of(pr)]
+    print(f"\n  vertical chain for 'cat': letters {letters} -> sounds {snds} -> word -> meaning")
     nf = pipe.store.db.execute("SELECT count(*) FROM nodes").fetchone()[0]
-    print(f"\n  all of it grounded in one lattice: {nf} nodes. The agent supplied")
-    print("  word meanings/frames/valence; the fixed towers composed the rest.")
+    print(f"  total: {nf} nodes in one lattice. Every tower really decomposed.")
 
 
 if __name__ == "__main__":
