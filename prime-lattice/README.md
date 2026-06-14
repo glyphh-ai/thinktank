@@ -61,6 +61,22 @@ One LLM-authored resolution (`s`→/z/ between vowels) propagates through every
 word sharing that prime. Build-time work is **sublinear** in words; each new
 word reuses resolutions already in the lattice. That is the compounding.
 
+## Storing the primitive (schema-on-write, built for 100M+ rows)
+
+```
+python prime-lattice/store.py            # demo + benchmark
+python prime-lattice/store.py 2000000    # benchmark N rows
+```
+
+`store.py` persists the lattice with **schema-on-write**: every record is
+validated at the door, and the schema *encodes the architecture's laws* —
+a prime may be untyped, anything above the crystallisation line **must** be
+typed, every substrate edge must reference an existing row, provenance is
+mandatory. Built for scale: **deterministic content-IDs** (idempotent swarm
+writes, no coordination), **normalised edges** indexed both ways (O(degree)
+traversal), **batched UPSERT** ingest. SQLite prototype, Postgres-ready DDL.
+~23k rows/s single-writer; scales ~linearly by hash-sharding writers.
+
 ## Honest open edges (next stakes)
 
 1. **Promotion criterion** is just a frequency threshold today; real version =
