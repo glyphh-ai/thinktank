@@ -1,0 +1,1052 @@
+{
+ "0": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "football"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "football"
+  }
+ ],
+ "3": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "book"
+  }
+ ],
+ "6": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "book"
+  }
+ ],
+ "9": [
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "football"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "football"
+  }
+ ],
+ "12": [
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "football"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  }
+ ],
+ "15": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "apple"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  }
+ ],
+ "18": [
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "mary",
+   "action": "take",
+   "arg": "apple"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  }
+ ],
+ "21": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  }
+ ],
+ "24": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "take",
+   "arg": "football"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  }
+ ],
+ "27": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  }
+ ],
+ "1": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "mary",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  }
+ ],
+ "4": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "book"
+  }
+ ],
+ "7": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "apple"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  }
+ ],
+ "10": [
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "mary",
+   "action": "take",
+   "arg": "apple"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  }
+ ],
+ "13": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "apple"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  }
+ ],
+ "16": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  }
+ ],
+ "19": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bathroom"
+  }
+ ],
+ "22": [
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  }
+ ],
+ "25": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "office"
+  }
+ ],
+ "28": [
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  }
+ ],
+ "2": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bathroom"
+  }
+ ],
+ "5": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bedroom"
+  }
+ ],
+ "8": [
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "book"
+  }
+ ],
+ "11": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  }
+ ],
+ "14": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  }
+ ],
+ "17": [
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "sandra",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  }
+ ],
+ "20": [
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "office"
+  },
+  {
+   "actor": "mary",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "milk"
+  }
+ ],
+ "23": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "book"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "book"
+  }
+ ],
+ "26": [
+  {
+   "actor": "john",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "hallway"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "mary",
+   "action": "take",
+   "arg": "milk"
+  },
+  {
+   "actor": "john",
+   "action": "take",
+   "arg": "milk"
+  }
+ ],
+ "29": [
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "kitchen"
+  },
+  {
+   "actor": "mary",
+   "action": "go",
+   "arg": "bedroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "garden"
+  },
+  {
+   "actor": "daniel",
+   "action": "go",
+   "arg": "bathroom"
+  },
+  {
+   "actor": "daniel",
+   "action": "take",
+   "arg": "football"
+  },
+  {
+   "actor": "sandra",
+   "action": "go",
+   "arg": "hallway"
+  }
+ ]
+}
