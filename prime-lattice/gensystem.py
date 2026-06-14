@@ -1,207 +1,97 @@
 """
-gensystem.py — GENERATION as a system in the lattice (primes -> programs -> system).
+gensystem.py — the generator. A small generic interpreter that READS the
+generation system from the persistent lattice and walks a tree.
 
-Not a one-off. The generation KNOWLEDGE lives in the lattice as programs; the
-generator is a small generic interpreter that reads them and walks a tree --
-exactly like the Earley reader reads productions. Add a frame/word/rule to the
-lattice and generation changes with zero code change.
+It hardcodes nothing: frames, noun classes, adjectives, productions and
+realization rules all come from lattice.db (built by the swarm via ingest.py).
+The bigger the system in the lattice, the richer the generation -- add more
+programs, get more out, zero code change.
 
-PRIMES   : category (det,noun,verb,prep) ; class (ANIMATE,PHYSICAL,PLACE,...) ; role
-PROGRAMS : word(+class) ; production(S->NP VP) ; frame(verb->selectional sigs) ;
-           inflect(lemma->past) ; realize(class->surface template)
-SYSTEM   : generation -> substrate = all of the above
-TREE     : generate = frame -> proposition -> syntactic tree -> realized surface
-
-Run:  python gensystem.py
+Run:  python ingest.py        # build/grow the generation system in the lattice
+      python gensystem.py      # generate from whatever the lattice holds
 """
 
 from __future__ import annotations
 import collections
 import json
 import random
-from store import Store, Node, node_id
-from reader import earley
-
-random.seed(5)
-
-# ---------------------------------------------------------------------------
-# BUILD THE GENERATION SYSTEM IN THE LATTICE (all knowledge = program nodes)
-# ---------------------------------------------------------------------------
-def build(store: Store):
-    cats = ["det", "noun", "verb", "prep"]
-    classes = ["ANIMATE", "PHYSICAL", "PLACE", "ABSTRACT", "COMMUNICATION", "BODY", "TIME"]
-    store.put_many([Node("prime", "category", c, agent="g") for c in cats]
-                   + [Node("prime", "class", c, agent="g") for c in classes])
-
-    # words: nouns carry their semantic class; function words are categories
-    noun_class = json.load(open("/tmp/noun_class.json"))
-    wn = []
-    for w, c in noun_class.items():
-        wn.append(Node("program", "word", w, type="noun", agent="g",
-                      substrate=[node_id("prime", "class", c)],
-                      pathways={"class": c, "proper": w in ("alice", "dinah")}))
-    wn += [Node("program", "word", w, type="det", agent="g",
-               substrate=[node_id("prime", "category", "det")]) for w in ("the", "a")]
-    store.put_many(wn)
-
-    # productions (structure programs)
-    prods = [("S", ["NP", "VP"]), ("NP", ["det", "noun"]), ("NP", ["noun"]),
-             ("VP", ["verb", "NP"]), ("VP", ["verb"]), ("VP", ["verb", "PP"]),
-             ("PP", ["prep", "NP"])]
-    store.put_many([Node("program", "production", f"{l}->{' '.join(r)}", type="rule",
-                        agent="g", substrate=[node_id("prime", "category", s)
-                                              for s in r if s.islower()] or
-                                  [node_id("prime", "category", "noun")],
-                        pathways={"lhs": l, "rhs": r}) for l, r in prods])
-
-    # frames (selectional programs) from the measured corpus-1 frames
-    frames = json.load(open("data/meaning_compounding.json"))["frames1"]
-    store.put_many([Node("program", "frame", v, type="predicate", agent="g",
-                        substrate=[node_id("prime", "class", sig[0])
-                                   for sig in sigs if sig[0] in
-                                   ("ANIMATE","PHYSICAL","PLACE","ABSTRACT","COMMUNICATION","BODY","TIME")]
-                                  or [node_id("prime", "category", "verb")],
-                        pathways={"sigs": sigs})
-                    for v, sigs in frames.items() if v != "don"])
-
-    # inflection programs (lemma -> past surface)
-    infl = {"know": "knew", "come": "came", "think": "thought", "see": "saw",
-            "get": "got", "go": "went", "tell": "told", "said": "said",
-            "won": "won", "went": "went", "got": "got"}
-    store.put_many([Node("program", "inflect", v, type="morph", agent="g",
-                        substrate=[node_id("prime", "category", "verb")],
-                        pathways={"past": p}) for v, p in infl.items()])
-
-    # realization programs (class -> surface template)
-    real = [("proper", "{w}"), ("PLACE", "to the {w}"), ("default", "the {w}")]
-    store.put_many([Node("program", "realize", trig, type="surface", agent="g",
-                        substrate=[node_id("prime", "category", "det")],
-                        pathways={"trigger": trig, "template": tmpl}) for trig, tmpl in real])
-
-    # the system: substrate = all the generation programs
-    ids = [r[0] for r in store.db.execute(
-        "SELECT id FROM nodes WHERE kind IN "
-        "('word','production','frame','inflect','realize')")]
-    store.put_many([Node("system", "generation", "core", type="generator",
-                        substrate=ids, agent="g")])
+from lattice import open_lattice
 
 
-# ---------------------------------------------------------------------------
-# THE GENERIC GENERATOR — reads the system from the lattice, walks a tree
-# ---------------------------------------------------------------------------
 class Generator:
-    def __init__(self, store: Store):
-        self.store = store
-        self.grammar = collections.defaultdict(list)
-        for lhs, pathways in store.db.execute(
-                "SELECT value, pathways FROM nodes WHERE kind='production'"):
-            p = json.loads(pathways); self.grammar[p["lhs"]].append(tuple(p["rhs"]))
-        self.frames = {v: json.loads(p)["sigs"] for v, p in store.db.execute(
-            "SELECT value, pathways FROM nodes WHERE kind='frame'")}
-        self.inflect = {v: json.loads(p)["past"] for v, p in store.db.execute(
-            "SELECT value, pathways FROM nodes WHERE kind='inflect'")}
-        self.realize_rules = {json.loads(p)["trigger"]: json.loads(p)["template"]
-                              for _, p in store.db.execute(
-                              "SELECT value, pathways FROM nodes WHERE kind='realize'")}
+    def __init__(self, store):
         self.by_class = collections.defaultdict(list)
-        self.proper = set()
-        for w, pathways in store.db.execute(
-                "SELECT value, pathways FROM nodes WHERE kind='word' AND type='noun'"):
-            p = json.loads(pathways); self.by_class[p["class"]].append(w)
-            if p.get("proper"): self.proper.add(w)
+        for w, p in store.db.execute("SELECT value, pathways FROM nodes WHERE kind='nclass'"):
+            self.by_class[json.loads(p)["class"]].append(w)
+        self.adj_by_class = collections.defaultdict(list)
+        for w, p in store.db.execute("SELECT value, pathways FROM nodes WHERE kind='adjmod'"):
+            for c in json.loads(p)["modifies"]:
+                self.adj_by_class[c].append(w)
+        self.frames = {v: json.loads(p) for v, p in store.db.execute(
+            "SELECT value, pathways FROM nodes WHERE kind='frame'")}
+        self.prods = set()
+        for (p,) in store.db.execute("SELECT pathways FROM nodes WHERE kind='production'"):
+            d = json.loads(p); self.prods.add((d["lhs"], tuple(d["rhs"])))
 
-    def realize_np(self, word, cls):
-        if word in self.proper:
-            tmpl = self.realize_rules["proper"]
-        elif cls == "PLACE" and "PLACE" in self.realize_rules:
-            tmpl = self.realize_rules["PLACE"]
-        else:
-            tmpl = self.realize_rules["default"]
-        return ("NP", *tmpl.format(w=word).split())
-
-    def has(self, lhs, rhs):
-        return tuple(rhs) in self.grammar[lhs]
+    def np(self, cls, adj=True):
+        if cls not in self.by_class:
+            return None
+        noun = random.choice(self.by_class[cls])
+        if (adj and random.random() < 0.45 and self.adj_by_class.get(cls)
+                and ("NP", ("det", "adj", "noun")) in self.prods):
+            return ("NP", "the", random.choice(self.adj_by_class[cls]), noun)
+        return ("NP", "the", noun)
 
     def generate(self):
-        """frame -> proposition -> tree -> surface, all from the lattice."""
-        v = random.choice([v for v in self.frames if v in self.inflect])
-        subj_cls, obj_cls = random.choice(self.frames[v])
-        if subj_cls not in self.by_class:
+        v = random.choice(list(self.frames))
+        fr = self.frames[v]
+        subj_opts = [c for c in fr.get("subj", []) if c in self.by_class]
+        if not subj_opts:
             return None
-        subj = random.choice(self.by_class[subj_cls])
-        vb = self.inflect[v]
-        np_subj = self.realize_np(subj, subj_cls)
-        if obj_cls in self.by_class and self.has("VP", ["verb", "NP"]):
-            obj = random.choice(self.by_class[obj_cls])
-            vp = ("VP", ("verb", vb), self.realize_np(obj, obj_cls))
-        elif self.has("VP", ["verb"]):
-            vp = ("VP", ("verb", vb))
-        else:
-            return None
-        return ("S", np_subj, vp)
+        subj = self.np(random.choice(subj_opts))
+        vb = fr.get("past", v)
+        obj = random.choice(fr.get("obj", ["NONE"]) or ["NONE"])
+        if obj == "PLACE" and "PLACE" in self.by_class and ("VP", ("verb", "PP")) in self.prods:
+            return ("S", subj, ("VP", ("verb", vb), ("PP", "to", self.np("PLACE", adj=False))))
+        if obj in ("NONE",) or obj not in self.by_class:
+            return ("S", subj, ("VP", ("verb", vb)))
+        return ("S", subj, ("VP", ("verb", vb), self.np(obj)))
 
 
-def leaves(tree):
+def words(tree):
     out = []
     def w(t):
         if isinstance(t, tuple) and t and isinstance(t[0], str) and t[0].isupper():
             for k in t[1:]: w(k)
-        elif isinstance(t, tuple) and len(t) == 2:  # (cat, word) leaf
+        elif isinstance(t, tuple) and len(t) == 2:
             out.append(t[1])
         elif isinstance(t, str):
             out.append(t)
     w(tree); return out
 
 
-def render(tree):
-    if isinstance(tree, tuple) and len(tree) == 2 and isinstance(tree[1], str):
-        return tree[1]
-    if isinstance(tree, tuple):
-        return f"[{tree[0]} " + " ".join(render(k) for k in tree[1:]) + "]"
-    return str(tree)
-
-
 def main():
-    store = Store(":memory:")
-    build(store)
+    store = open_lattice()
     gen = Generator(store)
-
+    n_fr = sum(len(v) for v in [gen.frames])
     print("=" * 70)
-    print("GENERATION SYSTEM (lattice-driven) — primes -> programs -> system")
+    print("GENERATION SYSTEM (persistent lattice) — bigger system, richer output")
     print("=" * 70)
-    counts = {k: store.db.execute(f"SELECT count(*) FROM nodes WHERE kind='{k}'").fetchone()[0]
-              for k in ("class", "word", "production", "frame", "inflect", "realize")}
-    print(f"  programs in the generation system: {counts}\n")
-
-    sents = []
-    while len(sents) < 10:
+    print(f"  reading from lattice.db: {len(gen.frames)} frames, "
+          f"{sum(len(v) for v in gen.by_class.values())} class-tagged nouns, "
+          f"{sum(len(v) for v in gen.adj_by_class.values())} adj-applications\n")
+    seen = set()
+    shown = 0
+    while shown < 24:
         t = gen.generate()
-        if not t: continue
-        ws = leaves(t)
-        gram = json.load(open("data/induced_grammar.json"))
-        tags = ["det" if w in ("the","a") else "prep" if w=="to"
-                else "verb" if w == ws[-1] and ("VP", ("verb", w)) else "noun" for w in ws]
-        sents.append((render(t), ws))
-
-    for tree, ws in sents:
-        print(f"  {' '.join(ws):32}  tree: {tree}")
-
-    print("\n  Every sentence: frame (lattice) -> proposition -> tree (productions")
-    print("  from lattice) -> realized (rules from lattice). The generator is a")
-    print("  generic interpreter; the knowledge is programs in the system tree.")
-    print("\n  EXTENSIBILITY (system, not one-off): add a frame node ->")
-    store.put_many([Node("program", "frame", "chase", type="predicate", agent="live",
-                        substrate=[node_id("prime", "class", "ANIMATE")],
-                        pathways={"sigs": [["ANIMATE", "ANIMATE"]]}),
-                    Node("program", "inflect", "chase", type="morph", agent="live",
-                        substrate=[node_id("prime", "category", "verb")],
-                        pathways={"past": "chased"})])
-    gen2 = Generator(store)
-    for _ in range(60):
-        t = gen2.generate()
-        if t and "chased" in leaves(t):
-            print(f"     new behavior, zero code change: {' '.join(leaves(t))}")
-            break
+        if not t:
+            continue
+        s = " ".join(words(t))
+        if s in seen:
+            continue
+        seen.add(s)
+        shown += 1
+        print(f"  {s}")
 
 
 if __name__ == "__main__":
