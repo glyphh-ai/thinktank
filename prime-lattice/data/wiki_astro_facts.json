@@ -1,0 +1,1107 @@
+{
+ "asteroid": [
+  {
+   "s": "asteroid",
+   "r": "is_a",
+   "o": "minor planet"
+  },
+  {
+   "s": "asteroid",
+   "r": "size",
+   "o": "1 meter or larger"
+  },
+  {
+   "s": "asteroid",
+   "r": "orbits",
+   "o": "inner solar system"
+  },
+  {
+   "s": "asteroid",
+   "r": "made_of",
+   "o": "rocky, metallic, or icy material"
+  },
+  {
+   "s": "asteroid",
+   "r": "has",
+   "o": "no atmosphere"
+  },
+  {
+   "s": "asteroid",
+   "r": "characteristic",
+   "o": "classified into c-type, m-type, or s-type"
+  },
+  {
+   "s": "asteroid",
+   "r": "located_in",
+   "o": "main asteroid belt"
+  },
+  {
+   "s": "asteroid",
+   "r": "distance",
+   "o": "2 to 4 astronomical units from the sun"
+  },
+  {
+   "s": "asteroid",
+   "r": "characteristic",
+   "o": "roughly one million known"
+  },
+  {
+   "s": "asteroid",
+   "r": "characteristic",
+   "o": "total mass 3% of earth's moon"
+  },
+  {
+   "s": "asteroid",
+   "r": "characteristic",
+   "o": "elliptical stable orbits"
+  }
+ ],
+ "gas giant": [
+  {
+   "s": "gas giant",
+   "r": "is_a",
+   "o": "giant planet"
+  },
+  {
+   "s": "gas giant",
+   "r": "made_of",
+   "o": "hydrogen and helium"
+  },
+  {
+   "s": "gas giant",
+   "r": "contains",
+   "o": "jupiter and saturn"
+  },
+  {
+   "s": "gas giant",
+   "r": "characteristic",
+   "o": "heavier elements 3 to 13 percent of mass"
+  },
+  {
+   "s": "gas giant",
+   "r": "has",
+   "o": "deep atmosphere of molecular hydrogen"
+  },
+  {
+   "s": "gas giant",
+   "r": "has",
+   "o": "layer of liquid metallic hydrogen"
+  },
+  {
+   "s": "gas giant",
+   "r": "has",
+   "o": "molten rocky core"
+  },
+  {
+   "s": "gas giant",
+   "r": "has",
+   "o": "visible cloud layers"
+  },
+  {
+   "s": "gas giant",
+   "r": "characteristic",
+   "o": "clouds of water and ammonia"
+  }
+ ],
+ "moon": [
+  {
+   "s": "moon",
+   "r": "is_a",
+   "o": "natural satellite of earth"
+  },
+  {
+   "s": "moon",
+   "r": "orbits",
+   "o": "earth"
+  },
+  {
+   "s": "moon",
+   "r": "distance",
+   "o": "384,399 kilometers from earth"
+  },
+  {
+   "s": "moon",
+   "r": "characteristic",
+   "o": "completes orbit every 29.5 days"
+  },
+  {
+   "s": "moon",
+   "r": "characteristic",
+   "o": "bound to earth by gravitational attraction"
+  },
+  {
+   "s": "moon",
+   "r": "causes",
+   "o": "earth's tides"
+  },
+  {
+   "s": "moon",
+   "r": "characteristic",
+   "o": "tidally locked to earth"
+  },
+  {
+   "s": "moon",
+   "r": "is_a",
+   "o": "planetary-mass object"
+  }
+ ],
+ "astronomy": [
+  {
+   "s": "astronomy",
+   "r": "is_a",
+   "o": "natural science"
+  },
+  {
+   "s": "astronomy",
+   "r": "characteristic",
+   "o": "studies celestial objects"
+  },
+  {
+   "s": "astronomy",
+   "r": "characteristic",
+   "o": "studies cosmic phenomena"
+  },
+  {
+   "s": "astronomy",
+   "r": "has",
+   "o": "uses mathematics, physics, and chemistry"
+  },
+  {
+   "s": "astronomy",
+   "r": "contains",
+   "o": "planets, moons, stars, nebulae, galaxies"
+  },
+  {
+   "s": "astronomy",
+   "r": "contains",
+   "o": "meteoroids, asteroids, and comets"
+  },
+  {
+   "s": "astronomy",
+   "r": "characteristic",
+   "o": "studies everything beyond earth's atmosphere"
+  },
+  {
+   "s": "astronomy",
+   "r": "is_a",
+   "o": "one of the oldest natural sciences"
+  },
+  {
+   "s": "cosmology",
+   "r": "part_of",
+   "o": "astronomy"
+  },
+  {
+   "s": "cosmology",
+   "r": "characteristic",
+   "o": "studies the universe as a whole"
+  }
+ ],
+ "gravity": [
+  {
+   "s": "gravity",
+   "r": "is_a",
+   "o": "fundamental interaction"
+  },
+  {
+   "s": "gravity",
+   "r": "characteristic",
+   "o": "force that draws material objects toward each other"
+  },
+  {
+   "s": "gravity",
+   "r": "named_after",
+   "o": "latin gravitas 'weight'"
+  },
+  {
+   "s": "gravity",
+   "r": "causes",
+   "o": "coalescence of hydrogen gas into stars"
+  },
+  {
+   "s": "gravity",
+   "r": "causes",
+   "o": "galaxies and clusters"
+  },
+  {
+   "s": "gravity",
+   "r": "has",
+   "o": "infinite range"
+  },
+  {
+   "s": "gravity",
+   "r": "characteristic",
+   "o": "weaker with greater distance"
+  },
+  {
+   "s": "gravity",
+   "r": "characteristic",
+   "o": "described by general theory of relativity"
+  },
+  {
+   "s": "general relativity",
+   "r": "named_after",
+   "o": "albert einstein"
+  },
+  {
+   "s": "general relativity",
+   "r": "characteristic",
+   "o": "describes gravity as curvature of spacetime"
+  },
+  {
+   "s": "black hole",
+   "r": "is_a",
+   "o": "extreme curvature of spacetime"
+  },
+  {
+   "s": "black hole",
+   "r": "characteristic",
+   "o": "nothing escapes past event horizon"
+  }
+ ],
+ "nebula": [
+  {
+   "s": "nebula",
+   "r": "is_a",
+   "o": "luminescent part of interstellar medium"
+  },
+  {
+   "s": "nebula",
+   "r": "named_after",
+   "o": "latin for 'cloud, fog'"
+  },
+  {
+   "s": "nebula",
+   "r": "made_of",
+   "o": "ionized, neutral, or molecular hydrogen"
+  },
+  {
+   "s": "nebula",
+   "r": "made_of",
+   "o": "cosmic dust"
+  },
+  {
+   "s": "nebula",
+   "r": "is_a",
+   "o": "star-forming region"
+  },
+  {
+   "s": "nebula",
+   "r": "causes",
+   "o": "formation of stars"
+  },
+  {
+   "s": "nebula",
+   "r": "characteristic",
+   "o": "remaining material forms planets"
+  },
+  {
+   "s": "nebula",
+   "r": "size",
+   "o": "hundreds of light-years in diameter"
+  },
+  {
+   "s": "pillars of creation",
+   "r": "located_in",
+   "o": "the eagle nebula"
+  }
+ ],
+ "atmosphere": [
+  {
+   "s": "atmosphere",
+   "r": "is_a",
+   "o": "layer of gases"
+  },
+  {
+   "s": "atmosphere",
+   "r": "characteristic",
+   "o": "envelops an astronomical object"
+  },
+  {
+   "s": "atmosphere",
+   "r": "characteristic",
+   "o": "held in place by gravity"
+  },
+  {
+   "s": "atmosphere",
+   "r": "named_after",
+   "o": "greek atmos and sphaira"
+  },
+  {
+   "s": "atmosphere",
+   "r": "formed_from",
+   "o": "accretion of matter"
+  },
+  {
+   "s": "atmosphere",
+   "r": "formed_from",
+   "o": "outgassing of volatiles"
+  },
+  {
+   "s": "atmosphere",
+   "r": "causes",
+   "o": "composition change by surface interaction"
+  },
+  {
+   "s": "atmosphere",
+   "r": "characteristic",
+   "o": "retained longer with high gravity"
+  },
+  {
+   "s": "atmosphere",
+   "r": "characteristic",
+   "o": "retained longer at low temperature"
+  },
+  {
+   "s": "atmosphere",
+   "r": "characteristic",
+   "o": "stripped by solar wind"
+  },
+  {
+   "s": "atmosphere",
+   "r": "characteristic",
+   "o": "stripping slowed by magnetosphere"
+  }
+ ],
+ "jupiter": [
+  {
+   "s": "jupiter",
+   "r": "is_a",
+   "o": "gas giant"
+  },
+  {
+   "s": "jupiter",
+   "r": "is_a",
+   "o": "fifth planet from the sun"
+  },
+  {
+   "s": "jupiter",
+   "r": "characteristic",
+   "o": "largest planet in the solar system"
+  },
+  {
+   "s": "jupiter",
+   "r": "has",
+   "o": "mass 2.5 times all other planets combined"
+  },
+  {
+   "s": "jupiter",
+   "r": "size",
+   "o": "diameter 11 times that of earth"
+  },
+  {
+   "s": "jupiter",
+   "r": "orbits",
+   "o": "the sun"
+  },
+  {
+   "s": "jupiter",
+   "r": "distance",
+   "o": "5.20 au from the sun"
+  },
+  {
+   "s": "jupiter",
+   "r": "characteristic",
+   "o": "orbital period of 11.86 years"
+  },
+  {
+   "s": "jupiter",
+   "r": "characteristic",
+   "o": "third-brightest natural object in night sky"
+  },
+  {
+   "s": "jupiter",
+   "r": "named_after",
+   "o": "roman god jupiter"
+  },
+  {
+   "s": "jupiter",
+   "r": "characteristic",
+   "o": "first planet to form"
+  }
+ ],
+ "neptune": [
+  {
+   "s": "neptune",
+   "r": "is_a",
+   "o": "eighth planet from the sun"
+  },
+  {
+   "s": "neptune",
+   "r": "is_a",
+   "o": "ice giant"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "farthest known planet"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "fourth-largest planet by diameter"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "densest giant planet"
+  },
+  {
+   "s": "neptune",
+   "r": "has",
+   "o": "mass 17 times that of earth"
+  },
+  {
+   "s": "neptune",
+   "r": "made_of",
+   "o": "gases and liquids"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "no well-defined solid surface"
+  },
+  {
+   "s": "neptune",
+   "r": "orbits",
+   "o": "the sun"
+  },
+  {
+   "s": "neptune",
+   "r": "distance",
+   "o": "30.1 astronomical units from the sun"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "orbital period of 164.8 years"
+  },
+  {
+   "s": "neptune",
+   "r": "named_after",
+   "o": "roman god of the sea"
+  }
+ ],
+ "black hole": [
+  {
+   "s": "black hole",
+   "r": "is_a",
+   "o": "astronomical body"
+  },
+  {
+   "s": "black hole",
+   "r": "characteristic",
+   "o": "so compact gravity prevents anything escaping"
+  },
+  {
+   "s": "black hole",
+   "r": "characteristic",
+   "o": "not even light escapes"
+  },
+  {
+   "s": "black hole",
+   "r": "has",
+   "o": "event horizon"
+  },
+  {
+   "s": "event horizon",
+   "r": "is_a",
+   "o": "boundary of no escape"
+  },
+  {
+   "s": "black hole",
+   "r": "has",
+   "o": "central singularity"
+  },
+  {
+   "s": "central singularity",
+   "r": "characteristic",
+   "o": "infinite spacetime curvature"
+  },
+  {
+   "s": "black hole",
+   "r": "predicted_by",
+   "o": "general relativity"
+  },
+  {
+   "s": "general relativity",
+   "r": "characteristic",
+   "o": "describes gravitation as curvature of spacetime"
+  },
+  {
+   "s": "black hole",
+   "r": "formed_from",
+   "o": "sufficiently compact mass"
+  },
+  {
+   "s": "black hole",
+   "r": "characteristic",
+   "o": "first solution found in 1916"
+  }
+ ],
+ "mars": [
+  {
+   "s": "mars",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "mars",
+   "r": "characteristic",
+   "o": "fourth planet from the sun"
+  },
+  {
+   "s": "mars",
+   "r": "named_after",
+   "o": "red planet"
+  },
+  {
+   "s": "mars",
+   "r": "characteristic",
+   "o": "orange-red appearance"
+  },
+  {
+   "s": "mars",
+   "r": "is_a",
+   "o": "desert-like rocky planet"
+  },
+  {
+   "s": "mars",
+   "r": "has",
+   "o": "tenuous atmosphere"
+  },
+  {
+   "s": "mars",
+   "r": "made_of",
+   "o": "atmosphere primarily carbon dioxide"
+  },
+  {
+   "s": "mars",
+   "r": "has",
+   "o": "polar ice caps"
+  },
+  {
+   "s": "mars",
+   "r": "has",
+   "o": "permafrost"
+  },
+  {
+   "s": "mars",
+   "r": "characteristic",
+   "o": "surface gravity a third of earth's"
+  },
+  {
+   "s": "mars",
+   "r": "size",
+   "o": "mean diameter 6,779 km"
+  },
+  {
+   "s": "mars",
+   "r": "characteristic",
+   "o": "no liquid surface water"
+  }
+ ],
+ "orbit": [
+  {
+   "s": "orbit",
+   "r": "is_a",
+   "o": "curved trajectory of an object"
+  },
+  {
+   "s": "orbit",
+   "r": "caused_by",
+   "o": "attracting force"
+  },
+  {
+   "s": "orbit",
+   "r": "is_a",
+   "o": "orbital revolution"
+  },
+  {
+   "s": "orbit",
+   "r": "characteristic",
+   "o": "rotation around an external axis"
+  },
+  {
+   "s": "orbit",
+   "r": "characteristic",
+   "o": "regularly repeating trajectory"
+  },
+  {
+   "s": "orbit",
+   "r": "characteristic",
+   "o": "planets follow elliptic orbits"
+  },
+  {
+   "s": "orbit",
+   "r": "described_by",
+   "o": "kepler's laws of planetary motion"
+  },
+  {
+   "s": "orbit",
+   "r": "described_by",
+   "o": "newtonian mechanics"
+  },
+  {
+   "s": "orbit",
+   "r": "characteristic",
+   "o": "center of mass at focal point of ellipse"
+  },
+  {
+   "s": "orbit",
+   "r": "part_of",
+   "o": "celestial mechanics"
+  }
+ ],
+ "comet": [
+  {
+   "s": "comet",
+   "r": "is_a",
+   "o": "icy small solar system body"
+  },
+  {
+   "s": "comet",
+   "r": "orbits",
+   "o": "the sun"
+  },
+  {
+   "s": "comet",
+   "r": "causes",
+   "o": "outgassing when near the sun"
+  },
+  {
+   "s": "comet",
+   "r": "has",
+   "o": "a coma"
+  },
+  {
+   "s": "comet",
+   "r": "has",
+   "o": "a nucleus"
+  },
+  {
+   "s": "comet",
+   "r": "has",
+   "o": "a tail of gas and dust"
+  },
+  {
+   "s": "comet",
+   "r": "made_of",
+   "o": "ice, dust, and rocky particles"
+  },
+  {
+   "s": "comet nucleus",
+   "r": "size",
+   "o": "few hundred meters to tens of kilometers"
+  },
+  {
+   "s": "comet coma",
+   "r": "size",
+   "o": "up to 15 times earth's diameter"
+  },
+  {
+   "s": "comet tail",
+   "r": "size",
+   "o": "beyond one astronomical unit"
+  },
+  {
+   "s": "comet",
+   "r": "characteristic",
+   "o": "affected by solar radiation and solar wind"
+  }
+ ],
+ "mercury (planet)": [
+  {
+   "s": "mercury",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "first planet from the sun"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "smallest planet in the solar system"
+  },
+  {
+   "s": "mercury",
+   "r": "is_a",
+   "o": "rocky planet"
+  },
+  {
+   "s": "mercury",
+   "r": "has",
+   "o": "a trace atmosphere"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "surface similar to earth's moon"
+  },
+  {
+   "s": "mercury",
+   "r": "has",
+   "o": "caloris planitia crater"
+  },
+  {
+   "s": "mercury",
+   "r": "size",
+   "o": "4,880 km diameter"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "appears as morning or evening star"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "3:2 spin-orbit resonance"
+  },
+  {
+   "s": "mercury",
+   "r": "has",
+   "o": "sidereal year of 88 earth days"
+  }
+ ],
+ "planet": [
+  {
+   "s": "planet",
+   "r": "is_a",
+   "o": "large rounded astronomical body"
+  },
+  {
+   "s": "planet",
+   "r": "orbits",
+   "o": "a star, stellar remnant, or brown dwarf"
+  },
+  {
+   "s": "planet",
+   "r": "characteristic",
+   "o": "eight planets in the solar system"
+  },
+  {
+   "s": "planet",
+   "r": "contains",
+   "o": "terrestrial planets mercury, venus, earth, mars"
+  },
+  {
+   "s": "planet",
+   "r": "contains",
+   "o": "giant planets jupiter, saturn, uranus, neptune"
+  },
+  {
+   "s": "planet",
+   "r": "formed_from",
+   "o": "protoplanetary disk by accretion"
+  },
+  {
+   "s": "planet",
+   "r": "characteristic",
+   "o": "formation explained by nebular hypothesis"
+  },
+  {
+   "s": "planet",
+   "r": "named_after",
+   "o": "greek word for wanderers"
+  },
+  {
+   "s": "planet",
+   "r": "characteristic",
+   "o": "historically associated with gods"
+  }
+ ],
+ "earth": [
+  {
+   "s": "earth",
+   "r": "is_a",
+   "o": "third planet from the sun"
+  },
+  {
+   "s": "earth",
+   "r": "characteristic",
+   "o": "only object known to harbor life"
+  },
+  {
+   "s": "earth",
+   "r": "is_a",
+   "o": "ocean world"
+  },
+  {
+   "s": "earth",
+   "r": "has",
+   "o": "liquid surface water"
+  },
+  {
+   "s": "earth",
+   "r": "contains",
+   "o": "ocean"
+  },
+  {
+   "s": "earth",
+   "r": "characteristic",
+   "o": "ocean covers 70.8% of crust"
+  },
+  {
+   "s": "earth",
+   "r": "characteristic",
+   "o": "land covers 29.2% of crust"
+  },
+  {
+   "s": "earth",
+   "r": "has",
+   "o": "tectonic plates"
+  },
+  {
+   "s": "earth",
+   "r": "causes",
+   "o": "mountain ranges, volcanoes, and earthquakes"
+  },
+  {
+   "s": "earth",
+   "r": "has",
+   "o": "liquid outer core"
+  },
+  {
+   "s": "earth",
+   "r": "has",
+   "o": "magnetosphere"
+  },
+  {
+   "s": "earth",
+   "r": "characteristic",
+   "o": "magnetosphere deflects solar winds and cosmic radiation"
+  }
+ ],
+ "meteorite": [
+  {
+   "s": "meteorite",
+   "r": "is_a",
+   "o": "rock from outer space"
+  },
+  {
+   "s": "meteorite",
+   "r": "characteristic",
+   "o": "fallen to surface of a planet or moon"
+  },
+  {
+   "s": "meteorite",
+   "r": "formed_from",
+   "o": "object entering the atmosphere"
+  },
+  {
+   "s": "meteorite",
+   "r": "causes",
+   "o": "heating from friction and pressure"
+  },
+  {
+   "s": "meteorite",
+   "r": "characteristic",
+   "o": "becomes a meteor and forms a fireball"
+  },
+  {
+   "s": "meteor",
+   "r": "is_a",
+   "o": "shooting star"
+  },
+  {
+   "s": "bolide",
+   "r": "is_a",
+   "o": "brightest meteor"
+  },
+  {
+   "s": "meteorite",
+   "r": "characteristic",
+   "o": "vary greatly in size"
+  },
+  {
+   "s": "bolide",
+   "r": "characteristic",
+   "o": "large enough to create an impact crater"
+  },
+  {
+   "s": "meteorite fall",
+   "r": "is_a",
+   "o": "meteorite recovered after being observed"
+  }
+ ],
+ "satellite": [
+  {
+   "s": "satellite",
+   "r": "is_a",
+   "o": "object placed into orbit around a celestial body"
+  },
+  {
+   "s": "satellite",
+   "r": "is_a",
+   "o": "spacecraft"
+  },
+  {
+   "s": "satellite",
+   "r": "orbits",
+   "o": "a celestial body"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "communication relay use"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "weather forecasting use"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "navigation use"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "earth observation use"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "military uses"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "electricity generation system"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "solar panels or rtgs"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "transponders"
+  },
+  {
+   "s": "satellite",
+   "r": "has",
+   "o": "standardized bus"
+  }
+ ],
+ "galaxy": [
+  {
+   "s": "galaxy",
+   "r": "is_a",
+   "o": "system of stars"
+  },
+  {
+   "s": "galaxy",
+   "r": "made_of",
+   "o": "stars, gas, dust, dark matter"
+  },
+  {
+   "s": "galaxy",
+   "r": "characteristic",
+   "o": "bound by gravity"
+  },
+  {
+   "s": "galaxy",
+   "r": "named_after",
+   "o": "greek galaxias meaning milky"
+  },
+  {
+   "s": "galaxy",
+   "r": "has",
+   "o": "an estimated 100 million stars"
+  },
+  {
+   "s": "galaxy",
+   "r": "size",
+   "o": "ranges from dwarfs to supergiants"
+  },
+  {
+   "s": "galaxy",
+   "r": "made_of",
+   "o": "mostly dark matter"
+  },
+  {
+   "s": "galaxy",
+   "r": "has",
+   "o": "supermassive black hole at center"
+  },
+  {
+   "s": "galaxy",
+   "r": "is_a",
+   "o": "elliptical, spiral, or irregular"
+  },
+  {
+   "s": "milky way",
+   "r": "is_a",
+   "o": "spiral galaxy"
+  }
+ ],
+ "milky way": [
+  {
+   "s": "milky way",
+   "r": "is_a",
+   "o": "barred spiral galaxy"
+  },
+  {
+   "s": "milky way",
+   "r": "contains",
+   "o": "the solar system"
+  },
+  {
+   "s": "milky way",
+   "r": "characteristic",
+   "o": "hazy band of light in night sky"
+  },
+  {
+   "s": "milky way",
+   "r": "size",
+   "o": "diameter of 26.8 kiloparsecs"
+  },
+  {
+   "s": "milky way",
+   "r": "size",
+   "o": "about 1,000 light-years thick at arms"
+  },
+  {
+   "s": "milky way",
+   "r": "has",
+   "o": "several satellite galaxies"
+  },
+  {
+   "s": "milky way",
+   "r": "part_of",
+   "o": "the local group"
+  },
+  {
+   "s": "milky way",
+   "r": "part_of",
+   "o": "the virgo supercluster"
+  },
+  {
+   "s": "milky way",
+   "r": "has",
+   "o": "100-400 billion stars"
+  },
+  {
+   "s": "milky way",
+   "r": "contains",
+   "o": "the galactic center"
+  },
+  {
+   "s": "milky way",
+   "r": "has",
+   "o": "the orion arm"
+  },
+  {
+   "s": "milky way",
+   "r": "has",
+   "o": "a central bulge and bars"
+  }
+ ]
+}

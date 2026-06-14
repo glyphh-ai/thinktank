@@ -13,6 +13,7 @@ Run:  python wiki_brain.py
 
 from __future__ import annotations
 import collections
+import re
 import json
 from store import Store, Node, node_id
 
@@ -60,7 +61,9 @@ class Brain:
         return [(s, r, o) for s, r, o in self.T if s == e]
 
     def realize(self, s, r, o):
-        return self.templates.get(r, "{s} {r} {o}").format(s=s.title(), r=r.replace("_", " "), o=o)
+        out = self.templates.get(r, "{s} {r} {o}").format(
+            s=s.title(), r=r.replace("_", " "), o=o)
+        return re.sub(r"\ba (?=[aeiou])", "an ", out)   # a icy -> an icy
 
     # ---- GENERATION: describe an entity from its learned facts -------------
     def describe(self, e):
