@@ -1,0 +1,205 @@
+{
+  "said": {
+    "pos": "verb",
+    "synonyms": ["stated", "uttered", "remarked", "declared"],
+    "senses": [
+      {"pos": "verb", "gloss": "past tense of say; uttered words"},
+      {"pos": "adjective", "gloss": "previously mentioned (e.g., the said person)"}
+    ]
+  },
+  "alice": {
+    "pos": "noun",
+    "synonyms": [],
+    "senses": [
+      {"pos": "noun", "gloss": "a female given name; proper noun"}
+    ]
+  },
+  "little": {
+    "pos": "adjective",
+    "synonyms": ["small", "tiny", "slight", "minor"],
+    "senses": [
+      {"pos": "adjective", "gloss": "small in size or amount"},
+      {"pos": "adverb", "gloss": "to a small degree; not much"},
+      {"pos": "noun", "gloss": "a small amount (e.g., a little)"}
+    ]
+  },
+  "know": {
+    "pos": "verb",
+    "synonyms": ["understand", "realize", "recognize", "comprehend"],
+    "senses": [
+      {"pos": "verb", "gloss": "to have knowledge or awareness of something"},
+      {"pos": "verb", "gloss": "to be acquainted with a person or place"}
+    ]
+  },
+  "went": {
+    "pos": "verb",
+    "synonyms": ["departed", "traveled", "proceeded", "moved"],
+    "senses": [
+      {"pos": "verb", "gloss": "past tense of go; moved or traveled"}
+    ]
+  },
+  "queen": {
+    "pos": "noun",
+    "synonyms": ["monarch", "sovereign", "empress"],
+    "senses": [
+      {"pos": "noun", "gloss": "a female monarch or ruler"},
+      {"pos": "noun", "gloss": "the most powerful piece in chess"},
+      {"pos": "noun", "gloss": "a playing card ranking below the king"},
+      {"pos": "noun", "gloss": "a reproductive female in a colony of bees or ants"}
+    ]
+  },
+  "thought": {
+    "pos": "noun",
+    "synonyms": ["idea", "notion", "reflection", "consideration"],
+    "senses": [
+      {"pos": "noun", "gloss": "an idea or opinion produced by thinking"},
+      {"pos": "verb", "gloss": "past tense of think; considered or believed"}
+    ]
+  },
+  "time": {
+    "pos": "noun",
+    "synonyms": ["period", "duration", "moment", "interval"],
+    "senses": [
+      {"pos": "noun", "gloss": "the indefinite continued progress of existence and events"},
+      {"pos": "noun", "gloss": "a particular point or moment (e.g., what time is it)"},
+      {"pos": "verb", "gloss": "to measure or schedule the duration of something"},
+      {"pos": "noun", "gloss": "an occasion or instance (e.g., three times)"}
+    ]
+  },
+  "see": {
+    "pos": "verb",
+    "synonyms": ["observe", "view", "perceive", "notice"],
+    "senses": [
+      {"pos": "verb", "gloss": "to perceive with the eyes"},
+      {"pos": "verb", "gloss": "to understand or comprehend"},
+      {"pos": "verb", "gloss": "to meet with or visit someone"},
+      {"pos": "noun", "gloss": "the area of a bishop's jurisdiction (an episcopal see)"}
+    ]
+  },
+  "king": {
+    "pos": "noun",
+    "synonyms": ["monarch", "sovereign", "ruler", "emperor"],
+    "senses": [
+      {"pos": "noun", "gloss": "a male monarch or ruler"},
+      {"pos": "noun", "gloss": "the most important piece in chess"},
+      {"pos": "noun", "gloss": "a playing card ranking below the ace and above the queen"}
+    ]
+  },
+  "don": {
+    "pos": "verb",
+    "synonyms": ["wear", "put on", "wrap"],
+    "senses": [
+      {"pos": "verb", "gloss": "to put on a garment or item of clothing"},
+      {"pos": "noun", "gloss": "a respected or important person; a head of a mafia family"},
+      {"pos": "noun", "gloss": "a university teacher, especially at Oxford or Cambridge"}
+    ]
+  },
+  "turtle": {
+    "pos": "noun",
+    "synonyms": ["tortoise", "terrapin"],
+    "senses": [
+      {"pos": "noun", "gloss": "a reptile with a bony or cartilaginous shell"},
+      {"pos": "verb", "gloss": "to turn over or capsize (especially a boat)"}
+    ]
+  },
+  "began": {
+    "pos": "verb",
+    "synonyms": ["started", "commenced", "initiated", "launched"],
+    "senses": [
+      {"pos": "verb", "gloss": "past tense of begin; started"}
+    ]
+  },
+  "mock": {
+    "pos": "verb",
+    "synonyms": ["ridicule", "taunt", "deride", "tease"],
+    "senses": [
+      {"pos": "verb", "gloss": "to tease or laugh at in a scornful way"},
+      {"pos": "adjective", "gloss": "not authentic; imitation or practice (e.g., a mock exam)"},
+      {"pos": "noun", "gloss": "a practice examination or a mockery"}
+    ]
+  },
+  "way": {
+    "pos": "noun",
+    "synonyms": ["method", "manner", "route", "path"],
+    "senses": [
+      {"pos": "noun", "gloss": "a method, style, or manner of doing something"},
+      {"pos": "noun", "gloss": "a road, path, or route leading somewhere"},
+      {"pos": "adverb", "gloss": "by a great distance or to a great degree (e.g., way too much)"}
+    ]
+  },
+  "hatter": {
+    "pos": "noun",
+    "synonyms": ["milliner", "hatmaker"],
+    "senses": [
+      {"pos": "noun", "gloss": "a person who makes or sells hats"}
+    ]
+  },
+  "gryphon": {
+    "pos": "noun",
+    "synonyms": ["griffin", "griffon"],
+    "senses": [
+      {"pos": "noun", "gloss": "a mythical creature with an eagle's head and wings and a lion's body"}
+    ]
+  },
+  "rabbit": {
+    "pos": "noun",
+    "synonyms": ["bunny", "hare", "coney"],
+    "senses": [
+      {"pos": "noun", "gloss": "a small burrowing mammal with long ears"},
+      {"pos": "verb", "gloss": "to talk at length about trivial matters (informal British)"}
+    ]
+  },
+  "think": {
+    "pos": "verb",
+    "synonyms": ["believe", "consider", "reason", "ponder"],
+    "senses": [
+      {"pos": "verb", "gloss": "to use the mind to reason or form ideas"},
+      {"pos": "verb", "gloss": "to believe or hold an opinion"}
+    ]
+  },
+  "say": {
+    "pos": "verb",
+    "synonyms": ["state", "utter", "speak", "declare"],
+    "senses": [
+      {"pos": "verb", "gloss": "to utter words; to speak"},
+      {"pos": "noun", "gloss": "an opportunity to express an opinion (e.g., have a say)"}
+    ]
+  },
+  "first": {
+    "pos": "adjective",
+    "synonyms": ["foremost", "initial", "earliest", "leading"],
+    "senses": [
+      {"pos": "adjective", "gloss": "coming before all others in order or time"},
+      {"pos": "adverb", "gloss": "before anything else; at the beginning"},
+      {"pos": "noun", "gloss": "the first occurrence or position of something"}
+    ]
+  },
+  "head": {
+    "pos": "noun",
+    "synonyms": ["skull", "leader", "top", "chief"],
+    "senses": [
+      {"pos": "noun", "gloss": "the body part on top of the neck containing the brain"},
+      {"pos": "verb", "gloss": "to move toward a destination; to lead or be in charge"},
+      {"pos": "noun", "gloss": "the leader or person in charge of something"},
+      {"pos": "noun", "gloss": "the top or front part of something"}
+    ]
+  },
+  "thing": {
+    "pos": "noun",
+    "synonyms": ["object", "item", "entity", "matter"],
+    "senses": [
+      {"pos": "noun", "gloss": "an object or item that is not specifically named"},
+      {"pos": "noun", "gloss": "an action, event, or matter (e.g., the right thing to do)"}
+    ]
+  },
+  "voice": {
+    "pos": "noun",
+    "synonyms": ["tone", "sound", "speech", "say"],
+    "senses": [
+      {"pos": "noun", "gloss": "the sound produced in a person's throat when speaking or singing"},
+      {"pos": "verb", "gloss": "to express or utter an opinion or feeling"},
+      {"pos": "noun", "gloss": "the right to express an opinion; representation (e.g., a voice in the matter)"},
+      {"pos": "noun", "gloss": "a grammatical category of verbs (active or passive voice)"}
+    ]
+  }
+}
