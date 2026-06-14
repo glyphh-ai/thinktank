@@ -96,6 +96,20 @@ pipeline — a **grammar system** (category primes → phrase-rule programs → 
 english grammar, rules stored as data) and **math** — proving the structure is
 domain-general. Next rungs (reading, comprehension) are the same pipeline.
 
+## One program, all rules (rules as data)
+
+```
+python prime-lattice/reader.py    # generic reader interprets grammar from the lattice
+```
+
+`reader.py` hardcodes no grammar. It loads every production from the lattice and
+parses with a generic Earley engine (any CFG, including left recursion). The
+demo parses with the seeded grammar, then a "swarm" adds **one** rule
+(`NP → NP conj NP`) as a row — and the *same* program parses a sentence it
+couldn't before, with **zero code change**. That is the thesis in one run:
+*primes + lattice + agents at scale → the complete deterministic system*, and
+every single rule lives in the lattice, not the code.
+
 ## Honest open edges (next stakes)
 
 1. **Promotion criterion** is just a frequency threshold today; real version =
