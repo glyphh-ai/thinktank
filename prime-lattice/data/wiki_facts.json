@@ -1,0 +1,661 @@
+{
+ "earth": [
+  {
+   "s": "earth",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "earth",
+   "r": "position_from_sun",
+   "o": "third"
+  },
+  {
+   "s": "earth",
+   "r": "orbits",
+   "o": "the sun"
+  },
+  {
+   "s": "earth",
+   "r": "characteristic",
+   "o": "harbors life"
+  },
+  {
+   "s": "earth",
+   "r": "is_a",
+   "o": "ocean world"
+  },
+  {
+   "s": "earth",
+   "r": "has",
+   "o": "liquid surface water"
+  },
+  {
+   "s": "earth",
+   "r": "ocean_coverage",
+   "o": "70.8%"
+  },
+  {
+   "s": "earth",
+   "r": "land_coverage",
+   "o": "29.2%"
+  },
+  {
+   "s": "earth",
+   "r": "has",
+   "o": "tectonic plates"
+  },
+  {
+   "s": "earth",
+   "r": "has",
+   "o": "ice sheets"
+  },
+  {
+   "s": "earth",
+   "r": "located_in",
+   "o": "solar system"
+  },
+  {
+   "s": "earth",
+   "r": "produces",
+   "o": "volcanoes"
+  }
+ ],
+ "moon": [
+  {
+   "s": "moon",
+   "r": "is_a",
+   "o": "natural satellite"
+  },
+  {
+   "s": "moon",
+   "r": "orbits",
+   "o": "earth"
+  },
+  {
+   "s": "moon",
+   "r": "distance",
+   "o": "384,399 kilometers"
+  },
+  {
+   "s": "moon",
+   "r": "orbital_period",
+   "o": "29.5 days"
+  },
+  {
+   "s": "moon",
+   "r": "bound_by",
+   "o": "gravitational attraction"
+  },
+  {
+   "s": "moon",
+   "r": "drives",
+   "o": "earth's tides"
+  },
+  {
+   "s": "moon",
+   "r": "characteristic",
+   "o": "tidally locked"
+  },
+  {
+   "s": "moon",
+   "r": "characteristic",
+   "o": "same near side faces earth"
+  },
+  {
+   "s": "moon",
+   "r": "satellite_of",
+   "o": "earth"
+  }
+ ],
+ "solar system": [
+  {
+   "s": "solar system",
+   "r": "is_a",
+   "o": "gravitationally bound system"
+  },
+  {
+   "s": "solar system",
+   "r": "has",
+   "o": "the sun"
+  },
+  {
+   "s": "solar system",
+   "r": "has",
+   "o": "eight planets"
+  },
+  {
+   "s": "solar system",
+   "r": "is_a",
+   "o": "single-star planetary system"
+  },
+  {
+   "s": "solar system",
+   "r": "located_in",
+   "o": "milky way galaxy"
+  },
+  {
+   "s": "solar system",
+   "r": "age",
+   "o": "4.6 billion years"
+  },
+  {
+   "s": "solar system",
+   "r": "formed_from",
+   "o": "molecular cloud"
+  },
+  {
+   "s": "solar system",
+   "r": "characteristic",
+   "o": "sun is 99.86% of mass"
+  },
+  {
+   "s": "solar system",
+   "r": "has",
+   "o": "heliosphere"
+  },
+  {
+   "s": "solar system",
+   "r": "contains",
+   "o": "earth"
+  }
+ ],
+ "jupiter": [
+  {
+   "s": "jupiter",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "jupiter",
+   "r": "is_a",
+   "o": "gas giant"
+  },
+  {
+   "s": "jupiter",
+   "r": "position_from_sun",
+   "o": "fifth"
+  },
+  {
+   "s": "jupiter",
+   "r": "characteristic",
+   "o": "largest in the solar system"
+  },
+  {
+   "s": "jupiter",
+   "r": "located_in",
+   "o": "solar system"
+  },
+  {
+   "s": "jupiter",
+   "r": "orbits",
+   "o": "the sun"
+  },
+  {
+   "s": "jupiter",
+   "r": "distance",
+   "o": "5.20 au"
+  },
+  {
+   "s": "jupiter",
+   "r": "has",
+   "o": "orbital period of 11.86 years"
+  },
+  {
+   "s": "jupiter",
+   "r": "larger_than",
+   "o": "earth"
+  },
+  {
+   "s": "jupiter",
+   "r": "characteristic",
+   "o": "third-brightest natural object in night sky"
+  },
+  {
+   "s": "jupiter",
+   "r": "named_after",
+   "o": "jupiter the roman deity"
+  }
+ ],
+ "neptune": [
+  {
+   "s": "neptune",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "neptune",
+   "r": "is_a",
+   "o": "ice giant"
+  },
+  {
+   "s": "neptune",
+   "r": "is_a",
+   "o": "giant planet"
+  },
+  {
+   "s": "neptune",
+   "r": "position_from_sun",
+   "o": "eighth"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "farthest known planet"
+  },
+  {
+   "s": "neptune",
+   "r": "orbits",
+   "o": "the sun"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "fourth-largest by diameter"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "third-most-massive planet"
+  },
+  {
+   "s": "neptune",
+   "r": "characteristic",
+   "o": "densest giant planet"
+  },
+  {
+   "s": "neptune",
+   "r": "made_of",
+   "o": "gases and liquids"
+  },
+  {
+   "s": "neptune",
+   "r": "has",
+   "o": "orbital period of 164.8 years"
+  },
+  {
+   "s": "neptune",
+   "r": "distance",
+   "o": "30.1 au"
+  }
+ ],
+ "sun": [
+  {
+   "s": "sun",
+   "r": "is_a",
+   "o": "star"
+  },
+  {
+   "s": "sun",
+   "r": "located_in",
+   "o": "centre of the solar system"
+  },
+  {
+   "s": "sun",
+   "r": "made_of",
+   "o": "hot plasma"
+  },
+  {
+   "s": "sun",
+   "r": "characteristic",
+   "o": "heated by nuclear fusion"
+  },
+  {
+   "s": "sun",
+   "r": "has",
+   "o": "core"
+  },
+  {
+   "s": "sun",
+   "r": "characteristic",
+   "o": "main source of energy for life on earth"
+  },
+  {
+   "s": "sun",
+   "r": "orbits",
+   "o": "the galactic center"
+  },
+  {
+   "s": "sun",
+   "r": "distance",
+   "o": "24,000 to 28,000 light-years from galactic center"
+  },
+  {
+   "s": "sun",
+   "r": "distance",
+   "o": "1.496x10^8 km from earth"
+  }
+ ],
+ "mars": [
+  {
+   "s": "mars",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "mars",
+   "r": "position_from_sun",
+   "o": "fourth"
+  },
+  {
+   "s": "mars",
+   "r": "named_after",
+   "o": "red planet"
+  },
+  {
+   "s": "mars",
+   "r": "color",
+   "o": "orange-red"
+  },
+  {
+   "s": "mars",
+   "r": "characteristic",
+   "o": "desert-like rocky planet"
+  },
+  {
+   "s": "mars",
+   "r": "has",
+   "o": "tenuous atmosphere"
+  },
+  {
+   "s": "mars",
+   "r": "made_of",
+   "o": "carbon dioxide"
+  },
+  {
+   "s": "mars",
+   "r": "characteristic",
+   "o": "high cosmic radiation"
+  },
+  {
+   "s": "mars",
+   "r": "has",
+   "o": "water"
+  },
+  {
+   "s": "mars",
+   "r": "has",
+   "o": "polar ice caps"
+  },
+  {
+   "s": "mars",
+   "r": "characteristic",
+   "o": "surface gravity third of earth's"
+  }
+ ],
+ "planet": [
+  {
+   "s": "planet",
+   "r": "is_a",
+   "o": "astronomical body"
+  },
+  {
+   "s": "planet",
+   "r": "characteristic",
+   "o": "large and rounded"
+  },
+  {
+   "s": "planet",
+   "r": "orbits",
+   "o": "star"
+  },
+  {
+   "s": "planet",
+   "r": "characteristic",
+   "o": "solar system has eight planets"
+  },
+  {
+   "s": "planet",
+   "r": "has",
+   "o": "terrestrial planets mercury venus earth mars"
+  },
+  {
+   "s": "planet",
+   "r": "has",
+   "o": "giant planets jupiter saturn uranus neptune"
+  },
+  {
+   "s": "planet",
+   "r": "characteristic",
+   "o": "formed by nebular hypothesis"
+  },
+  {
+   "s": "planet",
+   "r": "characteristic",
+   "o": "grows by accretion"
+  },
+  {
+   "s": "planet",
+   "r": "named_after",
+   "o": "greek planetai wanderers"
+  }
+ ],
+ "uranus": [
+  {
+   "s": "uranus",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "uranus",
+   "r": "position_from_sun",
+   "o": "seventh"
+  },
+  {
+   "s": "uranus",
+   "r": "is_a",
+   "o": "ice giant"
+  },
+  {
+   "s": "uranus",
+   "r": "color",
+   "o": "cyan"
+  },
+  {
+   "s": "uranus",
+   "r": "made_of",
+   "o": "water ammonia and methane"
+  },
+  {
+   "s": "uranus",
+   "r": "has",
+   "o": "layered cloud structure"
+  },
+  {
+   "s": "uranus",
+   "r": "characteristic",
+   "o": "lowest minimum temperature of solar system planets"
+  },
+  {
+   "s": "uranus",
+   "r": "characteristic",
+   "o": "axial tilt of 82.23 degrees"
+  },
+  {
+   "s": "uranus",
+   "r": "characteristic",
+   "o": "retrograde rotation"
+  },
+  {
+   "s": "uranus",
+   "r": "characteristic",
+   "o": "84-earth-year orbital period"
+  }
+ ],
+ "mercury (planet)": [
+  {
+   "s": "mercury",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "mercury",
+   "r": "position_from_sun",
+   "o": "first"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "smallest in solar system"
+  },
+  {
+   "s": "mercury",
+   "r": "is_a",
+   "o": "rocky planet"
+  },
+  {
+   "s": "mercury",
+   "r": "has",
+   "o": "trace atmosphere"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "surface gravity higher than mars"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "cratered surface"
+  },
+  {
+   "s": "mercury",
+   "r": "has",
+   "o": "rupes system"
+  },
+  {
+   "s": "mercury",
+   "r": "has",
+   "o": "caloris planitia"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "appears close to sun"
+  },
+  {
+   "s": "mercury",
+   "r": "characteristic",
+   "o": "highest delta-v from earth"
+  }
+ ],
+ "saturn": [
+  {
+   "s": "saturn",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "saturn",
+   "r": "position_from_sun",
+   "o": "sixth"
+  },
+  {
+   "s": "saturn",
+   "r": "characteristic",
+   "o": "second largest in solar system"
+  },
+  {
+   "s": "saturn",
+   "r": "is_a",
+   "o": "gas giant"
+  },
+  {
+   "s": "saturn",
+   "r": "characteristic",
+   "o": "radius 9 times earth"
+  },
+  {
+   "s": "saturn",
+   "r": "characteristic",
+   "o": "95 times more massive than earth"
+  },
+  {
+   "s": "saturn",
+   "r": "orbits",
+   "o": "sun"
+  },
+  {
+   "s": "saturn",
+   "r": "distance",
+   "o": "9.59 au"
+  },
+  {
+   "s": "saturn",
+   "r": "characteristic",
+   "o": "orbital period 29.45 years"
+  },
+  {
+   "s": "saturn",
+   "r": "made_of",
+   "o": "rocky core"
+  },
+  {
+   "s": "saturn",
+   "r": "made_of",
+   "o": "metallic hydrogen"
+  },
+  {
+   "s": "saturn",
+   "r": "made_of",
+   "o": "liquid hydrogen and helium"
+  }
+ ],
+ "venus": [
+  {
+   "s": "venus",
+   "r": "is_a",
+   "o": "planet"
+  },
+  {
+   "s": "venus",
+   "r": "position_from_sun",
+   "o": "second"
+  },
+  {
+   "s": "venus",
+   "r": "characteristic",
+   "o": "similar in size to earth"
+  },
+  {
+   "s": "venus",
+   "r": "characteristic",
+   "o": "no liquid water"
+  },
+  {
+   "s": "venus",
+   "r": "has",
+   "o": "thick dense atmosphere"
+  },
+  {
+   "s": "venus",
+   "r": "made_of",
+   "o": "carbon dioxide"
+  },
+  {
+   "s": "venus",
+   "r": "has",
+   "o": "sulfuric acid clouds"
+  },
+  {
+   "s": "venus",
+   "r": "characteristic",
+   "o": "surface temperature 737 k"
+  },
+  {
+   "s": "venus",
+   "r": "characteristic",
+   "o": "pressure 92 times earth"
+  },
+  {
+   "s": "venus",
+   "r": "characteristic",
+   "o": "brightest natural point of light"
+  },
+  {
+   "s": "venus",
+   "r": "orbits",
+   "o": "sun"
+  }
+ ]
+}
