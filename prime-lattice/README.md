@@ -77,6 +77,25 @@ writes, no coordination), **normalised edges** indexed both ways (O(degree)
 traversal), **batched UPSERT** ingest. SQLite prototype, Postgres-ready DDL.
 ~23k rows/s single-writer; scales ~linearly by hash-sharding writers.
 
+## The build engine + multiple towers
+
+```
+python prime-lattice/numbers.py   # math tower: primes that COMPUTE (100% clean)
+python prime-lattice/build.py     # spin agents: primes -> programs -> system
+```
+
+`numbers.py` is a second primitive tower (digits/operators → numbers →
+expressions that evaluate), ~100% deterministic — the cleanest test of
+"no probability at runtime" — and it joins the language tower (`"three"` ↔ `3`).
+
+`build.py` is the engine: a generic `primes → programs → system` pipeline that
+*any domain falls into*. Agents (LLM calls at scale; deterministic seeds here)
+emit each layer, schema-on-write validates them, and they land as typed nodes +
+substrate edges in one shared lattice. It builds two domains through the same
+pipeline — a **grammar system** (category primes → phrase-rule programs → an
+english grammar, rules stored as data) and **math** — proving the structure is
+domain-general. Next rungs (reading, comprehension) are the same pipeline.
+
 ## Honest open edges (next stakes)
 
 1. **Promotion criterion** is just a frequency threshold today; real version =
