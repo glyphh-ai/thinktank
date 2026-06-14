@@ -1,0 +1,46 @@
+{
+  "S": [
+    ["NP", "VP"],
+    ["NP"],
+    ["VP"],
+    ["S", "conj", "S"],
+    ["conj", "S"],
+    ["intj", "S"],
+    ["intj"],
+    ["adv"],
+    ["PP"]
+  ],
+  "NP": [
+    ["noun"],
+    ["pron"],
+    ["num"],
+    ["det", "noun"],
+    ["det", "adj", "noun"],
+    ["adj", "noun"],
+    ["NP", "noun"],
+    ["NP", "num"],
+    ["NP", "aux", "noun"],
+    ["det", "adv", "adj", "noun"],
+    ["NP", "conj", "NP"],
+    ["NP", "PP"],
+    ["adj"],
+    ["adj", "conj", "adj"]
+  ],
+  "VP": [
+    ["verb"],
+    ["verb", "NP"],
+    ["aux", "verb"],
+    ["aux", "VP"],
+    ["aux", "aux", "verb"],
+    ["adv", "VP"],
+    ["VP", "adv"],
+    ["verb", "PP"],
+    ["VP", "PP"],
+    ["aux", "NP"],
+    ["verb", "S"]
+  ],
+  "PP": [
+    ["prep", "NP"],
+    ["prep", "S"]
+  ]
+}
