@@ -259,26 +259,92 @@ def evaluate(p, split, rng, B=64, T=BLOCK):
     return loss, acc
 
 
+def per_window_loss(cache):
+    """Cross-entropy averaged over T for EACH window in the batch -> (B,)."""
+    probs, yf = cache["probs"], cache["yf"]
+    N = yf.shape[0]
+    nll = -np.log(probs[np.arange(N), yf] + 1e-12)
+    return nll.reshape(cache["B"], cache["T"]).mean(1)
+
+
+# ============================================================================
+# Samplers — how we choose which windows go into each batch
+# ============================================================================
+class UniformSampler:
+    """The baseline: B start positions drawn uniformly at random (i.i.d.)."""
+    def __init__(self, split="train", B=32, T=BLOCK, seed=0):
+        self.src = train_data if split == "train" else val_data
+        self.B, self.T = B, T
+        self.M = len(self.src) - T               # number of candidate windows
+        self.rng = np.random.default_rng(seed)
+
+    def sample(self):
+        idx = self.rng.integers(0, self.M, size=self.B)
+        return self._gather(idx)
+
+    def update(self, per_win_loss):              # no-op; uniform ignores feedback
+        pass
+
+    def _gather(self, idx):
+        x = np.stack([self.src[i:i + self.T] for i in idx])
+        y = np.stack([self.src[i + 1:i + 1 + self.T] for i in idx])
+        return x, y
+
+
+class PrioritizedSampler(UniformSampler):
+    """Markov-over-positions: P(draw window i next) tracks the model's recent
+    loss there. Each window's priority is an EMA of the loss it produced; we
+    sample proportional to priority (mixed with eps-uniform for exploration),
+    so the batch concentrates where the model is currently weak. The evolving
+    distribution IS the Markov chain over 'what to study next'.
+    """
+    def __init__(self, split="train", B=32, T=BLOCK, seed=0,
+                 beta=0.9, eps=0.1, init=3.3):
+        super().__init__(split, B, T, seed)
+        self.beta, self.eps = beta, eps
+        self.prio = np.full(self.M, init)        # optimistic init -> visit all
+        self.last_idx = None
+
+    def sample(self):
+        p = self.prio / self.prio.sum()
+        p = (1 - self.eps) * p + self.eps / self.M     # floor: never starve a window
+        idx = self.rng.choice(self.M, size=self.B, replace=False, p=p)
+        self.last_idx = idx
+        return self._gather(idx)
+
+    def update(self, per_win_loss):
+        i = self.last_idx
+        self.prio[i] = self.beta * self.prio[i] + (1 - self.beta) * per_win_loss
+
+
 # ============================================================================
 # Training loop
 # ============================================================================
-def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
+def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
+          sampler=None, eval_every=None):
+    """Train with any sampler (defaults to uniform). A sampler must expose
+    .sample()->(x,y) and .update(per_window_loss). Returns (params, history)."""
     rng = np.random.default_rng(seed)
     p = init_params(rng)
     opt = Adam(p, lr=lr)
+    if sampler is None:
+        sampler = UniformSampler("train", B=B, seed=seed)
     eval_rng = np.random.default_rng(123)
+    eval_every = eval_every or log_every
     history = []
     for step in range(1, steps + 1):
-        x, y = get_batch("train", rng, B=B)
+        x, y = sampler.sample()
         loss, _, cache = forward(p, x, y)
         grads = backward(p, cache)
         opt.step(p, grads)
-        if verbose and (step % log_every == 0 or step == 1):
+        sampler.update(per_window_loss(cache))
+        if step % eval_every == 0 or step == 1:
             tr_loss, tr_acc = evaluate(p, "train", eval_rng)
             va_loss, va_acc = evaluate(p, "val", eval_rng)
             history.append((step, tr_loss, tr_acc, va_loss, va_acc))
-            print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
-                  f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
+            if verbose:
+                print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
+                      f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
     return p, history
 
 
