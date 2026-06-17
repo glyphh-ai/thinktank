@@ -45,6 +45,23 @@ seeded-then-trained (washes out) or frozen (ignored). A tie is expected: with
 enough data signal the model learns its own representation. The prior can only
 matter where the model CAN'T learn it from data.
 
+## WHY read-out (why.py) — the actual goal: decode the pick as meaning
+Not generation, not a prior on training. The model trains normally (weights
+only); when it picks the next glyph we align that pick to the FIXED meaning
+vector in the same vocab slot and unbind the role paths to read WHY:
+
+```
+after 'to b'    -> 'e'  why sound: front, vowel       audible(vowel-ness) +0.23
+after 'and '    -> 'b'  why sound: plosive, voiced    audible +0.04
+after 'questio' -> 'n'  why sound: nasal, voiced      (shape: arch -- which n is)
+after 'or to '  -> 't'  why sound: plosive, unvoiced  audible +0.05
+after 'them.'   -> '\n' why sound: silence            audible +0.01
+```
+Every decode is correct, and the audible score cleanly separates vowels (.23)
+from consonants (.04) from silence (.01). The fixed meaning store is the memory;
+aligning a decision to it explains the choice in human terms. This is the part
+of the idea that WORKS -- because it's introspection, not a training/gen aid.
+
 ## What would make the structure matter (untested)
 - FREEZE tok_emb (don't train it): forces the model to USE the meaning geometry;
   tests whether the structure is sufficient, not just whether it survives.
