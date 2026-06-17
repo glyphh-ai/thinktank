@@ -30,6 +30,14 @@ MLP_HIDDEN = 4 * C
 BLOCK = BLOCK_SIZE  # T (context length)
 EPS = 1e-5      # layernorm epsilon
 
+# Optional FROZEN meaning embedding (vocab, C), added to the trainable tok_emb in
+# identical vocab slots. Never updated -> the meaning substrate can't wash out.
+_FROZEN_TOK = None
+
+def set_frozen_tok(matrix):
+    global _FROZEN_TOK
+    _FROZEN_TOK = None if matrix is None else np.asarray(matrix, dtype=np.float64)
+
 
 # ============================================================================
 # Parameters
@@ -144,7 +152,9 @@ def attention_bwd(dy, cache, p):
 # ============================================================================
 def forward(p, x_ids, y_ids=None):
     B, T = x_ids.shape
-    tok = p["tok_emb"][x_ids]                  # (B,T,C)
+    tok = p["tok_emb"][x_ids]                  # (B,T,C)  trainable (original loop)
+    if _FROZEN_TOK is not None:                # + frozen meaning, identical slots
+        tok = tok + _FROZEN_TOK[x_ids]         # frozen channel never updates
     pos = p["pos_emb"][:T]                      # (T,C)
     h0 = tok + pos                             # (B,T,C)
 
@@ -267,7 +277,8 @@ def evaluate(p, split, rng, B=64, T=BLOCK):
 # Training loop
 # ============================================================================
 def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
-          tok_emb_init=None, eval_every=None):
+          tok_emb_init=None, eval_every=None, frozen_tok=None):
+    set_frozen_tok(frozen_tok)              # frozen meaning channel (or clear)
     rng = np.random.default_rng(seed)
     p = init_params(rng, tok_emb_init=tok_emb_init)
     opt = Adam(p, lr=lr)
