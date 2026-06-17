@@ -153,7 +153,7 @@ def attention_bwd(dy, cache, p):
 # ============================================================================
 # Full forward (returns loss, predictions, and a cache for backward)
 # ============================================================================
-def forward(p, x_ids, y_ids=None):
+def forward(p, x_ids, y_ids=None, win_w=None):
     B, T = x_ids.shape
     tok = p["tok_emb"][x_ids]                  # (B,T,C)
     pos = p["pos_emb"][:T]                      # (T,C)
@@ -181,16 +181,24 @@ def forward(p, x_ids, y_ids=None):
     if y_ids is None:
         return logits, cache
 
-    # cross-entropy
+    # cross-entropy (optionally importance-weighted per window)
     flat = logits.reshape(-1, vocab_size)
     flat = flat - flat.max(1, keepdims=True)
     probs = np.exp(flat)
     probs /= probs.sum(1, keepdims=True)
     yf = y_ids.reshape(-1)
     N = yf.shape[0]
-    loss = -np.log(probs[np.arange(N), yf] + 1e-12).mean()
+    nll = -np.log(probs[np.arange(N), yf] + 1e-12)
+    if win_w is None:
+        loss = nll.mean()
+    else:
+        # win_w: (B,) importance weight per window; broadcast across its T tokens.
+        # Scaling the loss by w_b makes E_{i~p}[w_i g_i] = uniform gradient.
+        w_flat = np.repeat(win_w, T)
+        loss = (w_flat * nll).sum() / N
     cache["probs"] = probs
     cache["yf"] = yf
+    cache["win_w"] = win_w
     return loss, logits, cache
 
 
@@ -200,9 +208,11 @@ def backward(p, cache):
     B, T = cache["B"], cache["T"]
     grads = {k: np.zeros_like(v) for k, v in p.items()}
 
-    # d loss / d logits
+    # d loss / d logits  (importance-weight each window's rows if provided)
     dlogits = probs.copy()
     dlogits[np.arange(N), yf] -= 1.0
+    if cache["win_w"] is not None:
+        dlogits *= np.repeat(cache["win_w"], T)[:, None]
     dlogits /= N
     dlogits = dlogits.reshape(B, T, vocab_size)
 
@@ -267,8 +277,8 @@ def get_batch(split, rng, B=32, T=None):
     return x, y
 
 def evaluate(p, split, rng, B=64, T=None):
+    """Return (loss, accuracy) on one freshly-drawn batch (always uniform)."""
     T = T or CTX
-    """Return (loss, accuracy) on one freshly-drawn batch."""
     x, y = get_batch(split, rng, B=B, T=T)
     loss, logits, _ = forward(p, x, y)
     pred = logits.argmax(-1)
@@ -303,6 +313,9 @@ class UniformSampler:
     def update(self, per_win_loss):              # no-op; uniform ignores feedback
         pass
 
+    def is_weights(self):                        # uniform draw -> no correction
+        return np.ones(self.B)
+
     def _gather(self, idx):
         x = np.stack([self.src[i:i + self.T] for i in idx])
         y = np.stack([self.src[i + 1:i + 1 + self.T] for i in idx])
@@ -317,11 +330,13 @@ class PrioritizedSampler(UniformSampler):
     distribution IS the Markov chain over 'what to study next'.
     """
     def __init__(self, split="train", B=32, T=None, seed=0,
-                 beta=0.9, eps=0.1, init=3.3):
+                 beta=0.9, eps=0.1, init=3.3, is_correct=True):
         super().__init__(split, B, T, seed)
         self.beta, self.eps = beta, eps
+        self.is_correct = is_correct             # importance-sampling correction?
         self.prio = np.full(self.M, init)        # optimistic init -> visit all
         self.last_idx = None
+        self.last_p = None                       # P(draw) of the last batch
 
     def sample(self):
         p = self.prio / self.prio.sum()
@@ -329,7 +344,18 @@ class PrioritizedSampler(UniformSampler):
         # replace=True: fast for large M, collisions negligible at B<<M
         idx = self.rng.choice(self.M, size=self.B, replace=True, p=p)
         self.last_idx = idx
+        self.last_p = p[idx]
         return self._gather(idx)
+
+    def is_weights(self):
+        """w_i = (1/M) / p_i  -> unbiases the gradient back to the uniform
+        objective. Normalized to mean 1 so the effective learning rate matches
+        uniform. eps-floor caps p from below, so weights stay bounded by 1/eps.
+        """
+        if not self.is_correct:
+            return np.ones(self.B)
+        w = (1.0 / self.M) / self.last_p
+        return w / w.mean()
 
     def update(self, per_win_loss):
         i = self.last_idx
@@ -342,7 +368,8 @@ class PrioritizedSampler(UniformSampler):
 def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
           sampler=None, eval_every=None):
     """Train with any sampler (defaults to uniform). A sampler must expose
-    .sample()->(x,y) and .update(per_window_loss). Returns (params, history)."""
+    .sample()->(x,y), .is_weights()->(B,) and .update(per_window_loss).
+    Returns (params, history)."""
     rng = np.random.default_rng(seed)
     p = init_params(rng)
     opt = Adam(p, lr=lr)
@@ -353,10 +380,10 @@ def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
     history = []
     for step in range(1, steps + 1):
         x, y = sampler.sample()
-        loss, _, cache = forward(p, x, y)
+        loss, _, cache = forward(p, x, y, win_w=sampler.is_weights())
         grads = backward(p, cache)
         opt.step(p, grads)
-        sampler.update(per_window_loss(cache))
+        sampler.update(per_window_loss(cache))   # raw (unweighted) difficulty
         if step % eval_every == 0 or step == 1:
             tr_loss, tr_acc = evaluate(p, "train", eval_rng)
             va_loss, va_acc = evaluate(p, "val", eval_rng)
