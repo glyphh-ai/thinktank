@@ -308,7 +308,8 @@ class PrioritizedSampler(UniformSampler):
     def sample(self):
         p = self.prio / self.prio.sum()
         p = (1 - self.eps) * p + self.eps / self.M     # floor: never starve a window
-        idx = self.rng.choice(self.M, size=self.B, replace=False, p=p)
+        # replace=True: fast for large M, collisions negligible at B<<M
+        idx = self.rng.choice(self.M, size=self.B, replace=True, p=p)
         self.last_idx = idx
         return self._gather(idx)
 

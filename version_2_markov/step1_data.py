@@ -7,17 +7,26 @@ GPT will learn from.
 Run:  python step1_data.py
 """
 
+import os
 import numpy as np
 
-# A tiny corpus. Char-level modeling means we don't need much to see learning.
-# (Swap this for a .txt file later; the rest of the pipeline won't change.)
-TEXT = (
+# If a real corpus file sits next to this module use it (large, non-redundant
+# text -> genuine headroom for the sampling experiment). Otherwise fall back to
+# the tiny toy corpus so the rest of the pipeline still runs out of the box.
+_CORPUS_PATH = os.path.join(os.path.dirname(__file__), "corpus.txt")
+_TOY = (
     "to be, or not to be, that is the question:\n"
     "whether tis nobler in the mind to suffer\n"
     "the slings and arrows of outrageous fortune,\n"
     "or to take arms against a sea of troubles\n"
     "and by opposing end them.\n"
 ) * 20  # repeat so there's enough data to batch
+
+if os.path.exists(_CORPUS_PATH):
+    with open(_CORPUS_PATH, "r", encoding="utf-8") as f:
+        TEXT = f.read()
+else:
+    TEXT = _TOY
 
 # ---- 1. Build the vocabulary -------------------------------------------------
 # The set of every distinct character, sorted so the mapping is deterministic.
