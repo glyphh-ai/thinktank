@@ -241,6 +241,39 @@ class Adam:
 
 
 # ============================================================================
+# BeliefOpt — step size set by the gradient's DEVIATION from its trend
+# ============================================================================
+class BeliefOpt:
+    """The 'trend-belief' optimizer (= AdaBelief, 2020).
+
+    Adam scales the step by the gradient MAGNITUDE (v = EMA(g^2)). Here we scale
+    by how much the gradient DEVIATES from its own trend m (s = EMA((g-m)^2)):
+
+        gradient tracks its trend  -> small (g-m)^2 -> small denom -> BIG step
+        gradient keeps surprising  -> large (g-m)^2 -> large denom -> SMALL step
+
+    i.e. push harder when the nudge is consistent, slow down when it's volatile
+    relative to where the trend has been heading.
+    """
+    def __init__(self, params, lr=3e-3, betas=(0.9, 0.99), eps=1e-8):
+        self.lr, self.b1, self.b2, self.eps = lr, betas[0], betas[1], eps
+        self.m = {k: np.zeros_like(v) for k, v in params.items()}
+        self.s = {k: np.zeros_like(v) for k, v in params.items()}
+        self.t = 0
+
+    def step(self, params, grads):
+        self.t += 1
+        for k in params:
+            g = grads[k]
+            self.m[k] = self.b1 * self.m[k] + (1 - self.b1) * g
+            dev = g - self.m[k]                                   # deviation from trend
+            self.s[k] = self.b2 * self.s[k] + (1 - self.b2) * (dev * dev) + self.eps
+            mhat = self.m[k] / (1 - self.b1 ** self.t)
+            shat = self.s[k] / (1 - self.b2 ** self.t)
+            params[k] -= self.lr * mhat / (np.sqrt(shat) + self.eps)
+
+
+# ============================================================================
 # Batching + metrics
 # ============================================================================
 def get_batch(split, rng, B=32, T=BLOCK):
@@ -262,23 +295,27 @@ def evaluate(p, split, rng, B=64, T=BLOCK):
 # ============================================================================
 # Training loop
 # ============================================================================
-def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
+def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
+          make_opt=None, eval_every=None):
+    """Train with any optimizer (make_opt(params)->opt; defaults to Adam)."""
     rng = np.random.default_rng(seed)
     p = init_params(rng)
-    opt = Adam(p, lr=lr)
+    opt = make_opt(p) if make_opt is not None else Adam(p, lr=lr)
     eval_rng = np.random.default_rng(123)
+    eval_every = eval_every or log_every
     history = []
     for step in range(1, steps + 1):
         x, y = get_batch("train", rng, B=B)
         loss, _, cache = forward(p, x, y)
         grads = backward(p, cache)
         opt.step(p, grads)
-        if verbose and (step % log_every == 0 or step == 1):
+        if (step % eval_every == 0 or step == 1):
             tr_loss, tr_acc = evaluate(p, "train", eval_rng)
             va_loss, va_acc = evaluate(p, "val", eval_rng)
             history.append((step, tr_loss, tr_acc, va_loss, va_acc))
-            print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
-                  f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
+            if verbose:
+                print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
+                      f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
     return p, history
 
 
