@@ -241,6 +241,95 @@ class Adam:
 
 
 # ============================================================================
+# MarkovOpt — 2-state per-parameter sign-Markov optimizer
+# ============================================================================
+class MarkovOpt:
+    """Rprop with a probabilistic (Markov) memory.
+
+    For each weight the "state" is the sign of last round's (momentum-smoothed)
+    gradient: + or -. We always step (p=1), so direction is the only thing worth
+    modeling. We keep a running estimate of P(the sign flips next round):
+
+        flip rare  (P_flip < .5) -> rolling steadily downhill -> GROW the step
+        flip often (P_flip > .5) -> oscillating across a min   -> SHRINK the step
+
+    The update rides the gradient SIGN only; the chain governs the magnitude
+    (a per-weight adaptive step in [lo, hi]). P_flip is an EMA, so a weight that
+    flips 51% of the time is barely damped while one that flips 95% gets clamped
+    hard -> the probability's sharpness is the confidence dial.
+    """
+    def __init__(self, params, lr=3e-3, beta_m=0.9, beta_p=0.9,
+                 grow=1.2, shrink=0.5, lo=1e-5, hi=5e-2):
+        self.bm, self.bp = beta_m, beta_p
+        self.grow, self.shrink, self.lo, self.hi = grow, shrink, lo, hi
+        self.m     = {k: np.zeros_like(v) for k, v in params.items()}      # smoothed grad
+        self.last  = {k: np.zeros_like(v) for k, v in params.items()}      # last sign
+        self.pflip = {k: np.full_like(v, 0.5) for k, v in params.items()}  # running P(flip)
+        self.scale = {k: np.full_like(v, lr) for k, v in params.items()}   # per-weight step
+        self.t = 0
+
+    def step(self, params, grads):
+        self.t += 1
+        for k in params:
+            g = grads[k]
+            self.m[k] = self.bm * self.m[k] + (1 - self.bm) * g
+            s = np.sign(self.m[k])
+            # flip = current sign opposes last sign (both nonzero)
+            flip = ((s * self.last[k]) < 0).astype(g.dtype)
+            self.pflip[k] = self.bp * self.pflip[k] + (1 - self.bp) * flip
+            mult = np.where(self.pflip[k] < 0.5, self.grow, self.shrink)
+            self.scale[k] = np.clip(self.scale[k] * mult, self.lo, self.hi)
+            params[k] -= self.scale[k] * s
+            # remember sign only where it's defined this round
+            nz = s != 0
+            self.last[k] = np.where(nz, s, self.last[k])
+
+
+# ============================================================================
+# MarkovAdam — the Markov flip-probability as a confidence dial on Adam
+# ============================================================================
+class MarkovAdam:
+    """Adam, but each per-weight update is scaled by a Markov confidence factor.
+
+    Pure sign-stepping (MarkovOpt) is unstable under minibatch noise, so here the
+    chain doesn't set the magnitude -- it only MODULATES Adam's proven update:
+
+        conf = 1 + k*(1 - 2*P_flip)     # P_flip<.5 (persisting) -> conf>1 (push)
+                                        # P_flip>.5 (oscillating)-> conf<1 (brake)
+        update = adam_update * clip(conf, lo, hi)
+
+    At the noise floor (P_flip=.5) conf=1, so it falls back to plain Adam.
+    """
+    def __init__(self, params, lr=3e-3, betas=(0.9, 0.99), eps=1e-8,
+                 beta_p=0.9, k=0.5, lo=0.5, hi=1.5):
+        self.lr, self.b1, self.b2, self.eps = lr, betas[0], betas[1], eps
+        self.bp, self.k, self.lo, self.hi = beta_p, k, lo, hi
+        self.m     = {kk: np.zeros_like(v) for kk, v in params.items()}
+        self.v     = {kk: np.zeros_like(v) for kk, v in params.items()}
+        self.last  = {kk: np.zeros_like(v) for kk, v in params.items()}
+        self.pflip = {kk: np.full_like(v, 0.5) for kk, v in params.items()}
+        self.t = 0
+
+    def step(self, params, grads):
+        self.t += 1
+        for kk in params:
+            g = grads[kk]
+            self.m[kk] = self.b1 * self.m[kk] + (1 - self.b1) * g
+            self.v[kk] = self.b2 * self.v[kk] + (1 - self.b2) * (g * g)
+            mhat = self.m[kk] / (1 - self.b1 ** self.t)
+            vhat = self.v[kk] / (1 - self.b2 ** self.t)
+            update = self.lr * mhat / (np.sqrt(vhat) + self.eps)
+            # Markov layer: flip probability of the smoothed-gradient sign
+            s = np.sign(self.m[kk])
+            flip = ((s * self.last[kk]) < 0).astype(g.dtype)
+            self.pflip[kk] = self.bp * self.pflip[kk] + (1 - self.bp) * flip
+            conf = np.clip(1.0 + self.k * (1.0 - 2.0 * self.pflip[kk]), self.lo, self.hi)
+            params[kk] -= update * conf
+            nz = s != 0
+            self.last[kk] = np.where(nz, s, self.last[kk])
+
+
+# ============================================================================
 # Batching + metrics
 # ============================================================================
 def get_batch(split, rng, B=32, T=BLOCK):
@@ -262,23 +351,31 @@ def evaluate(p, split, rng, B=64, T=BLOCK):
 # ============================================================================
 # Training loop
 # ============================================================================
-def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
+def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
+          make_opt=None, eval_every=None):
+    """Train with any optimizer. make_opt(params)->optimizer; defaults to Adam.
+
+    Returns (params, history). history rows: (step, tr_loss, tr_acc, va_loss,
+    va_acc). eval_every controls metric sampling cadence (defaults to log_every).
+    """
     rng = np.random.default_rng(seed)
     p = init_params(rng)
-    opt = Adam(p, lr=lr)
+    opt = make_opt(p) if make_opt is not None else Adam(p, lr=lr)
     eval_rng = np.random.default_rng(123)
+    eval_every = eval_every or log_every
     history = []
     for step in range(1, steps + 1):
         x, y = get_batch("train", rng, B=B)
         loss, _, cache = forward(p, x, y)
         grads = backward(p, cache)
         opt.step(p, grads)
-        if verbose and (step % log_every == 0 or step == 1):
+        if step % eval_every == 0 or step == 1:
             tr_loss, tr_acc = evaluate(p, "train", eval_rng)
             va_loss, va_acc = evaluate(p, "val", eval_rng)
             history.append((step, tr_loss, tr_acc, va_loss, va_acc))
-            print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
-                  f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
+            if verbose:
+                print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
+                      f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
     return p, history
 
 
