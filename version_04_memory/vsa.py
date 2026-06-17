@@ -180,6 +180,19 @@ SHAPE = {
 }
 
 
+# Non-letter glyphs (whitespace / punctuation) so EVERY vocab char has meaning.
+SOUND.update({
+    " ":  ["silence","separator"],      "\n": ["silence","boundary"],
+    ",":  ["pause","short"],            ".":  ["stop","final"],
+    ":":  ["introduce","pause"],
+})
+SHAPE.update({
+    " ":  ["whitespace","gap"],         "\n": ["whitespace","line-break"],
+    ",":  ["punctuation","low-mark","curve"], ".": ["punctuation","dot","low-mark"],
+    ":":  ["punctuation","two-dots"],
+})
+
+
 def letter_cortex(ch, space, w_shape=1.0, w_sound=1.0):
     """Build the Cortex vector for one letter per the example schema:
         cortex -> semantic -> { physical -> shape:<feats>,
@@ -197,6 +210,18 @@ def letter_cortex(ch, space, w_shape=1.0, w_sound=1.0):
 
 def build_alphabet(space, **kw):
     return {ch: letter_cortex(ch, space, **kw) for ch in SHAPE}
+
+
+def build_vocab_vectors(chars, space, **kw):
+    """Cortex vector for every char in `chars` (model vocab order). Chars not in
+    the schema fall back to their own near-orthogonal atom."""
+    out = {}
+    for ch in chars:
+        if ch in SHAPE and ch in SOUND:
+            out[ch] = letter_cortex(ch, space, **kw)
+        else:
+            out[ch] = space.atom(f"glyph:{ch!r}")
+    return out
 
 
 def project_to_embedding(vectors_by_char, C, seed=0):

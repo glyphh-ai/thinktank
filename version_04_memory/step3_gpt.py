@@ -34,12 +34,16 @@ EPS = 1e-5      # layernorm epsilon
 # ============================================================================
 # Parameters
 # ============================================================================
-def init_params(rng, vocab=vocab_size, C=C):
-    """All learnable tensors, small random init (scaled so signals stay sane)."""
+def init_params(rng, vocab=vocab_size, C=C, tok_emb_init=None):
+    """All learnable tensors, small random init (scaled so signals stay sane).
+    tok_emb_init: optional (vocab, C) matrix to seed the token embeddings with
+    meaning vectors (the VSA glyph vectors) instead of random noise."""
     def n(*shape, scale):
         return rng.normal(0, scale, size=shape)
+    tok = (tok_emb_init.astype(np.float64).copy() if tok_emb_init is not None
+           else n(vocab, C, scale=0.02))
     return {
-        "tok_emb": n(vocab, C, scale=0.02),
+        "tok_emb": tok,
         "pos_emb": n(BLOCK, C, scale=0.02),
         # attention
         "Wq": n(C, C, scale=1/np.sqrt(C)),
@@ -262,23 +266,26 @@ def evaluate(p, split, rng, B=64, T=BLOCK):
 # ============================================================================
 # Training loop
 # ============================================================================
-def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
+def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
+          tok_emb_init=None, eval_every=None):
     rng = np.random.default_rng(seed)
-    p = init_params(rng)
+    p = init_params(rng, tok_emb_init=tok_emb_init)
     opt = Adam(p, lr=lr)
     eval_rng = np.random.default_rng(123)
+    eval_every = eval_every or log_every
     history = []
     for step in range(1, steps + 1):
         x, y = get_batch("train", rng, B=B)
         loss, _, cache = forward(p, x, y)
         grads = backward(p, cache)
         opt.step(p, grads)
-        if verbose and (step % log_every == 0 or step == 1):
+        if (step % eval_every == 0 or step == 1):
             tr_loss, tr_acc = evaluate(p, "train", eval_rng)
             va_loss, va_acc = evaluate(p, "val", eval_rng)
             history.append((step, tr_loss, tr_acc, va_loss, va_acc))
-            print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
-                  f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
+            if verbose:
+                print(f"step {step:4d} | train loss {tr_loss:6.3f} acc {tr_acc:5.1%}"
+                      f" | val loss {va_loss:6.3f} acc {va_acc:5.1%}")
     return p, history
 
 
