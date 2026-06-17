@@ -23,24 +23,39 @@ from step1_data import (
     train_data, val_data, vocab_size, BLOCK_SIZE, decode,
 )
 
-# ---- Hyperparameters ---------------------------------------------------------
-C = 64          # embedding dim (n_embd)
-HEAD = C        # single attention head, head size == C
+# ---- Hyperparameters (mutable via set_config for the scale-up experiment) ----
+C = 64              # embedding dim (n_embd)
+HEAD = C            # single attention head, head size == C
 MLP_HIDDEN = 4 * C
-BLOCK = BLOCK_SIZE  # T (context length)
-EPS = 1e-5      # layernorm epsilon
+BLOCK = BLOCK_SIZE  # T (context length); CTX is the live value used everywhere
+CTX = BLOCK
+EPS = 1e-5          # layernorm epsilon
+
+
+def set_config(width=None, ctx=None, mlp_mult=4):
+    """Resize the model: width (=C) and/or context length (=CTX). Call BEFORE
+    building params/samplers. Lets us run a bigger model without editing code."""
+    global C, HEAD, MLP_HIDDEN, CTX
+    if width is not None:
+        C = width
+    if ctx is not None:
+        CTX = ctx
+    HEAD = C
+    MLP_HIDDEN = mlp_mult * C
+    return dict(C=C, CTX=CTX, MLP_HIDDEN=MLP_HIDDEN)
 
 
 # ============================================================================
 # Parameters
 # ============================================================================
-def init_params(rng, vocab=vocab_size, C=C):
-    """All learnable tensors, small random init (scaled so signals stay sane)."""
+def init_params(rng, vocab=vocab_size):
+    """All learnable tensors, small random init (scaled so signals stay sane).
+    Reads the live C/CTX/MLP_HIDDEN globals so set_config takes effect."""
     def n(*shape, scale):
         return rng.normal(0, scale, size=shape)
     return {
         "tok_emb": n(vocab, C, scale=0.02),
-        "pos_emb": n(BLOCK, C, scale=0.02),
+        "pos_emb": n(CTX, C, scale=0.02),
         # attention
         "Wq": n(C, C, scale=1/np.sqrt(C)),
         "Wk": n(C, C, scale=1/np.sqrt(C)),
@@ -243,14 +258,16 @@ class Adam:
 # ============================================================================
 # Batching + metrics
 # ============================================================================
-def get_batch(split, rng, B=32, T=BLOCK):
+def get_batch(split, rng, B=32, T=None):
+    T = T or CTX
     src = train_data if split == "train" else val_data
     ix = rng.integers(0, len(src) - T, size=B)
     x = np.stack([src[i:i + T] for i in ix])
     y = np.stack([src[i + 1:i + 1 + T] for i in ix])
     return x, y
 
-def evaluate(p, split, rng, B=64, T=BLOCK):
+def evaluate(p, split, rng, B=64, T=None):
+    T = T or CTX
     """Return (loss, accuracy) on one freshly-drawn batch."""
     x, y = get_batch(split, rng, B=B, T=T)
     loss, logits, _ = forward(p, x, y)
@@ -272,7 +289,8 @@ def per_window_loss(cache):
 # ============================================================================
 class UniformSampler:
     """The baseline: B start positions drawn uniformly at random (i.i.d.)."""
-    def __init__(self, split="train", B=32, T=BLOCK, seed=0):
+    def __init__(self, split="train", B=32, T=None, seed=0):
+        T = T or CTX
         self.src = train_data if split == "train" else val_data
         self.B, self.T = B, T
         self.M = len(self.src) - T               # number of candidate windows
@@ -298,7 +316,7 @@ class PrioritizedSampler(UniformSampler):
     so the batch concentrates where the model is currently weak. The evolving
     distribution IS the Markov chain over 'what to study next'.
     """
-    def __init__(self, split="train", B=32, T=BLOCK, seed=0,
+    def __init__(self, split="train", B=32, T=None, seed=0,
                  beta=0.9, eps=0.1, init=3.3):
         super().__init__(split, B, T, seed)
         self.beta, self.eps = beta, eps
@@ -349,8 +367,9 @@ def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
     return p, history
 
 
-def sample(p, n=200, seed=0, T=BLOCK):
+def sample(p, n=200, seed=0, T=None):
     """Autoregressively generate text to eyeball what it learned."""
+    T = T or CTX
     rng = np.random.default_rng(seed)
     ctx = [int(train_data[0])]
     out = list(ctx)
