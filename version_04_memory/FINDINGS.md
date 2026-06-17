@@ -28,6 +28,23 @@ overwriting the meaning prior. With enough data signal, the model learns its own
 geometry and discards the structured one -> "meaning as weighted vector" ends up
 without the meaning.
 
+## Frozen meaning channel (compare_frozen.py): trainable + fixed meaning, same slots
+representation[id] = tok_emb[id] (trainable) + frozen_meaning[id] (never updates)
+```
+config                         val loss(mean±std)   val acc   ->90% @
+trainable only                    0.209 ± 0.006      91.9%       200
+trainable + frozen meaning        0.211 ± 0.002      92.0%       200
+```
+Dead tie. Freezing keeps the meaning from washing out, but the model just
+learns to ignore it -- on a saturated task it doesn't need the prior. (Lower
+variance is the only effect: the fixed substrate makes runs more consistent.)
+
+## Conclusion so far
+On this small saturated corpus a structured meaning prior is inert, whether
+seeded-then-trained (washes out) or frozen (ignored). A tie is expected: with
+enough data signal the model learns its own representation. The prior can only
+matter where the model CAN'T learn it from data.
+
 ## What would make the structure matter (untested)
 - FREEZE tok_emb (don't train it): forces the model to USE the meaning geometry;
   tests whether the structure is sufficient, not just whether it survives.
