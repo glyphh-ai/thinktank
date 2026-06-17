@@ -34,20 +34,43 @@ prioritized        2.072          39.7%          2.002
 - Prioritized is **slightly worse** and trails uniform across the whole curve.
   The small-scale speed advantage does not survive scaling up.
 
-## Verdict
+## 3. Importance-sampling correction (C=64, ctx=16), 2000 steps, 3 seeds — `compare_is.py`
 
-Prioritized ("Markov-over-positions") sampling is **not a clear win**. At small
-scale it's a minor convergence-speed optimization with no quality gain; at larger
-scale it slightly *underperforms* uniform.
+The principled fix: scale each window's gradient by w_i=(1/M)/p_i so the
+expected gradient equals the uniform objective (as in prioritized experience
+replay). Gradient-checked (weighted path rel err ~1e-7).
 
-Most likely cause: sampling non-uniformly **biases the training distribution**
-away from the true one, so the model optimizes a reweighted objective that
-doesn't match the (uniform) validation distribution. Prioritized experience
-replay hits the same problem and fixes it with **importance-sampling weights**
-(scale each sample's gradient by ~1/priority) to keep the gradient unbiased.
-We did NOT do that correction here -> the prime suspect for why it doesn't help.
+```
+sampler          val loss (mean±std)   val acc   ->match uniform @
+uniform            2.085 ± 0.011        40.4%      2000 (ref)
+prio (no IS)       2.086 ± 0.001        40.2%      1767
+prio (IS-corr)     2.097 ± 0.015        40.5%      1800   (highest variance)
+```
 
-## If continuing
-- Add IS-weight correction to `PrioritizedSampler` (the principled fix).
-- Re-tune beta/eps at the scaled size (they were only tuned at base size).
-- More seeds on the scaled model (only 2 here).
+IS correction does NOT rescue it. All three tie on final val loss (within error
+bars), and the corrected version has the highest variance and is marginally
+slowest.
+
+## Verdict (final)
+
+Prioritized ("Markov-over-positions") sampling is **not a win** for this
+stationary supervised LM objective. The reason is a genuine bias-variance trap:
+
+- **Uncorrected** -> the sampling skew BIASES the gradient (optimizes a
+  reweighted objective != validation) -> no net gain; mild harm when scaled up.
+- **IS-corrected** -> the gradient expectation becomes IDENTICAL to uniform by
+  construction, so the ceiling is "tie uniform" -- but the reweighting INFLATES
+  gradient variance, landing at "uniform, but noisier."
+
+There is no free lunch here: prioritization either biases you or just adds
+variance. It pays off in the settings it was designed for -- non-stationary
+data, sparse rewards, replay buffers (RL) -- not on a stationary objective where
+uniform sampling already covers the data well.
+
+## Arc summary
+- v1 (Markov optimizer): tied/lost to Adam -- Adam's 2nd moment already encodes
+  the oscillation signal.
+- v2 (Markov sampling): no win; speed-only at small scale, mild loss at scale,
+  and IS correction confirms the bias-variance trap rather than removing it.
+
+Two clean negative results, each with an understood mechanism.
