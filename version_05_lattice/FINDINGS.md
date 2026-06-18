@@ -107,3 +107,27 @@ Still open (honest): (1) labels are clean (from Ada's structured fields), so
 enricher label-NOISE is untested; (2) 60k-param numpy model, not frontier scale;
 (3) we proved the structure is LEARNED, not yet that emitting it BUYS something
 downstream (factuality / refusal / control) -- the next real test.
+
+## Task 3: does in-loop structure buy TRUST? (task3_trust.py) — NULL
+
+Calibration ablation (role objective on/off, identical corpus/model): train on
+known (entity,slot) facts, hold out 160 pairs never told; AUROC of answer-
+confidence separating answerable vs unanswerable.
+
+```
+config                  known acc  conf(known)  conf(unknown)   AUROC
+plain LM (lambda=0)        99.9%       0.98         0.58         0.984
+Ada-in-loop (lambda=1)     99.9%       0.95         0.60         0.954
+```
+AUROC delta -0.030. Structure did NOT buy calibration; baseline already near
+ceiling (0.984) -- on a clean memorization task, softmax confidence ALREADY
+encodes "did I memorize this", so there's no headroom for structure to help.
+Honest negative (test too easy for the baseline to fail).
+
+Implication for the bigger claim: in-loop structure is LEARNABLE, FREE, and
+SCALES (proven), but its downstream USEFULNESS as a trust/calibration boost is
+NOT demonstrated -- first clean test came back null. The supportable claim is
+narrower: you can fold Ada's auditable/queryable structure into the model's own
+outputs at no cost (an auditability win, like Ada itself), not a capability win.
+A fair harder test would need a setting where the plain LM is CONFIDENTLY WRONG
+(e.g. relational/multi-hop), where structured tracking could plausibly help.
