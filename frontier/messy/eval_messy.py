@@ -23,12 +23,21 @@ import json, argparse
 
 
 def flat(slots):
-    """{layer:{role:value}} -> set of 'layer.role=value' (lowercased)."""
+    """slots -> set of 'layer.role=value' (lowercased). Robust to Ada's shapes:
+    a layer can be a dict {role:value}, a LIST of such dicts (e.g. multiple
+    relational triples), or a scalar."""
     out = set()
-    for layer, roles in (slots or {}).items():
-        for role, val in (roles or {}).items():
-            if val:
-                out.add(f"{layer}.{role}={str(val).strip().lower()}")
+    if not isinstance(slots, dict):
+        return out
+    for layer, roles in slots.items():
+        items = roles if isinstance(roles, list) else [roles]
+        for d in items:
+            if isinstance(d, dict):
+                for role, val in d.items():
+                    if val not in (None, "", [], {}):
+                        out.add(f"{layer}.{role}={str(val).strip().lower()}")
+            elif d not in (None, ""):
+                out.add(f"{layer}={str(d).strip().lower()}")
     return out
 
 
@@ -44,17 +53,22 @@ def slot_f1(pred, gold):
 
 
 def selftest():
+    # gold with a LIST-valued layer (multiple relations) — the real Ada shape
     gold = {"entity": {"name": "Caffeine", "kind": "stimulant"},
-            "relational": {"predicate": "blocks", "object": "adenosine"}}
+            "relational": [{"predicate": "blocks", "object": "adenosine"},
+                           {"predicate": "contains", "object": "nitrogen"}]}
     perfect = gold
     partial = {"entity": {"name": "caffeine", "kind": "drug"},          # kind wrong
-               "relational": {"predicate": "blocks", "object": "adenosine"}}
+               "relational": [{"predicate": "blocks", "object": "adenosine"}]}  # 1 of 2
     empty = {}
-    for name, pred in (("perfect", perfect), ("partial", partial), ("empty", empty)):
+    bad = []                                                            # not even a dict
+    for name, pred in (("perfect", perfect), ("partial", partial),
+                       ("empty", empty), ("listjunk", bad)):
         print(f"  {name:8} P/R/F1 = %.2f %.2f %.2f" % slot_f1(pred, gold))
     assert slot_f1(perfect, gold)[2] == 1.0
     assert 0 < slot_f1(partial, gold)[2] < 1.0
     assert slot_f1(empty, gold)[2] == 0.0
+    assert slot_f1(bad, gold)[2] == 0.0
     print("slot-F1 metric self-test PASSED.")
 
 

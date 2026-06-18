@@ -27,22 +27,44 @@ def fetch_summary(title):
     return d.get("extract") or None
 
 
-def main(titles_path, n, out):
-    if titles_path:
-        titles = [l.strip() for l in open(titles_path) if l.strip()][:n]
-    else:
-        titles = SAMPLE[:n]
+def fetch_random():
+    """A random real Wikipedia article summary -> reliably resolves, broad domain."""
+    url = "https://en.wikipedia.org/api/rest_v1/page/random/summary"
+    req = urllib.request.Request(url, headers={"User-Agent": "ada-messy-test/0.1"})
+    d = json.load(urllib.request.urlopen(req, timeout=20))
+    if d.get("type", "").endswith("disambiguation"):
+        return None, None
+    return d.get("title"), (d.get("extract") or None)
+
+
+def main(titles_path, n, out, use_random):
     ok = 0
+    seen = set()
     with open(out, "w") as fo:
-        for t in titles:
-            try:
-                text = fetch_summary(t)
-            except Exception as e:
-                text = None
-            if text and len(text) > 80:
-                fo.write(json.dumps({"title": t, "text": text}) + "\n"); ok += 1
-            time.sleep(0.1)  # be polite
-    print(f"wrote {ok}/{len(titles)} messy summaries -> {out}")
+        if use_random:
+            attempts = 0
+            while ok < n and attempts < n * 4:
+                attempts += 1
+                try:
+                    t, text = fetch_random()
+                except Exception:
+                    t = text = None
+                if t and t not in seen and text and len(text) > 150:
+                    seen.add(t)
+                    fo.write(json.dumps({"title": t, "text": text}) + "\n"); ok += 1
+                time.sleep(0.1)
+        else:
+            titles = ([l.strip() for l in open(titles_path) if l.strip()][:n]
+                      if titles_path else SAMPLE[:n])
+            for t in titles:
+                try:
+                    text = fetch_summary(t)
+                except Exception:
+                    text = None
+                if text and len(text) > 80:
+                    fo.write(json.dumps({"title": t, "text": text}) + "\n"); ok += 1
+                time.sleep(0.1)
+    print(f"wrote {ok} messy summaries -> {out}")
     if ok:
         ex = json.loads(open(out).readline())
         print("sample:", ex["title"], "->", ex["text"][:200])
@@ -53,5 +75,7 @@ if __name__ == "__main__":
     ap.add_argument("--titles", default=None)
     ap.add_argument("--n", type=int, default=50)
     ap.add_argument("--out", default="messy.jsonl")
+    ap.add_argument("--random", action="store_true",
+                    help="pull random real Wikipedia articles (reliable volume, all domains)")
     a = ap.parse_args()
-    main(a.titles, a.n, a.out)
+    main(a.titles, a.n, a.out, a.random)
