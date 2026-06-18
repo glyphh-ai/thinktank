@@ -61,3 +61,26 @@ as a TARGET in the gradient gets learned. The fix is the gradient, not the input
 (Caveat: small templated corpus -> role task is easy; this proves the MECHANISM
 is learnable and free, not that it's hard. In production Ada's LLM enricher
 supplies the slot labels at write time.)
+
+## Proof it really learns the STRUCTURE (prove.py) — fair tagging + killer baseline
+
+Genuine role ambiguity: the same word fills different Ada slots by context
+(city = location after "lives in" / origin after "is from"; pet = object after
+"owns a" / entity.name in "the <pet> is..."). 14 ambiguous words. Fair tagging
+setup: model and a word->majority-role LOOKUP baseline both see the same token;
+only the model has context.
+
+```
+role accuracy (fair tagging)   overall   AMBIGUOUS   unambiguous
+word->role lookup (baseline)     91.8%      58.7%        100.0%
+Ada-in-the-loop model            99.2%      96.1%        100.0%
+```
+
+On ambiguous tokens the model beats lookup by +37.4 (96.1 vs 58.7). Lookup is
+pinned at the majority-class rate because the word alone can't decide the role;
+the model can only win by USING CONTEXT -> it genuinely learned Ada's
+context-dependent slot assignment, not a word->role table. (This is exactly what
+Ada's enricher does at write time, now learned in-loop at no LM cost.)
+
+Caveat: synthetic corpus with local cues; proves the mechanism is real and
+context-driven, not that messy real text is solved.
