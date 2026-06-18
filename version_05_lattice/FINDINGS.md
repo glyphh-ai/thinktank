@@ -84,3 +84,26 @@ Ada's enricher does at write time, now learned in-loop at no LM cost.)
 
 Caveat: synthetic corpus with local cues; proves the mechanism is real and
 context-driven, not that messy real text is solved.
+
+## Big test: in-loop on Ada's REAL data at scale (big_loop.py)
+
+glyphh-ai/adaL real enricher output, 3 domains (chemistry/philosophy/law):
+14,000 facts -> 151,935 tokens, vocab 8,002, 5,392 ambiguous words. ~30x the toy.
+
+```
+role accuracy (fair tagging)   overall   AMBIGUOUS   unambiguous
+word->role lookup (baseline)     69.8%      63.4%        99.8%
+Ada-in-the-loop model            90.0%      88.1%        98.8%
+```
+ambiguous-token gap: model 88.1% vs lookup 63.4% (+24.7).
+LM next-word acc: lambda=1 36.3% vs lambda=0 35.1% -> role objective still FREE.
+
+Verdict: the toy result HELD on real cross-domain data at 30x scale. Margin
+shrank (+37 toy -> +24.7 real) as expected (messier vocab, <unk>, 5k+ ambiguous
+words) but did not collapse -- the model disambiguates real domain terms by
+context, decisively beating memorization, at zero LM cost.
+
+Still open (honest): (1) labels are clean (from Ada's structured fields), so
+enricher label-NOISE is untested; (2) 60k-param numpy model, not frontier scale;
+(3) we proved the structure is LEARNED, not yet that emitting it BUYS something
+downstream (factuality / refusal / control) -- the next real test.
