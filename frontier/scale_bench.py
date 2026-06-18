@@ -33,9 +33,8 @@ BARS = {
 
 def build(n, seed=0):
     rng = np.random.default_rng(seed)
-    city = rng.integers(0, CITIES, n)          # entity -> city  (Ada: exact arrays)
-    job = rng.integers(0, JOBS, n)
-    return city, job, rng
+    city = rng.integers(0, CITIES, n, dtype=np.int16)   # entity -> city (compact for 1B)
+    return city, rng
 
 
 def rag_index(n, city, job, rng):
@@ -57,11 +56,12 @@ RAG_BUDGET_GB = 8.0     # if the dense index exceeds this, RAG can't be built
 
 def main(n):
     t0 = time.time()
-    city, job, rng = build(n)
+    city, rng = build(n)
     print(f"built {n:,} facts  ({time.time()-t0:.1f}s)  [Ada side = int arrays, {city.nbytes/1e9:.2f} GB]")
     rag_gb = n * RAG_DIM * 4 * 2 / 1e9
     rag_on = rag_gb <= RAG_BUDGET_GB
     if rag_on:
+        job = rng.integers(0, JOBS, n, dtype=np.int16)        # only needed by RAG
         E, ent, cvec = rag_index(n, city, job, rng)
         print(f"built RAG index {E.nbytes/1e9:.2f} GB  ({time.time()-t0:.1f}s)")
     else:
