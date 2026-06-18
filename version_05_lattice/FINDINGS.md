@@ -131,3 +131,27 @@ narrower: you can fold Ada's auditable/queryable structure into the model's own
 outputs at no cost (an auditability win, like Ada itself), not a capability win.
 A fair harder test would need a setting where the plain LM is CONFIDENTLY WRONG
 (e.g. relational/multi-hop), where structured tracking could plausibly help.
+
+## Task 3b: long-horizon recall — the thing a windowed LLM CAN'T do (long_memory.py)
+
+Stream of 40 NOVEL facts (entity-value combos not in training, so the answer can
+only come from the stream); the in-loop model extracts each (entity,slot,value)
+from its role head AS IT READS -> persistent store -> recall at any distance.
+Probe all facts at the stream end; context window T=12.
+
+```
+recall@          plain LM (context)   in-loop + store
+in-window               50%               100%    (n=2)
+beyond-window           11%                97%    (n=38)
+```
+
+Decisive: once a fact is beyond the context window the plain LM is blind (11%,
+confabulating its stale trained value); the in-loop model + store recalls 97% at
+ANY distance. Unlike task3 (calibration, baseline near-ceiling), this targets a
+hard architectural wall -> real headroom, real win.
+
+Honest decomposition of the win: the RECALL is external memory (Ada's domain,
+proven to 1M facts -- a windowed LM losing to a store isn't surprising). The part
+that's OURS is the 97% in-loop EXTRACTION accuracy: the model natively turns its
+generation into the right structured triples that populate the store, with no
+separate enricher pass. read -> emit structure in-loop -> persist -> recall.
