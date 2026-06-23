@@ -223,11 +223,28 @@ def backward(p, cache):
 # Adam optimizer
 # ============================================================================
 class Adam:
-    def __init__(self, params, lr=3e-3, betas=(0.9, 0.99), eps=1e-8):
+    """Adam, optionally with a per-weight Markov sign-reversion gain.
+
+    When ``reversion=True`` we track, per weight, an EMA ``r`` of whether the
+    gradient kept its sign from one step to the next -- i.e. the Markov
+    stay-probability P(sign_t == sign_{t-1}). A weight whose direction repeats
+    (r -> 1) gets its step amplified; one whose sign keeps reverting (r -> 0)
+    gets braked. The map 2r-1 sends a coin-flip (r=0.5) to gain 1, so an
+    untouched direction matches vanilla Adam. ``gain`` is clamped to
+    [gmin, gmax] so amplification can't run away and diverge.
+    """
+    def __init__(self, params, lr=3e-3, betas=(0.9, 0.99), eps=1e-8,
+                 reversion=False, alpha=1.0, b3=0.9, gmin=0.5, gmax=2.0):
         self.lr, self.b1, self.b2, self.eps = lr, betas[0], betas[1], eps
         self.m = {k: np.zeros_like(v) for k, v in params.items()}
         self.v = {k: np.zeros_like(v) for k, v in params.items()}
         self.t = 0
+        self.reversion = reversion
+        self.alpha, self.b3, self.gmin, self.gmax = alpha, b3, gmin, gmax
+        if reversion:
+            # r starts at 0.5 (no information -> gain 1.0); prev sign unset.
+            self.r = {k: np.full_like(v, 0.5) for k, v in params.items()}
+            self.prev_sign = {k: np.zeros_like(v) for k, v in params.items()}
 
     def step(self, params, grads):
         self.t += 1
@@ -237,7 +254,16 @@ class Adam:
             self.v[k] = self.b2 * self.v[k] + (1 - self.b2) * (g * g)
             mhat = self.m[k] / (1 - self.b1 ** self.t)
             vhat = self.v[k] / (1 - self.b2 ** self.t)
-            params[k] -= self.lr * mhat / (np.sqrt(vhat) + self.eps)
+            update = self.lr * mhat / (np.sqrt(vhat) + self.eps)
+            if self.reversion:
+                s = np.sign(g)
+                agree = (s * self.prev_sign[k] > 0).astype(g.dtype)  # 1 if sign kept
+                self.r[k] = self.b3 * self.r[k] + (1 - self.b3) * agree
+                gain = np.clip(1.0 + self.alpha * (2.0 * self.r[k] - 1.0),
+                               self.gmin, self.gmax)
+                update = update * gain
+                self.prev_sign[k] = s
+            params[k] -= update
 
 
 # ============================================================================
@@ -262,10 +288,11 @@ def evaluate(p, split, rng, B=64, T=BLOCK):
 # ============================================================================
 # Training loop
 # ============================================================================
-def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
+def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
+          reversion=False, alpha=1.0):
     rng = np.random.default_rng(seed)
     p = init_params(rng)
-    opt = Adam(p, lr=lr)
+    opt = Adam(p, lr=lr, reversion=reversion, alpha=alpha)
     eval_rng = np.random.default_rng(123)
     history = []
     for step in range(1, steps + 1):
