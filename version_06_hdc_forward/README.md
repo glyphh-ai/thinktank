@@ -20,6 +20,7 @@ Word-level (not char-level): the groundedness check fires at word boundaries.
 | `baseline.py` | the **sacred baseline** — vanilla LM. Perplexity is the number the HDC treatment must not wreck (~2.8 train / 3.2 val). |
 | `memory.py` | the **groundedness primitive**: entity-keyed associative memory. `record[e] = Σ bind(role, filler)` over e's true facts; verify a claim by `unbind(record[e], role) → cleanup → filler`. |
 | `forward_hdc.py` | the **decode gate**: LM proposes fillers, `probe(entity, slot)` disposes. Grounded fillers are asserted; an empty cell → geometric **refusal**. |
+| `reasoning.py` | **compositional reasoning over the hierarchical lattice**: encode each record as a tree (`cortex → layer → role → filler`) and navigate it — subtree extraction, bounded-depth multi-hop, relational analogy. |
 
 ## The key design correction
 
@@ -46,13 +47,32 @@ refusal (record's location fact deleted):
 
 Run any file with `python <file>.py` (each self-verifies).
 
+## Compositional reasoning over the hierarchy (`reasoning.py`)
+
+Encoding each record as a tree (nested binds: `cortex → layer → role → filler`)
+gives three capabilities a flat bundle cannot, plus one honest non-win:
+
+- **subtree extraction** — `unbind(cortex, layer_key)` reads a whole layer at once
+  (`erin spatial → {location=boston, origin=maine}`). Flat memory can't address a layer.
+- **bounded-depth multi-hop** — retrieve → **cleanup to a clean concept** → retrieve.
+  A 6-hop chain holds margin **~0.37 at every hop** (no decay): depth is bounded
+  only by per-hop SNR, and the hierarchy's tiers are the cleanup boundaries.
+- **relational analogy** — the role is *discovered*, not named: "maine is to erin
+  as ? is to jack" → discovers `spatial.origin`, returns `kansas`. (Cleanup of the
+  extracted role is essential — the raw extraction leaks the source filler back.)
+- **capacity (honest)** — within capacity, a single flat bundle *beats*
+  double-sign-bundled hierarchy on raw leaf SNR. Hierarchy's payoff is **structure**
+  (addressing + cleanup boundaries for depth), not leaf SNR.
+
+**Takeaway:** deeper reasoning = `retrieve → cleanup → retrieve`; the hierarchy
+supplies the natural cleanup points, so chains stay bounded-error to arbitrary depth.
+
 ## Open / next
 
-1. **Deeper compositional reasoning over the hierarchical lattice** — multi-hop
-   entailment is the truly hard part; the lattice is hierarchy-based, so probe
-   composition should exploit that structure.
-2. **Enricher label-noise** — records here are distilled from clean corpus
+1. **Enricher label-noise** — records here are distilled from clean corpus
    fields; the real test is Ada's enricher output (a few % noise).
-3. **Trained-in binding** — currently HDC is only the runtime *disposal* layer;
+2. **Trained-in binding** — currently HDC is only the runtime *disposal* layer;
    the doc's other layer (bind HDC targets into the weights, per-node deep
    supervision) is not yet wired in.
+3. **Deeper trees** — records are cortex→layer→role (3 tiers); Ada's full schema
+   adds segments, and per-hop fan-out sets the SNR bar that limits chain depth.
