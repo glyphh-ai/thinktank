@@ -26,7 +26,8 @@ Word-level (not char-level): the groundedness check fires at word boundaries.
 | `business.py` | an **organization on the lattice**: exact store (revenue, cases…) for exact aggregation + an HDC semantic layer for **similarity cohorts** ("customers likely to churn"). Deterministic query engine, self-verified. |
 | `run_qwen_analytics.py` | **consistency test**: analytical queries answered by stock Qwen3, unconstrained (sampled) vs adapter-constrained. |
 | `plan.py` | **typed query-plan schema + executor**: NL → a plan confined to real ops/fields/values → deterministic execution over the lattice. Self-verified. |
-| `run_qwen_planner.py` | **NL → constrained plan → answer**: the model fills each plan slot but is constrained to the schema enum, so it can't emit an invalid/ungrounded plan. |
+| `run_qwen_planner.py` | **NL → constrained plan → answer**: embedding router does semantic routing (metric/churn/refuse), the LLM fills the structured slots (constrained), lattice executes + constrains the answer. |
+| `schema_guard.py` | **semantic schema-membership**: nearest-exemplar embedding router (`Qwen3-Embedding-0.6B`) with an out-of-schema negative class → refuse off-schema questions + route the metric. |
 
 ## The key design correction
 
@@ -140,29 +141,42 @@ result. Consistency holds at *both* layers. On stock Qwen3-1.7B (K=3 runs each):
    → all 6: 1 distinct plan + 1 distinct answer across 3 runs (perfectly consistent)
 ```
 
-**Honest finding — separate the two axes:**
-- *Mechanism* (constrained typed plan → exec → constrained answer): guarantees
-  **validity + consistency** regardless of model size. Proven: 6/6, 1 plan/1 answer.
-- *Interpretation* (NL → op/field/filters): **scales with the model.** 1.7B nails
-  the clear aggregation/filter/churn cases (5/6) but the `op` intent classifier is
-  unstable — sharpening out-of-schema refusal (Q6) regressed a valid query, classic
-  small-model whack-a-mole. This is the axis a 7B/14B fixes, and it's a *language*
-  weakness, not a hole in the guarantee: a mis-planned query yields a **consistent,
-  grounded aggregate or a refusal — never a fabricated number.**
-- The clean fix for out-of-schema refusal is an **HDC schema-membership check** on
-  the question's target metric (cosine to field prototypes) rather than trusting a
-  tiny model's `unsupported` pick — our own machinery, one level up.
+**The fix — put each decision on the right substrate.** The 1.7B's `op`/refusal
+classifier was unstable (whack-a-mole). So we split the plan by what each part
+actually needs:
+
+- **semantic routing** (metric? churn? out-of-schema?) → an **embedding router**
+  (`schema_guard.py`, `Qwen3-Embedding-0.6B`), nearest-exemplar with an explicit
+  out-of-schema negative class. Robust and **size-independent**: 8/8 on the guard
+  test, clean margin (in-schema +0.17..+0.30 vs out-of-schema all negative).
+- **structured extraction** (aggregation + tier/region) → the LLM, each slot
+  constrained to its enum.
+- **execute + answer** → deterministic lattice + answer constraint.
+
+With the router doing the semantic decisions, the full pipeline goes **7/7 correct
+and 7/7 consistent** on stock Qwen3-1.7B — including churn routing and out-of-schema
+refusal, the two the LLM alone kept missing.
+
+**Important correction:** this membership check uses **semantic embeddings, not our
+random-atom HDC.** HDC vectors are quasi-orthogonal by construction — perfect for
+binding/structure, but they carry *no semantic content* ("revenue" ⟂ "earnings" ⟂
+"carbon"), so an HDC cosine cannot tell that "total earnings" is the revenue field
+and "carbon footprint" is not. Semantic membership needs semantic vectors. (The two
+layers compose: embeddings for *what the question means*, HDC for *how the fact is
+structured/bound*.)
+
+Residual axis: the LLM's structured extraction still scales with model size (a
+mis-extracted filter is a consistent, grounded aggregate — never a fabricated
+number). That's the 7B/14B lift.
 
 ## Open / next
 
-1. **Bigger model on NL→plan** — interpretation (not the guarantee) is the axis
-   that scales; run `run_qwen_planner.py` with `MODEL=` a 7B/14B (Modal/Colab) and
-   measure the op-intent + out-of-schema accuracy lift.
-2. **HDC schema-membership refusal** — replace the tiny model's `unsupported` pick
-   with a cosine check of the question's target metric against field prototypes.
-3. **Enricher label-noise** — records here are distilled from clean corpus
+1. **Bigger model on structured extraction** — the remaining error axis; run
+   `run_qwen_planner.py` with `MODEL=` a 7B/14B (Modal/Colab) and measure the
+   filter/aggregation accuracy lift (semantic routing is already size-independent).
+2. **Enricher label-noise** — records here are distilled from clean corpus
    fields; the real test is Ada's enricher output (a few % noise).
-4. **Free-form fact-assertion detection** — the v05 role head as a second logits
+3. **Free-form fact-assertion detection** — the v05 role head as a second logits
    stream, so the gate fires on open generation, not just templated slots.
-5. **Trained-in binding** — currently HDC is only the runtime *disposal* layer;
+4. **Trained-in binding** — currently HDC is only the runtime *disposal* layer;
    the doc's other layer (bind HDC targets into the weights) is not yet wired in.
