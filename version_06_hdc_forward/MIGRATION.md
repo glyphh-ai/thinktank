@@ -41,10 +41,10 @@ front of `/ingest` makes ingestion end-to-end (raw -> both structures) in one re
 
 **MOVE as a DISTINCT module (do not merge into HDC):**
 - `ada/rotor/*` (primes decomposition + nomic embeddings + prime-based recall +
-  short-term memory) → `glyphh/recall/`. This is a capability glyphh lacks
-  (semantic conversational recall). It stays its own subsystem: NSM primes +
-  embeddings, separate from the HDC encoder. (This is also the semantic layer the
-  `schema_guard` experiment showed you need — embeddings, not HDC.)
+  short-term memory) → `glyphh/primes/` (de-branded — no "Ada"). This is a
+  capability glyphh lacks (semantic conversational recall). It stays its own
+  subsystem: NSM primes + embeddings, separate from the HDC encoder. (This is also
+  the semantic layer the `schema_guard` experiment showed you need — embeddings.)
 
 **RECONCILE (the real work / risk):**
 - **Stores.** Ada (SQLAlchemy, likely sqlite-default) vs glyphh Postgres
@@ -78,22 +78,25 @@ front of `/ingest` makes ingestion end-to-end (raw -> both structures) in one re
 
 1. Land the enricher in `glyphh/enrich/`; add `raw` mode to `/ingest`
    (`enrich -> ConceptInput -> ingest_concepts`). Ship the end-to-end path first.
-2. Move `ada/rotor/*` → `glyphh/recall/` as a separate subsystem (primes +
-   embeddings). Do NOT touch the HDC encoder.
-3. Store reconciliation: choose Postgres authoritative; alembic-migrate Ada tables.
+2. Move `ada/rotor/*` → `glyphh/primes/` as a separate subsystem (NSM primes +
+   embeddings + recall). Do NOT touch the HDC encoder.
+3. Store reconciliation: choose Postgres authoritative; alembic-migrate the tables.
 4. Decide gateway ownership (proxy.py vs glyphh-apps).
 5. Point everything at one `roles_config`-per-model; delete vendored schema/HDC.
 6. Move the load-bearing benchmarks; archive tui/skill/domains.
-7. Retire the `adaL` repo. Keep **"Ada"** as the *product/substrate name* for the
-   enrichment + schema + recall layer living inside glyphh — the repo dies, the
-   noun doesn't.
+7. Retire the `adaL` repo.
 
-## Open decisions for you (not mine to make)
+## Decisions (locked 2026-07-12)
 
-- **Keep both vector systems?** Recommended yes (embeddings=meaning, HDC=structure —
-  proven complementary). Confirm.
-- **Recall subsystem** (rotor) — product feature or legacy? If legacy gateway-era,
-  archive instead of move.
-- **Gateway** — glyphh owns it, or stays in glyphh-apps?
-- **Store** — single Postgres, or Postgres (structural) + a light local store
-  (short-term recall)?
+- **glyphh is primary** (more history/maturity). Port the Ada code *into* glyphh;
+  adaL retires.
+- **Drop the "Ada" name entirely.** There is no "Ada" product noun. What moves in is
+  just the **NSM-primes + enrichment layer** — name it plainly (`glyphh/primes/`,
+  `glyphh/enrich/`). De-brand as you port: rename the `ada` package, strip "Ada"
+  from module names, docstrings, CLI help, and user-facing strings.
+- **Keep the glyphh REPL/banner.** When porting the TUI/REPL, use glyphh's banner —
+  drop Ada's banner and any Ada-branded startup text. (This is the one branding keep.)
+- **Keep both vector systems** (embeddings = meaning, HDC = structure — complementary).
+- **Recall subsystem** (primes/embeddings) — port as a real capability, de-branded.
+- **Gateway / store** — still open; not blocking. Default: Postgres authoritative,
+  gateway ownership TBD.
