@@ -29,6 +29,9 @@ Word-level (not char-level): the groundedness check fires at word boundaries.
 | `run_qwen_planner.py` | **NL → constrained plan → answer**: embedding router does semantic routing (metric/churn/refuse), the LLM fills the structured slots (constrained), lattice executes + constrains the answer. |
 | `schema_guard.py` | **semantic schema-membership**: nearest-exemplar embedding router (`Qwen3-Embedding-0.6B`) with an out-of-schema negative class → refuse off-schema questions + route the metric. |
 | `adal_sdk.py` | **the bolt-in SDK facade**: `ingest(records)` → both structures; `probe/verify/aggregate`; `constraint(...)` → a logits processor any logit-access LLM plugs into its decode loop. |
+| `grounding.py` | **the grounding layer**: `GroundingStore` abstraction with `LocalStore` (runs here) and `RuntimeStore` (faithful to glyphh-runtime's `Glyph` store + `Encoder`, lazy-imports `glyphh`) + the `space_id` invariant. |
+| `adapters.py` | **transformer adapters** from one core: HF `transformers.LogitsProcessor` (tested on a real HF model) + mlx-lm + vLLM/llama.cpp notes. |
+| `benchmark.py` | **the benchmark**: stock vs gated on real Qwen3 — grounded accuracy, refusal precision/recall, consistency, latency. |
 
 ## The key design correction
 
@@ -169,6 +172,48 @@ structured/bound*.)
 Residual axis: the LLM's structured extraction still scales with model size (a
 mis-extracted filter is a consistent, grounded aggregate — never a fabricated
 number). That's the 7B/14B lift.
+
+## Runtime integration + benchmark (`grounding.py`, `adapters.py`, `benchmark.py`)
+
+The prototype is now packaged to drop into the real runtime, via dependency
+inversion — one `GroundingStore` interface, two backends:
+
+- **`LocalStore`** — vendored encoder + entity records; runs and benchmarks here.
+- **`RuntimeStore`** — faithful to `glyphh-runtime` (`api/services/ingest.py`,
+  `api/core/models.py`): a DB `Session` + a `Model` row, reads the `Glyph` store
+  (`semantic` = exact symbolic, authoritative; `cortex` bytes = HDC, geometric
+  `verify`), uses `glyphh.encoder.Encoder`. Lazy-imports `glyphh`, so this module
+  imports without it; it runs where the runtime lives (Postgres + `glyphh`).
+
+**Space invariant** (`assert_space`): a gate must bind in the *same* space it was
+stored (`space_id = sha256(vector_dim, seed, roles_config)`) or probes return
+noise — enforced before every constraint is built.
+
+**Adapters** wrap one `GroundedConstraint`: HF `transformers.LogitsProcessor`
+(verified forcing `boston`/`dallas` on a real HF model), mlx-lm, vLLM (same
+callable), llama.cpp (GBNF from `grounded_fillers()`).
+
+**Benchmark** — stock vs gated on stock Qwen3-1.7B, 8 known + 5 unknown entities:
+
+```
+                                    stock      gated
+grounded accuracy (known)             0%        100%
+answer consistency (distinct/entity) 3.38       1.00
+refusal recall (unknown -> refuse)     -        100%
+refusal precision (no false refuse)    -        100%
+latency / query                     137 ms     121 ms   (gate is FASTER: no rambling)
+```
+
+The stock model is fluent-but-wrong and non-reproducible on facts it never saw;
+the gate makes it exact, consistent, and honest — at no latency cost.
+
+## Not runnable in the dev sandbox
+
+`RuntimeStore` and the runtime wiring are code-complete but **cannot execute here**:
+the private `glyphh` package isn't installed and the store is Postgres-specific
+(`BYTEA`, `pgvector`, `json_extract_path_text`). Everything else — grounding,
+adapters (HF + mlx), the benchmark — runs on the vendored-faithful `LocalStore` and
+real models. Deploy `RuntimeStore` where `glyphh` + Postgres live to close the loop.
 
 ## Open / next
 
