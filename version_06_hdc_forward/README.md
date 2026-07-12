@@ -21,6 +21,8 @@ Word-level (not char-level): the groundedness check fires at word boundaries.
 | `memory.py` | the **groundedness primitive**: entity-keyed associative memory. `record[e] = Σ bind(role, filler)` over e's true facts; verify a claim by `unbind(record[e], role) → cleanup → filler`. |
 | `forward_hdc.py` | the **decode gate**: LM proposes fillers, `probe(entity, slot)` disposes. Grounded fillers are asserted; an empty cell → geometric **refusal**. |
 | `reasoning.py` | **compositional reasoning over the hierarchical lattice**: encode each record as a tree (`cortex → layer → role → filler`) and navigate it — subtree extraction, bounded-depth multi-hop, relational analogy. |
+| `lattice_adapter.py` | **Ada as an in-loop memory adapter on a stock model**: a logits processor that masks the vocabulary, every step, to Ada's grounded fillers (from the HDC `probe`) or a refusal token. Model-agnostic, MLX-optional; CPU-unit-tested. |
+| `run_qwen.py` | drives a **real stock Qwen3** (MLX, Apple Silicon) with the adapter — grounded answer or refusal, regardless of pretraining. |
 
 ## The key design correction
 
@@ -66,6 +68,29 @@ gives three capabilities a flat bundle cannot, plus one honest non-win:
 
 **Takeaway:** deeper reasoning = `retrieve → cleanup → retrieve`; the hierarchy
 supplies the natural cleanup points, so chains stay bounded-error to arbitrary depth.
+
+## In-loop memory adapter on a stock model (`lattice_adapter.py`, `run_qwen.py`)
+
+The guarantee is **architectural, not learned**: the base model's pretraining is
+irrelevant to Ada-groundedness. A logits processor masks generation, at every step,
+to the token continuations of Ada's grounded fillers for `(entity, role)` — or a
+refusal. By construction the model cannot emit a non-Ada answer. Demonstrated on
+**stock Qwen3-1.7B (MLX)**:
+
+```
+Erin lives in the city of…   Qwen: "New York, and she is 1"   ->  Ada-grounded: boston
+Jack works as a…             Qwen: "carpenter. He has 10"     ->  Ada-grounded: farmer
+[delete erin's location]     Qwen: "New York..."             ->  Ada-grounded: unknown (refuses)
+```
+
+The guarantee is size-independent (size only affects fluency), so 7B/14B is a
+one-line `MODEL=` change. Scope: it adjudicates **Ada-typed facts** — statements
+that decompose to `(entity, role, filler)`. Knowing *which* slot is being answered
+is currently supplied (structured QA); free-form detection of "the model is now
+asserting fact X about entity Y" needs an inline role/entity tagger (the v05 role
+head) — that's the remaining seam, not a hole in the guarantee.
+
+Run:  `/opt/homebrew/anaconda3/bin/python run_qwen.py`  (needs `mlx_lm`, Apple Silicon)
 
 ## Open / next
 
