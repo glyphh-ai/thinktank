@@ -28,6 +28,7 @@ Word-level (not char-level): the groundedness check fires at word boundaries.
 | `plan.py` | **typed query-plan schema + executor**: NL → a plan confined to real ops/fields/values → deterministic execution over the lattice. Self-verified. |
 | `run_qwen_planner.py` | **NL → constrained plan → answer**: embedding router does semantic routing (metric/churn/refuse), the LLM fills the structured slots (constrained), lattice executes + constrains the answer. |
 | `schema_guard.py` | **semantic schema-membership**: nearest-exemplar embedding router (`Qwen3-Embedding-0.6B`) with an out-of-schema negative class → refuse off-schema questions + route the metric. |
+| `adal_sdk.py` | **the bolt-in SDK facade**: `ingest(records)` → both structures; `probe/verify/aggregate`; `constraint(...)` → a logits processor any logit-access LLM plugs into its decode loop. |
 
 ## The key design correction
 
