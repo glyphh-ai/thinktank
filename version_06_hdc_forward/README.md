@@ -25,6 +25,8 @@ Word-level (not char-level): the groundedness check fires at word boundaries.
 | `run_qwen.py` | drives a **real stock Qwen3** (MLX, Apple Silicon) with the adapter — grounded answer or refusal, regardless of pretraining. |
 | `business.py` | an **organization on the lattice**: exact store (revenue, cases…) for exact aggregation + an HDC semantic layer for **similarity cohorts** ("customers likely to churn"). Deterministic query engine, self-verified. |
 | `run_qwen_analytics.py` | **consistency test**: analytical queries answered by stock Qwen3, unconstrained (sampled) vs adapter-constrained. |
+| `plan.py` | **typed query-plan schema + executor**: NL → a plan confined to real ops/fields/values → deterministic execution over the lattice. Self-verified. |
+| `run_qwen_planner.py` | **NL → constrained plan → answer**: the model fills each plan slot but is constrained to the schema enum, so it can't emit an invalid/ungrounded plan. |
 
 ## The key design correction
 
@@ -118,16 +120,49 @@ most likely to churn 5 distinct, 0/5 correct   ->   acme14   (5/5)
 
 The model can't sum 54 numbers, filter-then-sum, or rank churn — alone it's wrong
 *and* non-reproducible. Consistency doesn't come from the model reasoning better;
-it comes from **removing the model's authority over the answer.** The remaining
-seam is NL→query-plan (let the model propose the plan, execute it deterministically,
-and constrain the plan to a schema of valid query types — consistency there too).
+it comes from **removing the model's authority over the answer.**
+
+## NL → constrained query-plan (`plan.py`, `run_qwen_planner.py`)
+
+Closes the last seam: the model turns a question into a **typed plan**, but each
+plan slot (`op`, `field`, `tier`, `region`) is constrained to its schema enum —
+so the model does the language mapping yet **cannot emit an invalid or ungrounded
+plan**. The plan executes deterministically; the answer is constrained to the
+result. Consistency holds at *both* layers. On stock Qwen3-1.7B (K=3 runs each):
+
+```
+"total revenue, all customers"          -> total(revenue)                     2054653  ✓
+"revenue from enterprise, west coast"   -> total(revenue tier=ent region=west)  265823  ✓
+"how many pro-tier customers"           -> count(tier=pro)                          19  ✓
+"which customer most likely to churn"   -> churn()                             acme14  ✓
+"average revenue per enterprise cust."  -> average(revenue tier=ent)            168005  ✓
+"total carbon footprint"                -> total(revenue)  [MISS: should refuse] 2054653
+   → all 6: 1 distinct plan + 1 distinct answer across 3 runs (perfectly consistent)
+```
+
+**Honest finding — separate the two axes:**
+- *Mechanism* (constrained typed plan → exec → constrained answer): guarantees
+  **validity + consistency** regardless of model size. Proven: 6/6, 1 plan/1 answer.
+- *Interpretation* (NL → op/field/filters): **scales with the model.** 1.7B nails
+  the clear aggregation/filter/churn cases (5/6) but the `op` intent classifier is
+  unstable — sharpening out-of-schema refusal (Q6) regressed a valid query, classic
+  small-model whack-a-mole. This is the axis a 7B/14B fixes, and it's a *language*
+  weakness, not a hole in the guarantee: a mis-planned query yields a **consistent,
+  grounded aggregate or a refusal — never a fabricated number.**
+- The clean fix for out-of-schema refusal is an **HDC schema-membership check** on
+  the question's target metric (cosine to field prototypes) rather than trusting a
+  tiny model's `unsupported` pick — our own machinery, one level up.
 
 ## Open / next
 
-1. **Enricher label-noise** — records here are distilled from clean corpus
+1. **Bigger model on NL→plan** — interpretation (not the guarantee) is the axis
+   that scales; run `run_qwen_planner.py` with `MODEL=` a 7B/14B (Modal/Colab) and
+   measure the op-intent + out-of-schema accuracy lift.
+2. **HDC schema-membership refusal** — replace the tiny model's `unsupported` pick
+   with a cosine check of the question's target metric against field prototypes.
+3. **Enricher label-noise** — records here are distilled from clean corpus
    fields; the real test is Ada's enricher output (a few % noise).
-2. **Trained-in binding** — currently HDC is only the runtime *disposal* layer;
-   the doc's other layer (bind HDC targets into the weights, per-node deep
-   supervision) is not yet wired in.
-3. **Deeper trees** — records are cortex→layer→role (3 tiers); Ada's full schema
-   adds segments, and per-hop fan-out sets the SNR bar that limits chain depth.
+4. **Free-form fact-assertion detection** — the v05 role head as a second logits
+   stream, so the gate fires on open generation, not just templated slots.
+5. **Trained-in binding** — currently HDC is only the runtime *disposal* layer;
+   the doc's other layer (bind HDC targets into the weights) is not yet wired in.
