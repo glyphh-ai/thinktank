@@ -23,6 +23,8 @@ Word-level (not char-level): the groundedness check fires at word boundaries.
 | `reasoning.py` | **compositional reasoning over the hierarchical lattice**: encode each record as a tree (`cortex → layer → role → filler`) and navigate it — subtree extraction, bounded-depth multi-hop, relational analogy. |
 | `lattice_adapter.py` | **Ada as an in-loop memory adapter on a stock model**: a logits processor that masks the vocabulary, every step, to Ada's grounded fillers (from the HDC `probe`) or a refusal token. Model-agnostic, MLX-optional; CPU-unit-tested. |
 | `run_qwen.py` | drives a **real stock Qwen3** (MLX, Apple Silicon) with the adapter — grounded answer or refusal, regardless of pretraining. |
+| `business.py` | an **organization on the lattice**: exact store (revenue, cases…) for exact aggregation + an HDC semantic layer for **similarity cohorts** ("customers likely to churn"). Deterministic query engine, self-verified. |
+| `run_qwen_analytics.py` | **consistency test**: analytical queries answered by stock Qwen3, unconstrained (sampled) vs adapter-constrained. |
 
 ## The key design correction
 
@@ -91,6 +93,34 @@ asserting fact X about entity Y" needs an inline role/entity tagger (the v05 rol
 head) — that's the remaining seam, not a hole in the guarantee.
 
 Run:  `/opt/homebrew/anaconda3/bin/python run_qwen.py`  (needs `mlx_lm`, Apple Silicon)
+
+## Analytical queries & consistency (`business.py`, `run_qwen_analytics.py`)
+
+Can a stock LLM answer complex questions (total revenue, churn risk) consistently
+when wired in-loop to the lattice? Yes — but the honest architecture matters:
+
+- **exact aggregation → deterministic reducer over the exact store.** HDC does NOT
+  do the arithmetic (vectors are lossy at numbers; that would be *inconsistent*).
+- **semantic cohort ("likely to churn") → HDC cosine to a prototype** built from
+  known-churned records. This is the part SQL can't express; the cohort came back
+  6/6 declining/dormant with no rule written.
+- **consistency → the adapter constrains the model to the computed answer.** The
+  model gets fluency; the lattice keeps authority over the number.
+
+Measured on stock Qwen3-1.7B, K=5 samples/query:
+
+```
+                     unconstrained (sampled)        adapter-constrained
+total revenue        4 distinct, 0/5 correct   ->   2054653  (5/5, identical)
+enterprise-west rev  3 distinct, 0/5 correct   ->   265823   (5/5)
+most likely to churn 5 distinct, 0/5 correct   ->   acme14   (5/5)
+```
+
+The model can't sum 54 numbers, filter-then-sum, or rank churn — alone it's wrong
+*and* non-reproducible. Consistency doesn't come from the model reasoning better;
+it comes from **removing the model's authority over the answer.** The remaining
+seam is NL→query-plan (let the model propose the plan, execute it deterministically,
+and constrain the plan to a schema of valid query types — consistency there too).
 
 ## Open / next
 
