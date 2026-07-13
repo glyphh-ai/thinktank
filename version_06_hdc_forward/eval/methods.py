@@ -94,3 +94,44 @@ def gate(model, tok, question, subj, prop, store: LocalStore) -> str:
 
 def build_store(kb_items) -> LocalStore:
     return LocalStore().inject([{"entity": it.subj, it.prop: it.obj} for it in kb_items])
+
+
+# ── realistic slot extraction (no gold): PopQA templates ─────────────────────
+import re
+
+_TEMPLATES = [
+    ("occupation", r"^What is (.+?)'s occupation\?$"),
+    ("place of birth", r"^(?:In what city was|Where was) (.+?) born\??$"),
+    ("genre", r"^What genre is (.+?)\?$"),
+    ("father", r"^Who is the father of (.+?)\?$"),
+    ("country", r"^(?:In what country is|What country is) (.+?)(?: in| located)?\?$"),
+    ("producer", r"^Who was the producer of (.+?)\?$"),
+    ("director", r"^Who was the director of (.+?)\?$"),
+    ("capital of", r"^What is (.+?) the capital of\?$"),
+    ("screenwriter", r"^Who was the screenwriter for (.+?)\?$"),
+    ("composer", r"^Who was the composer of (.+?)\?$"),
+    ("color", r"^What color is (.+?)\?$"),
+    ("religion", r"^What is the religion of (.+?)\?$"),
+    ("sport", r"^What sport does (.+?) play\?$"),
+    ("author", r"^Who is the author of (.+?)\?$"),
+    ("mother", r"^Who is the mother of (.+?)\?$"),
+    ("capital", r"^What is the capital of (.+?)\?$"),
+]
+_COMPILED = [(rel, re.compile(rx, re.I)) for rel, rx in _TEMPLATES]
+
+
+def extract_slots(question: str):
+    """(subject, relation) from a templated question, or (None, None). No gold used."""
+    for rel, rx in _COMPILED:
+        m = rx.match(question.strip())
+        if m:
+            return m.group(1).strip(), rel
+    return None, None
+
+
+def gate_linked(model, tok, question, store: LocalStore) -> str:
+    """Gate WITHOUT gold slots — extract (subject, relation) from the question."""
+    subj, prop = extract_slots(question)
+    if subj is None:
+        return ABSTAIN
+    return gate(model, tok, question, subj, prop, store)

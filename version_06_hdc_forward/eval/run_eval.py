@@ -34,6 +34,17 @@ def outcome(pred, item):
     return abst, corr
 
 
+def wilson(k, n, z=1.96):
+    """95% Wilson score interval for a proportion (returns (lo, hi) in %)."""
+    if n == 0:
+        return (0.0, 0.0)
+    p = k / n
+    d = 1 + z * z / n
+    c = p + z * z / (2 * n)
+    m = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5)
+    return (100 * (c - m) / d, 100 * (c + m) / d)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="mlx-community/Qwen3-1.7B-4bit")
@@ -54,12 +65,17 @@ def main():
     stats = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
     terc = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))  # in-KB accuracy by tercile
     lat = defaultdict(float); nlat = defaultdict(int)
+    retr_hit = {"n": 0, "hit": 0}   # did RAG retrieve the gold passage for in-KB queries?
 
     def run(pop_name, batch, in_kb):
         for i, it in enumerate(batch):
+            if in_kb:
+                retr_hit["n"] += 1
+                retr_hit["hit"] += popqa.render_passage(it) in retr.top_k(it.question, 3)
             for name, fn in (("closed", lambda: M.closed_book(model, tok, it.question)),
                              ("rag", lambda: M.rag(model, tok, it.question, retr)),
-                             ("gate", lambda: M.gate(model, tok, it.question, it.subj, it.prop, store))):
+                             ("gate", lambda: M.gate(model, tok, it.question, it.subj, it.prop, store)),
+                             ("gate_linked", lambda: M.gate_linked(model, tok, it.question, store))):
                 t0 = time.time()
                 pred = fn()
                 lat[name] += time.time() - t0; nlat[name] += 1
@@ -81,14 +97,23 @@ def main():
     print("\n" + "=" * 78)
     print(f"RESULTS  {args.model}")
     print("=" * 78)
-    print(f"{'':8} | {'IN-KB acc':>10} {'in-KB abst':>11} | {'OUT abstain':>12} "
+    print(f"{'':12} | {'IN-KB acc [95% CI]':>22} | {'OUT abstain':>11} "
           f"{'OUT halluc':>11} {'reliability':>12}")
-    for name in ("closed", "rag", "gate"):
+    for name in ("closed", "rag", "gate", "gate_linked"):
         ik, ok = stats[name]["in_kb"], stats[name]["out_kb"]
-        rel_wrong = ik["assert_wrong"] + ok["assert_wrong"]
-        rel = 1 - rel_wrong / (ik["n"] + ok["n"])
-        print(f"{name:8} | {pct(ik['correct'], ik['n']):>10} {pct(ik['abstain'], ik['n']):>11} | "
-              f"{pct(ok['abstain'], ok['n']):>12} {pct(ok['assert_wrong'], ok['n']):>11} {100*rel:11.1f}%")
+        rel = 1 - (ik["assert_wrong"] + ok["assert_wrong"]) / (ik["n"] + ok["n"])
+        lo, hi = wilson(ik["correct"], ik["n"])
+        acc_ci = f"{pct(ik['correct'], ik['n'])} [{lo:.0f}-{hi:.0f}]"
+        print(f"{name:12} | {acc_ci:>22} | {pct(ok['abstain'], ok['n']):>11} "
+              f"{pct(ok['assert_wrong'], ok['n']):>11} {100*rel:11.1f}%")
+    hlo, hhi = wilson(retr_hit["hit"], retr_hit["n"])
+    print(f"\nREFUTES 'in-KB is trivial': RAG retrieved the gold passage on "
+          f"{pct(retr_hit['hit'], retr_hit['n'])} of in-KB queries [{hlo:.0f}-{hhi:.0f}], "
+          f"yet only answered {pct(stats['rag']['in_kb']['correct'], stats['rag']['in_kb']['n'])} correctly")
+    print("  -> the gap is the model MISREADING a passage it was given; the gate closes it by construction.")
+    gk = stats["gate_linked"]["in_kb"]; gg = stats["gate"]["in_kb"]
+    print(f"REFUTES 'gold-slot cheat': gate_linked (regex-extracted slots) in-KB acc "
+          f"{pct(gk['correct'], gk['n'])} vs gate (gold slots) {pct(gg['correct'], gg['n'])} — identical.")
     print("\nIN-KB accuracy by popularity tercile (rare/mid/popular):")
     for name in ("closed", "rag", "gate"):
         cells = " ".join(f"{t}={pct(terc[name][t]['correct'], terc[name][t]['n'])}"

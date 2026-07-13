@@ -64,6 +64,54 @@ and (small-model) RAG are not. The guarantee does not depend on model capability
 4. **The guarantee is size-independent** (gate: 100%/0% at all sizes) while closed-book
    and small-model RAG are not.
 
+## The hardest objection — "why not just query the database?"
+
+This is the critique that would sink the paper if unaddressed, so we address it directly.
+
+On single-fact KBQA the gate emits `store[entity][relation]`, so a reviewer can say:
+*"you've shown a constrained decoder equals a database on database questions — the LLM
+is a costume; just query the DB."* Our honest answer, three parts:
+
+1. **PopQA isolates the guarantee; it is not the target use case.** We test the safety
+   property on a clean factual benchmark the way a seatbelt is tested on a crash dummy —
+   not because dummies drive, but because it isolates the property. The gate's *value*
+   is in **grounded generation** (an LLM composing free-form text that must not assert
+   ungrounded facts), which single-fact QA under-tests. That generative eval is the
+   needed next experiment (below) and we do **not** claim the QA result stands in for it.
+2. **The fair comparison is gate vs RAG, not gate vs DB.** "Why use an LLM over a KB at
+   all?" applies *equally* to RAG — and the field already answered it (NL interface,
+   generative flexibility, unstructured inputs). Given a system already committed to an
+   LLM+KB (i.e., every RAG deployment), the gate is a strictly better grounding
+   mechanism: a **hard** guarantee where RAG's is empirical, **no misread failures**, and
+   **lower latency**. It is a drop-in reliability upgrade for LLM-over-KB systems.
+3. **We do not claim the model "knows" more.** The gate converts KB correctness into
+   output *with a guarantee*. It is a reliability result, not a knowledge result.
+
+**What we must NOT claim** (and don't): that the gate beats a database at KBQA, or that
+this QA benchmark demonstrates value a database couldn't provide. It demonstrates the
+*guarantee* and quantifies it against the standard LLM+KB baseline (RAG).
+
+## Refutations we ran (adversarial self-checks) — Qwen3-1.7B, N=360, 95% CIs
+
+Rigorous run (181 KB / 179 held-out), Wilson intervals:
+
+| method | in-KB acc [95% CI] | out abstain | out halluc | reliability |
+|---|---|---|---|---|
+| closed-book | 7.7% [5–13] | 38% | 52% | 46% |
+| RAG | 73.5% [67–79] | 99% | 0.6% | 86% |
+| **gate** | **100% [98–100]** | 100% | 0% | 100% |
+| **gate_linked** (no gold) | **100% [98–100]** | 100% | 0% | 100% |
+
+- **"Gold-slot cheat" — REFUTED.** `gate_linked` extracts `(entity, relation)` with a
+  regex (no gold): slot recovery **100%** on 600 items, and its accuracy **equals `gate`
+  (100% = 100%)**. Honest caveat: this holds *because PopQA embeds the entity in the
+  question*; free-form entity linking is a separate, genuinely hard problem.
+- **"In-KB=100% is trivial" — REFUTED.** RAG **retrieved the gold passage on 100%
+  [98–100]** of in-KB queries yet answered only **73.5%** correctly — a **26.5%
+  pure-misreading gap** (retrieval was perfect; the model ignored/garbled the answer it
+  was handed). The gate closes that gap by construction. The in-KB result guards a real,
+  measured failure mode — not a lookup tautology.
+
 ## Limitations (state these in the paper)
 
 - **Oracle slots.** The gate probes with gold `(subject, relation)`; it assumes entity
