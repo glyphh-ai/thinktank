@@ -82,13 +82,15 @@ class GroundedConstraint:
 
 
 def continuation_ids(tokenizer, prompt: str, filler: str) -> List[int]:
-    """The exact token ids the model must emit to append `filler` after `prompt`
-    (BPE-boundary safe: diff the two encodings; fall back to encoding ' '+filler)."""
-    p = tokenizer.encode(prompt)
-    full = tokenizer.encode(prompt + " " + filler)
-    if full[:len(p)] == list(p):
-        return list(full[len(p):])
-    return list(tokenizer.encode(" " + filler))
+    """The exact token ids the model must emit to append `filler` after `prompt`.
+    BPE-boundary safe: try both separators (chat templates append no space, raw
+    prompts often do), keep whichever leaves `prompt` as a clean prefix."""
+    p = list(tokenizer.encode(prompt))
+    for sep in (" ", ""):
+        full = list(tokenizer.encode(prompt + sep + filler))
+        if full[:len(p)] == p and len(full) > len(p):
+            return full[len(p):]
+    return list(tokenizer.encode(filler))
 
 
 def build_allowed(tokenizer, prompt: str, fillers: Sequence[str], refusal: str) -> tuple:
