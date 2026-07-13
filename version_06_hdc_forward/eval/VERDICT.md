@@ -41,10 +41,36 @@ abstain *in place*. Two possible mechanisms, both unbuilt, both real work:
 Until one of these exists and is measured on free-form generation, "better than a
 DB" is unproven — and the current gate is a DB with extra steps.
 
-## Decision
+## Falsification result: assertion-detection recall (the make-or-break number)
 
-- **Close the lid on "better than a DB" for the current mechanism.** It's a database.
-- Keep the honest, narrow result if useful: a provable grounding layer for existing
-  LLM+KB (RAG) pipelines — retrofit safety, not a new capability.
-- OR commit to building span-level grounded generation (#1 or #2) — a genuine
-  research project — and re-test *that* against a DB on a generation task.
+Ran the cheap falsification (`falsify.py`): can we DETECT a factual assertion in
+model-written text well enough to gate it? Best case — ONE clean fact per sentence,
+strongest local extractor (Qwen3-4B), most generous metric (fact mentioned anywhere):
+
+    surface detection recall = 97.4% (76/78)
+    implied P(ALL caught): k=3 -> 92%, k=5 -> 88%, k=8 -> 81%
+
+**97.4% is an optimistic ceiling and it is NOT enough for a hard guarantee.** A
+multi-fact paragraph leaks an ungated assertion 12-19% of the time — and this is the
+best case. *Gateable* recall (extracting a triple that canonically matches the KB
+schema, not just mentioning the value) is lower — even here the extractor flipped
+subject/object direction — and on messy free generation it drops further.
+
+Caution learned: our first metric read 66.7% due to an object-column-only match bug;
+the assertion WAS detected but direction-flipped. Fixed to 97.4%. (We nearly refuted
+on a measurement artifact — the reason to check twice.)
+
+## Decision (final, evidence-based)
+
+- **Close the lid on "provably better than a DB."** A hard 0-hallucination guarantee
+  in free generation requires ~100% assertion detection; the best case is 97.4% and
+  reality is worse, so ungated assertions leak. **Refuted, with a number.**
+- **The current gate is a database lookup** (replaces the answer with the stored
+  value); it ties a DB on structured QA and does not generate grounded prose.
+- **What 97.4% DOES enable is SOFT grounding**, not a guarantee: a
+  generate-then-verify-repair system could catch ~most hallucinations — a strong
+  hallucination *reducer*, competing with RAG, **not** a DB-beater.
+- **Honest bottom line:** there is no version of this that beats a database. The
+  achievable wins are (a) a provable grounding layer for slot-shaped LLM+KB answers
+  (= a DB with NL I/O), and (b) soft hallucination reduction in generation (~RAG).
+  If the bar is "beat a DB," the answer is **no** — lid closed.
