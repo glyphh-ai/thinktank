@@ -60,6 +60,29 @@ Caution learned: our first metric read 66.7% due to an object-column-only match 
 the assertion WAS detected but direction-flipped. Fixed to 97.4%. (We nearly refuted
 on a measurement artifact — the reason to check twice.)
 
+## THE test: gate vs a real database (text-to-SQL), not RAG (`showdown.py`)
+
+Every earlier benchmark compared the gate to RAG (a weak baseline for structured
+data). The decisive test adds the real incumbent — an LLM writing SQL over a DB —
+across query classes (Qwen3-4B, 60-customer org):
+
+| query class | SQL (DB) | RAG | HDC/gate |
+|---|---|---|---|
+| structured (agg / count) | exact | — | exact (== DB) |
+| fuzzy churn (easy: column proxy) | 100% | 100% | 100% |
+| holistic similarity ("like X") | 0%* | 75% | 80% |
+
+\* SQL's 0% was **bad query generation**, not a limit: our HDC similarity IS
+categorical-attribute overlap = a `COUNT of matching columns` SQL query; a
+well-written one ties HDC.
+
+**There is NO query class where HDC uniquely wins.** Where SQL wins (structured),
+HDC ties it (it *is* a DB query). Where SQL stumbles (holistic similarity), RAG
+matches HDC. HDC is dominated by "SQL for structured + LLM-over-rows for fuzzy."
+Scale doesn't save it: exact queries at scale → the store (a DB) wins (frontier
+result); similarity at scale → DB vector search (pgvector); random-atom HDC ≡
+categorical overlap ≡ SQL-computable, adding nothing a modern DB lacks.
+
 ## Decision (final, evidence-based)
 
 - **Close the lid on "provably better than a DB."** A hard 0-hallucination guarantee
