@@ -32,13 +32,22 @@ accuracy, at a fraction of the latency, independent of model size.
 | **4B** | closed-book | 7% | 79% | 16% | 85% | 277 ms |
 | | RAG | 100% | 100% | 0% | 100% | 388 ms |
 | | **gate** | **100%** | **100%** | **0%** | **100%** | **115 ms** |
-| **0.6B** | closed-book | _pending_ | | | | |
-| | RAG | _pending_ | | | | |
-| | **gate** | _pending_ | | | | |
+| **0.6B** | closed-book | 2.6% | 90% | 8% | 89%* | 135 ms |
+| | RAG | 84% | 100% | 0% | 99% | 195 ms |
+| | **gate** | **100%** | **100%** | **0%** | **100%** | **63 ms** |
+
+\* **Reliability is gameable by abstaining.** Closed-book at 0.6B scores 89%
+"reliability" only because it abstains on ~everything (2.6% in-KB accuracy — it says
+"I don't know" to nearly all questions). Reliability must be read *jointly* with
+coverage/accuracy. The **gate is the only method that hits 100% reliability AND 100%
+in-KB accuracy AND the lowest latency at every model size.**
 
 **In-KB accuracy by popularity** (why grounding matters): closed-book collapses on
-rare entities (1.7B: rare 10% / mid 4% / popular 18%; 4B: 3% / 0% / 18%), while both
-RAG and the gate are flat. Parametric knowledge is exactly where the long tail lives.
+rare entities (0.6B: 3/4/0%; 1.7B: 10/4/18%; 4B: 3/0/18%), while both RAG and the gate
+are flat across the tail. Parametric knowledge is exactly where the long tail lives.
+
+**Size-independence:** the gate is flat **100% / 100% / 0%** across 0.6B→4B; closed-book
+and (small-model) RAG are not. The guarantee does not depend on model capability.
 
 ## Findings (honest)
 
