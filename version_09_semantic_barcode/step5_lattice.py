@@ -45,8 +45,12 @@ def main():
     print(f"(a) bit recovery: {bit_acc:.4f} (need >= 0.99)")
 
     # (b) feature query via unbind only
-    assert "good-bad" in kept and "someone-something" in kept, \
-        "meter axes missing from stable bank — query undefined"
+    if "good-bad" not in kept or "someone-something" not in kept:
+        print("(b) feature query: the v08 meter axes (good-bad, someone-something) "
+              "did not survive stability certification at this layer — query "
+              "undefined as pre-registered.")
+        print("K4 FAIL (query bits unavailable)")
+        return False
     vi, ai = kept.index("good-bad"), kept.index("someone-something")
     truth = (C[:, vi] == -1) & (C[:, ai] == +1)          # negative-valence animates
     pred = (read[:, vi] == -1) & (read[:, ai] == +1)

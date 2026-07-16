@@ -1,2 +1,2 @@
-vectors.npz
+*.npz
 __pycache__/
