@@ -22,6 +22,21 @@ pre vs post safety training, week-over-week continual training.
 Word-level caveat: readings use the raw-text carrier frames (no chat
 template), so this measures representational drift, not chat behavior.
 
+## Result (see REPORT.md)
+
+Instruction tuning at 0.5B is **representation-preserving at the word
+level**: median axis correlation base↔instruct **0.993**, and **zero**
+committed bit flips across 1375×242 bits — whatever chat tuning changed, it
+did not move word meanings wholesale. Against that quiet baseline the
+detector's top signal is unmistakably real: the single most-moved word is
+**"mean"** (‖Δz‖ 4.0, 1.5× the runner-up), shifting toward *bad*, *rude*,
+*angry*, *false*, and *dishonest* — the chat tune re-weighted its dominant
+sense from statistics ("the mean") to unkindness ("that's mean"). The next
+movers are chat-register words (*reply, answer, issue, date, update*), and
+*update/edit/help/useful* drifted toward *good/polite* — assistant-speak
+acquiring positive valence. Small, coherent, and named: exactly what a
+semantic changelog is for.
+
 ## Run
 
 ```
