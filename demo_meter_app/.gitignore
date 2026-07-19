@@ -1,0 +1,4 @@
+*.npz
+__pycache__/
+web/node_modules/
+web/.next/
