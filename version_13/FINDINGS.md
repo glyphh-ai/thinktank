@@ -84,22 +84,32 @@ G2' (within 0.15 of learned): FAIL, +0.291. Suspected remaining channels:
 corpus co-occurrence (relatedness — v12's ghost, third appearance),
 frequency-in-norm (erased by row normalization), 13-role resolution.
 
-## Strat 4 — learned per-word gain: pre-registered
+## Strat 4 — learned per-word gain: PARTIAL (G1'' PASS, G2'' FAIL)
 
 E = s_w · row_norm(1.0·lat + 0.5·id); table frozen, only s (one scalar per
 word, init 1.0, 5,375 params — each readable as a loudness) learns. Gain
 gradient verified against finite differences (2.1e-07).
-Gates: G1'' improves strat 3 best (3.526) by >=0.05; G2'' within 0.15 of
-learned (3.235). Results pending.
+
+**val loss 3.473, acc 31.8%.** G1'' (improve strat 3 best by >=0.05):
+**PASS, +0.052** — just clears. G2'' (within 0.15 of learned): FAIL,
++0.238. The gain vector is itself the predicted finding: loudest words are
+the story scaffold (<eot> 2.99, moral 2.93, mr, saw, she, named, is), and
+corr(gain, log frequency) = **0.41** — the frequency-in-norm channel is
+real, one scalar per word buys ~18% of the remaining gap, and what's left
+(0.24) is the co-occurrence/relatedness + 13-role-resolution channel that
+scalars cannot carry.
 
 ## Where this leaves the program
 
-An authored, named, NSM-grounded geometry is (a) buildable at corpus scale
-by an LLM judge for ~$10, (b) decodable BACKWARDS from single ternary
-vectors — every role readable, weights included, (c) genuinely useful to a
-transformer as input — but only ON TOP of word identity, and (d) not yet a
-full replacement for learned embeddings; the measured shortfall is the
-relatedness/frequency channel the lattice deliberately does not encode.
+The ladder, one variable at a time: lattice 3.861 -> random 3.663 ->
++identity 3.526 -> +frequency 3.473 -> learned 3.235. An authored, named,
+NSM-grounded geometry is (a) buildable at corpus scale by an LLM judge for
+~$10, (b) decodable BACKWARDS from single ternary vectors — every role
+readable, weights included, (c) genuinely useful to a transformer as input
+— but only ON TOP of word identity (+0.138) and frequency (+0.052), and
+(d) not yet a full replacement for learned embeddings; the measured
+residue (0.24) is the co-occurrence/relatedness channel plus 13-role
+resolution — decomposed, named, and priced in val loss.
 The program's recurring invariant, now seen from a third angle: attribute
 structure IS similarity, and similarity alone is neither retrieval (v11),
 relatedness (v12), nor an LM input (v13 strat 2). It composes; it does not
