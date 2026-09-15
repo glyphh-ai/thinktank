@@ -20,11 +20,11 @@ Run:  python step3_gpt.py          # trains and prints a learning curve
 
 import numpy as np
 from step1_data import (
-    train_data, val_data, vocab_size, BLOCK_SIZE, decode,
+    train_data, val_data, vocab_size, BLOCK_SIZE, decode, stoi,
 )
 
 # ---- Hyperparameters ---------------------------------------------------------
-C = 64          # embedding dim (n_embd)
+C = 128         # embedding dim (n_embd) — widened for the word-level head
 HEAD = C        # single attention head, head size == C
 MLP_HIDDEN = 4 * C
 BLOCK = BLOCK_SIZE  # T (context length)
@@ -282,19 +282,22 @@ def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
     return p, history
 
 
-def sample(p, n=200, seed=0, T=BLOCK):
-    """Autoregressively generate text to eyeball what it learned."""
+def sample(p, n=200, seed=0, T=BLOCK, temperature=0.8):
+    """Autoregressively generate text to eyeball what it learned.
+
+    Starts at a story boundary (<eot>) so generation opens like a story.
+    """
     rng = np.random.default_rng(seed)
-    ctx = [int(train_data[0])]
-    out = list(ctx)
+    out = [stoi["<eot>"]]
     for _ in range(n):
         x = np.array([out[-T:]])
         logits, _ = forward(p, x)
-        probs = np.exp(logits[0, -1] - logits[0, -1].max())
+        z = logits[0, -1] / temperature
+        probs = np.exp(z - z.max())
         probs /= probs.sum()
         nxt = int(rng.choice(len(probs), p=probs))
         out.append(nxt)
-    return decode(out)
+    return decode(out[1:])
 
 
 if __name__ == "__main__":

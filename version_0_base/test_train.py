@@ -2,7 +2,7 @@
 Benchmark / regression test for the step-3 GPT.
 
 Runs the full loop for 500-1000 Adam steps and asserts the model actually
-learned: loss must fall a lot and next-char accuracy must clear a threshold.
+learned: loss must fall a lot and next-word accuracy must clear a threshold.
 Also re-checks backprop with finite differences so a bad gradient can never
 masquerade as "it trained fine".
 
@@ -69,14 +69,15 @@ def test_gradients_match_numeric():
 
 def test_model_learns():
     r = _benchmark(steps=700)
-    # loss must drop to a small fraction of where it started
-    assert r["va_loss"] < 0.5 * r["init_loss"], r
-    assert r["va_loss"] < 0.6, r
-    # next-char accuracy must clear a clear-learning bar (random ~ 1/26 = 3.8%)
-    assert r["tr_acc"] > 0.85, r
-    assert r["va_acc"] > 0.85, r
+    # word-level bars (vocab ~5.4k, init loss ~ ln(V) = 8.6): loss must
+    # roughly halve, and accuracy must clearly beat the always-predict-'.'
+    # baseline (~8%). Measured at 700 steps: val loss ~3.9, val acc ~27%.
+    assert r["va_loss"] < 0.55 * r["init_loss"], r
+    assert r["va_loss"] < 4.3, r
+    assert r["tr_acc"] > 0.22, r
+    assert r["va_acc"] > 0.22, r
     # train/val gap small -> not wildly overfitting
-    assert abs(r["tr_acc"] - r["va_acc"]) < 0.10, r
+    assert abs(r["tr_acc"] - r["va_acc"]) < 0.08, r
 
 
 # ----------------------------------------------------------------------------
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     print(f"  train             : loss {r['tr_loss']:6.3f}  acc {r['tr_acc']:6.1%}")
     print(f"  val               : loss {r['va_loss']:6.3f}  acc {r['va_acc']:6.1%}")
 
-    ok = (err < 1e-4 and r["va_loss"] < 0.6
-          and r["tr_acc"] > 0.85 and r["va_acc"] > 0.85)
+    ok = (err < 1e-4 and r["va_loss"] < 4.3
+          and r["tr_acc"] > 0.22 and r["va_acc"] > 0.22)
     print("\nRESULT:", "PASS" if ok else "FAIL")
     raise SystemExit(0 if ok else 1)

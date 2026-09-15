@@ -1,43 +1,70 @@
 """
-Step 1 — DATA
-=============
+Step 1 — DATA (word-level)
+==========================
 Goal: turn raw text into integer batches of (input, target) pairs that the
 GPT will learn from.
+
+version_13 change vs version_0_base: WORD-level tokens, not characters, on a
+real corpus (TinyStories validation split, ~4.5M words). Words are the unit
+the whole v13 program needs — the semantic lattice describes *words*, so the
+model must predict words.
 
 Run:  python step1_data.py
 """
 
+import re
+from collections import Counter
+from pathlib import Path
+
 import numpy as np
 
-# A tiny corpus. Char-level modeling means we don't need much to see learning.
-# (Swap this for a .txt file later; the rest of the pipeline won't change.)
-TEXT = (
-    "to be, or not to be, that is the question:\n"
-    "whether tis nobler in the mind to suffer\n"
-    "the slings and arrows of outrageous fortune,\n"
-    "or to take arms against a sea of troubles\n"
-    "and by opposing end them.\n"
-) * 20  # repeat so there's enough data to batch
+CORPUS_PATH = Path(__file__).parent / "data" / "tinystories_valid.txt"
+
+# ---- 0. Tokenize -------------------------------------------------------------
+# Lowercase words (contractions kept whole), punctuation as its own token,
+# story boundary <|endoftext|> mapped to a single <eot> token.
+TOKEN_RE = re.compile(r"<eot>|[a-z]+'[a-z]+|[a-z]+|[.,!?;:\"]")
+
+def tokenize(text: str) -> list[str]:
+    text = text.lower().replace("<|endoftext|>", " <eot> ")
+    return TOKEN_RE.findall(text)
+
+_tokens = tokenize(CORPUS_PATH.read_text())
 
 # ---- 1. Build the vocabulary -------------------------------------------------
-# The set of every distinct character, sorted so the mapping is deterministic.
-chars = sorted(set(TEXT))
-vocab_size = len(chars)
+# Words seen >= MIN_FREQ times get an id; everything else becomes <unk>.
+# At MIN_FREQ=10 that is ~5.4k words covering 99.57% of the corpus — small
+# enough that every word can later be judged and encoded individually.
+MIN_FREQ = 10
+_counts = Counter(_tokens)
+words = ["<unk>"] + sorted(w for w, n in _counts.items() if n >= MIN_FREQ)
+vocab_size = len(words)
+chars = words  # backward-compat alias for version_0 scripts
 
 # Two lookup tables: string->int (stoi) and int->string (itos).
-stoi = {ch: i for i, ch in enumerate(chars)}
-itos = {i: ch for i, ch in enumerate(chars)}
+stoi = {w: i for i, w in enumerate(words)}
+itos = {i: w for i, w in enumerate(words)}
+UNK = stoi["<unk>"]
 
-def encode(s: str) -> list[int]:
-    """Text -> list of token ids."""
-    return [stoi[c] for c in s]
+def encode(toks) -> list[int]:
+    """Text (or pre-tokenized list) -> list of token ids."""
+    if isinstance(toks, str):
+        toks = tokenize(toks)
+    return [stoi.get(t, UNK) for t in toks]
 
-def decode(ids: list[int]) -> str:
-    """List of token ids -> text."""
-    return "".join(itos[i] for i in ids)
+def decode(ids) -> str:
+    """List of token ids -> readable text (no space before punctuation)."""
+    out = []
+    for i in ids:
+        w = itos[int(i)]
+        if out and w in ".,!?;:":
+            out[-1] += w
+        else:
+            out.append(w)
+    return " ".join(out)
 
 # Encode the whole corpus once into a 1-D array of ids.
-data = np.array(encode(TEXT), dtype=np.int64)
+data = np.array(encode(_tokens), dtype=np.int64)
 
 # ---- 2. Train / validation split --------------------------------------------
 # Hold out the last 10% to check we're learning, not just memorizing.
@@ -46,13 +73,13 @@ train_data = data[:n]
 val_data = data[n:]
 
 # ---- 3. Batching -------------------------------------------------------------
-BLOCK_SIZE = 16   # T: how many tokens of context the model sees at once
+BLOCK_SIZE = 32   # T: how many words of context the model sees at once
 BATCH_SIZE = 4    # B: how many independent sequences per batch
 
 def get_batch(split: str, rng: np.random.Generator):
     """
     Return one batch: x and y, each shape (BATCH_SIZE, BLOCK_SIZE), dtype int.
-    y is x shifted by one position -> the "next char" target at every step.
+    y is x shifted by one position -> the "next word" target at every step.
     """
     src = train_data if split == "train" else val_data
     # Random starting indices, each leaving room for BLOCK_SIZE+1 tokens.
@@ -64,22 +91,18 @@ def get_batch(split: str, rng: np.random.Generator):
 # ---- Demo --------------------------------------------------------------------
 if __name__ == "__main__":
     print(f"corpus length : {len(data)} tokens")
-    print(f"vocab size    : {vocab_size}")
-    print(f"vocab         : {''.join(chars)!r}")
+    print(f"vocab size    : {vocab_size}  (MIN_FREQ={MIN_FREQ})")
+    unk_rate = float((data == UNK).mean())
+    print(f"<unk> rate    : {unk_rate:.4%}")
     print()
 
-    print("encode('be') ->", encode("be"))
-    print("decode(...)  ->", repr(decode(encode("be"))))
+    print("encode('the cat sat.') ->", encode("the cat sat."))
+    print("decode(...)            ->", repr(decode(encode("the cat sat."))))
     print()
 
     rng = np.random.default_rng(1337)
     x, y = get_batch("train", rng)
     print(f"x shape: {x.shape}   y shape: {y.shape}")
     print("\nFirst sequence in the batch:")
-    print("  input  x[0]:", x[0].tolist(), "->", repr(decode(x[0].tolist())))
-    print("  target y[0]:", y[0].tolist(), "->", repr(decode(y[0].tolist())))
-    print("\nRead it as 'given these chars, predict the next':")
-    for t in range(6):
-        context = x[0, : t + 1].tolist()
-        target = y[0, t]
-        print(f"  {repr(decode(context)):>22}  ->  {repr(itos[int(target)])}")
+    print("  input  x[0]:", repr(decode(x[0].tolist())))
+    print("  target y[0]:", repr(decode(y[0].tolist())))
