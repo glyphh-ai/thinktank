@@ -141,6 +141,8 @@ def attention_bwd(dy, cache, p):
 def forward(p, x_ids, y_ids=None):
     B, T = x_ids.shape
     tok = p["tok_emb"][x_ids]                  # (B,T,C)
+    if "tok_gain" in p:                         # strat 4: per-word learned gain
+        tok = tok * p["tok_gain"][x_ids][..., None]
     pos = p["pos_emb"][:T]                      # (T,C)
     h0 = tok + pos                             # (B,T,C)
 
@@ -213,8 +215,13 @@ def backward(p, cache):
     dh0b, grads["g1"], grads["b1"] = layernorm_bwd(dln1, cache["c_ln1"])
     dh0 += dh0b
 
-    # embeddings: h0 = tok_emb[ids] + pos_emb[:T]
-    np.add.at(grads["tok_emb"], cache["x_ids"], dh0)
+    # embeddings: h0 = tok_emb[ids] (* gain) + pos_emb[:T]
+    if "tok_gain" in p:
+        ids = cache["x_ids"]
+        np.add.at(grads["tok_emb"], ids, dh0 * p["tok_gain"][ids][..., None])
+        np.add.at(grads["tok_gain"], ids, (dh0 * p["tok_emb"][ids]).sum(-1))
+    else:
+        np.add.at(grads["tok_emb"], cache["x_ids"], dh0)
     grads["pos_emb"][:T] += dh0.sum(0)
     return grads
 
@@ -262,9 +269,17 @@ def evaluate(p, split, rng, B=64, T=BLOCK):
 # ============================================================================
 # Training loop
 # ============================================================================
-def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
+def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True,
+          tok_emb=None, tok_gain=False):
+    """tok_emb: optional FROZEN (V, C) embedding table — installed in place of
+    the learned one and excluded from updates (strat 2's single variable).
+    tok_gain: learn one scalar per word multiplying its frozen row (strat 4)."""
     rng = np.random.default_rng(seed)
     p = init_params(rng)
+    if tok_emb is not None:
+        p["tok_emb"] = tok_emb.astype(np.float64).copy()
+    if tok_gain:
+        p["tok_gain"] = np.ones(vocab_size)
     opt = Adam(p, lr=lr)
     eval_rng = np.random.default_rng(123)
     history = []
@@ -272,6 +287,8 @@ def train(steps=1000, B=32, lr=3e-3, seed=0, log_every=100, verbose=True):
         x, y = get_batch("train", rng, B=B)
         loss, _, cache = forward(p, x, y)
         grads = backward(p, cache)
+        if tok_emb is not None:
+            grads["tok_emb"][:] = 0.0
         opt.step(p, grads)
         if verbose and (step % log_every == 0 or step == 1):
             tr_loss, tr_acc = evaluate(p, "train", eval_rng)
