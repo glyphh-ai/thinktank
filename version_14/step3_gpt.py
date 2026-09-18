@@ -30,7 +30,7 @@ from step1_data import (
 
 # ---- Hyperparameters ---------------------------------------------------------
 C = 128         # embedding dim (n_embd) — widened for the word-level head
-N_PHASES = 3    # 3-phase attention (0°, 120°, 240°)
+N_PHASES = 3    # 3-phase attention (120° spacing)
 MLP_HIDDEN = 4 * C
 BLOCK = BLOCK_SIZE  # T (context length)
 EPS = 1e-5      # layernorm epsilon
@@ -39,23 +39,22 @@ EPS = 1e-5      # layernorm epsilon
 # ============================================================================
 # 3-phase π-frequency positional encoding
 # ============================================================================
-def three_phase_pi_pos(T, C):
-    """3 phase-shifted π-frequency positional encodings (0°, 120°, 240°).
+def multi_phase_pi_pos(T, C, n_phases=N_PHASES):
+    """N phase-shifted π-frequency positional encodings, equally spaced.
 
     Each phase is a full (T, C) sinusoidal encoding at base frequency π,
-    offset by 2π/3. Like the three windings of a transformer — together
-    they cover the full rotation, eliminating positional blind spots.
+    offset by 2πk/N. Like the windings of a polyphase transformer —
+    together they cover the full rotation, eliminating positional blind spots.
     """
     pos = np.arange(T)[:, None].astype(np.float64)
     dim = np.arange(C)[None, :].astype(np.float64)
     freq = 1.0 / (np.pi ** (2.0 * (dim // 2) / C))
-    phases = [0.0, 2.0 * np.pi / 3.0, 4.0 * np.pi / 3.0]
     return np.stack([
         np.where(dim % 2 == 0,
-                 np.sin(pos * freq + phi),
-                 np.cos(pos * freq + phi))
-        for phi in phases
-    ])  # (3, T, C)
+                 np.sin(pos * freq + 2.0 * np.pi * k / n_phases),
+                 np.cos(pos * freq + 2.0 * np.pi * k / n_phases))
+        for k in range(n_phases)
+    ])  # (n_phases, T, C)
 
 
 # ============================================================================
@@ -203,7 +202,7 @@ def attention_bwd(dy, cache, p):
 def forward(p, x_ids, y_ids=None):
     B, T = x_ids.shape
     tok = p["tok_emb"][x_ids]                      # (B,T,C)
-    positions = three_phase_pi_pos(T, C)           # (3,T,C) — deterministic
+    positions = multi_phase_pi_pos(T, C)           # (3,T,C) — deterministic
 
     ln1, c_ln1 = layernorm_fwd(tok, p["g1"], p["b1"])
     attn, c_att = attention_fwd(ln1, positions, p)
