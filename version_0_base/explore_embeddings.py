@@ -5,7 +5,7 @@ Each section prints a small, concrete demonstration of one idea.
 """
 
 import numpy as np
-from step1_data import vocab_size, itos, stoi
+from step1_data import vocab_size, itos, stoi, words
 
 np.set_printoptions(precision=3, suppress=True)
 rng = np.random.default_rng(7)
@@ -19,9 +19,9 @@ def section(title):
 
 # ---------------------------------------------------------------------------
 section("LEVEL 1 — a raw id is just a meaningless label")
-# The id 21 ('s') is NOT '21 units' of anything. Arithmetic on ids is nonsense.
-print("id of 's' =", stoi["s"], " | id of 'b' =", stoi["b"], " | id of 'e' =", stoi["e"])
-print("is 's' (21) '3 more than' 'p' (18)?  No -- ids are arbitrary name tags.")
+print("id of 'the' =", stoi["the"], " | id of 'cat' =", stoi["cat"],
+      " | id of 'happy' =", stoi["happy"])
+print("is 'the' 'more than' 'cat'?  No -- ids are arbitrary name tags.")
 print("We need each token as a POINT IN SPACE where math is meaningful.")
 
 # ---------------------------------------------------------------------------
@@ -30,27 +30,25 @@ tok_emb = rng.normal(0, 0.02, size=(vocab_size, C))
 print("tok_emb shape (vocab_size, C):", tok_emb.shape)
 print("row i  = the vector for token id i")
 print("col j  = feature j (a dimension the model defines for itself)")
-print("\nrow for 's' (id 21):", tok_emb[stoi['s']])
-print("row for 'e' (id  8):", tok_emb[stoi['e']])
+print("\nrow for 'the' (id %d):" % stoi['the'], tok_emb[stoi['the']])
+print("row for 'cat' (id %d):" % stoi['cat'], tok_emb[stoi['cat']])
 
 # ---------------------------------------------------------------------------
 section("LEVEL 3 — the lookup IS a one-hot matrix multiply (just faster)")
-# one-hot of 's': a length-26 vector, 1 at index 21, 0 elsewhere.
-onehot_s = np.zeros(vocab_size)
-onehot_s[stoi["s"]] = 1.0
-print("one-hot('s') (length 26):")
-print(onehot_s)
-print("\none-hot @ tok_emb  selects exactly row 21:")
-print("   via matmul :", onehot_s @ tok_emb)
-print("   via lookup :", tok_emb[stoi["s"]])
-print("   identical? ", np.allclose(onehot_s @ tok_emb, tok_emb[stoi["s"]]))
+onehot = np.zeros(vocab_size)
+onehot[stoi["the"]] = 1.0
+print(f"one-hot('the') (length {vocab_size}): mostly zeros, 1 at index {stoi['the']}")
+print("\none-hot @ tok_emb  selects exactly that row:")
+print("   via matmul :", (onehot @ tok_emb))
+print("   via lookup :", tok_emb[stoi["the"]])
+print("   identical? ", np.allclose(onehot @ tok_emb, tok_emb[stoi["the"]]))
 print("=> 'embedding lookup' = multiply a one-hot by the table. Lookup skips the zeros.")
 
 # ---------------------------------------------------------------------------
 section("LEVEL 4 — why init RANDOM and SMALL (not zeros)?")
 zeros_tbl = np.zeros((vocab_size, C))
 print("If the table were all zeros, every token -> same vector:")
-print("   'a' ->", zeros_tbl[stoi['a']], " 'z'... ->", zeros_tbl[stoi['y']])
+print("   'the' ->", zeros_tbl[stoi['the']], " 'cat' ->", zeros_tbl[stoi['cat']])
 print("   The model could never tell tokens apart, and (we'll see in backprop)")
 print("   identical rows get identical gradients -> they'd stay identical forever.")
 print("   RANDOM init breaks this symmetry so each token can specialize.")
@@ -59,9 +57,9 @@ print("   sample std of our init:", round(tok_emb.std(), 4), "(~0.02)")
 
 # ---------------------------------------------------------------------------
 section("LEVEL 5 — fancy indexing turns a GRID of ids into a GRID of vectors")
-x = np.array([[stoi[c] for c in "to be"],
-              [stoi[c] for c in "or to"]])      # (B=2, T=5)
-print("x ids (B=2, T=5):")
+x = np.array([[stoi["the"], stoi["cat"], stoi["sat"]],
+              [stoi["a"],   stoi["big"], stoi["dog"]]])   # (B=2, T=3)
+print("x ids (B=2, T=3):")
 print(x)
 e = tok_emb[x]                                   # (B, T, C)
 print("\ntok_emb[x] shape:", e.shape, " <- gained the C axis")
@@ -91,10 +89,10 @@ print("  e[0,0] + pos[0] == out[0,0]? ", np.allclose(e[0,0] + pos[0], out[0,0]))
 print("  e[1,0] + pos[0] == out[1,0]? ", np.allclose(e[1,0] + pos[0], out[1,0]))
 
 # ---------------------------------------------------------------------------
-section("LEVEL 8 — same char, different position -> different final vector")
-# 'o' appears in both rows but at different slots.
-print("'o' id =", stoi['o'])
-# row0 'to be': 'o' at position 1 ; row1 'or to': 'o' at position 0
-print("'o' at position 1 -> final:", (tok_emb[stoi['o']] + pos[1]))
-print("'o' at position 0 -> final:", (tok_emb[stoi['o']] + pos[0]))
+section("LEVEL 8 — same word, different position -> different final vector")
+w = "the"
+print(f"'{w}' id =", stoi[w])
+vec = tok_emb[stoi[w]]
+print(f"'{w}' at position 0 -> final:", (vec + pos_emb[0]))
+print(f"'{w}' at position 1 -> final:", (vec + pos_emb[1]))
 print("Same token vector, DIFFERENT position vector added => order is encoded.")

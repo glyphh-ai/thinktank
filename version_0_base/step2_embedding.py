@@ -5,7 +5,7 @@ Turn the (B, T) grid of integer ids into a (B, T, C) grid of vectors, and add
 position information.
 
 Two LEARNABLE tables (the first parameters in our model):
-  token_emb : (vocab_size, C)   one vector per character  -> "what" the token is
+  token_emb : (vocab_size, C)   one vector per word       -> "what" the token is
   pos_emb   : (block_size, C)   one vector per position    -> "where" it sits
 
 Forward:  x_ids (B,T) -> tok[x_ids] (B,T,C)  +  pos[0:T] (T,C)  ->  (B,T,C)
@@ -17,7 +17,7 @@ import numpy as np
 from step1_data import get_batch, vocab_size, BLOCK_SIZE, itos
 
 # ---- Hyperparameters ---------------------------------------------------------
-C = 32  # embedding dimension ("n_embd"): how many numbers represent each token
+C = 128  # embedding dimension ("n_embd"): how many numbers represent each token
 
 # ---- Parameters (LEARNABLE) --------------------------------------------------
 # Initialized to small random values. Adam will nudge these every step.

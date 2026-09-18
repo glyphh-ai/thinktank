@@ -4,10 +4,8 @@ Step 1 — DATA (word-level)
 Goal: turn raw text into integer batches of (input, target) pairs that the
 GPT will learn from.
 
-version_13 change vs version_0_base: WORD-level tokens, not characters, on a
-real corpus (TinyStories validation split, ~4.5M words). Words are the unit
-the whole v13 program needs — the semantic lattice describes *words*, so the
-model must predict words.
+Word-level tokens on TinyStories validation split (~4.5M words).
+Vocab: every word with freq >= 10 (~5.4k words, 99.6% coverage).
 
 Run:  python step1_data.py
 """
@@ -39,7 +37,6 @@ MIN_FREQ = 10
 _counts = Counter(_tokens)
 words = ["<unk>"] + sorted(w for w, n in _counts.items() if n >= MIN_FREQ)
 vocab_size = len(words)
-chars = words  # backward-compat alias for version_0 scripts
 
 # Two lookup tables: string->int (stoi) and int->string (itos).
 stoi = {w: i for i, w in enumerate(words)}
