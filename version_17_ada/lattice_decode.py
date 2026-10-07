@@ -26,6 +26,10 @@ Two words are compared node by node: per layer, the cosine of the word
 fields that entered through that layer — and the threads that run directly
 from one word to the other (love -opposite-> hate).
 
+Glyph sets: glyphs3.jsonl (v3, default) — IDENTICAL atomic makeup: every
+glyph is 27 real words, unweighted (27 binds x 1/27). glyphs2.jsonl (v2)
+has per-role weights and empty roles.
+
 Run:  python lattice_decode.py                       # love hate kind mean
       python lattice_decode.py love hate --depth 3
 """
@@ -47,12 +51,14 @@ LAYERS = list(SCHEMA)
 # The space: glyphs + glyph keys (solved once, cached)
 # ============================================================================
 class Lattice:
-    def __init__(self, beta_glyph=0.7, rebuild=False, fixed=True, w_none=0.3):
-        G = E.load(fixed=fixed, w_none=w_none)
+    def __init__(self, beta_glyph=0.7, rebuild=False, fixed=True, w_none=0.3,
+                 glyphs="glyphs2.jsonl"):
+        G = E.load(glyphs, fixed=fixed, w_none=w_none)
         if fixed:
             assert all(len(t) == len(PATHS) for t in G.values()), "fixed lattice: 27 binds each"
         self.space = space = E.Space(G)
-        CACHE = HERE / (f"space2_fixed_{w_none}.npz" if fixed else "space2.npz")
+        stem = Path(glyphs).stem
+        CACHE = HERE / (f"space_{stem}_fixed_{w_none}.npz" if fixed else f"space_{stem}.npz")
         if CACHE.exists() and not rebuild:
             z = np.load(CACHE, allow_pickle=True)
             g, K = z["g"], z["K"].item()
@@ -103,7 +109,7 @@ class Lattice:
         return self._fired[w]
 
     # ------------------------------------------------------------------------
-    def spread(self, w, depth=3, beta=0.5, eps=1e-3, branch=None):
+    def spread(self, w, depth=3, beta=0.5, eps=1e-5, branch=None):
         """Energy from w down the lattice threads, hop by hop.
 
         Returns a field: node energy (role paths), word energy split by the
@@ -190,9 +196,11 @@ if __name__ == "__main__":
     ap.add_argument("--rebuild", action="store_true")
     ap.add_argument("--free", action="store_true", help="glyphs bind only the roles they fill")
     ap.add_argument("--w-none", type=float, default=0.3, help="weight of a 'none' bind (fixed)")
+    ap.add_argument("--glyphs", default="glyphs3.jsonl",
+                    help="glyphs3.jsonl = v3, identical makeup (default); glyphs2.jsonl = v2")
     args = ap.parse_args()
 
-    L = Lattice(rebuild=args.rebuild, fixed=not args.free, w_none=args.w_none)
+    L = Lattice(rebuild=args.rebuild, fixed=not args.free, w_none=args.w_none, glyphs=args.glyphs)
     fields = {w: L.spread(w, depth=args.depth, beta=args.beta) for w in args.words}
     for w in args.words:
         show(L, w, fields[w])

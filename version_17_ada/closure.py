@@ -39,32 +39,40 @@ class RoleFill(BaseModel):
     weight: float = Field(ge=0.0, le=1.0)
 
 
+class RoleValue(BaseModel):          # unweighted schemas: every role weighs the same
+    value: str
+
+
 class Writer:
     """Everything that depends on the schema: the output model and the prompt."""
     def __init__(self, schema_module: str):
         S = importlib.import_module(schema_module)
         self.S = S
         self.fields = {f"{l}_{s}_{r}": f"{l}.{s}.{r}" for l, s, r in S.ROLE_PATHS}
-        self.model = create_model("Glyph", **{f: (RoleFill, ...) for f in self.fields})
+        self.weighted = getattr(S, "WEIGHTED", True)
+        fill = RoleFill if self.weighted else RoleValue
+        self.model = create_model("Glyph", **{f: (fill, ...) for f in self.fields})
         lines = "\n".join(f"- {l}_{s}_{r}: {S.SCHEMA[l][s][r]}" for l, s, r in S.ROLE_PATHS)
         intro = getattr(S, "PROMPT_INTRO", """You write the glyph of an English word: its meaning as role: value
 pairs in a fixed schema that is the same for every word. Fill EVERY role.""")
         examples = getattr(S, "PROMPT_EXAMPLES", """- Function words get glyphs too: "not" -> category: word, opposite: yes,
   thought: denial; "under" -> category: position, opposite: over, place: below.""")
+        weight_rule = ("""- weight = how central this role is to the word: 1.0 = defining,
+  0.5 = clearly present, 0.2 = weakly present. Use "none" with weight 0.0
+  when a role does not apply. Most words fill well under half the roles.
+""" if self.weighted else "")
+        self_rule = "- A word may never be its own value.\n" if self.weighted else ""
+        none_rule = ' or "none"' if self.weighted else ""
         self.system = f"""{intro}
 
 Roles:
 {lines}
 
 Rules:
-- value is ONE lowercase English word (letters only, no spaces) or "none".
+- value is ONE lowercase English word (letters only, no spaces){none_rule}.
 - Prefer simple, common everyday words as values — the words a child knows.
   Use base forms: singular nouns, plain verbs ("run", not "running").
-- A word may never be its own value.
-- weight = how central this role is to the word: 1.0 = defining,
-  0.5 = clearly present, 0.2 = weakly present. Use "none" with weight 0.0
-  when a role does not apply. Most words fill well under half the roles.
-- Describe the word's DOMINANT everyday sense (as in children's stories).
+{self_rule}{weight_rule}- Describe the word's DOMINANT everyday sense (as in children's stories).
 {examples}
 """
 
@@ -85,7 +93,7 @@ Rules:
                 glyph = {}
                 for f, path in self.fields.items():
                     v = getattr(g, f).value.strip().lower()
-                    w = round(getattr(g, f).weight, 2)
+                    w = round(getattr(g, f).weight, 2) if self.weighted else 1.0
                     glyph[path] = {"value": v, "weight": 0.0 if v == "none" else w}
                 problems = self.S.validate_glyph(word, glyph)
                 if problems:

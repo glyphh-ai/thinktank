@@ -3,4 +3,6 @@ data/
 __pycache__/
 closure_log.txt
 closure2_log.txt
-space2.npz
+space_*.npz
+glyphs3.jsonl
+closure3_log.txt
