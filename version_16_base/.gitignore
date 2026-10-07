@@ -1,3 +1,4 @@
 data/
 *.npz
 __pycache__/
+strat0_log.txt
