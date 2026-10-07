@@ -1,0 +1,6 @@
+{
+  "model": "claude-haiku-4-5",
+  "vocab_sha": "8a7c1e5989bbe53a",
+  "vocab_size": 5375,
+  "corpus": "tinystories_valid"
+}
