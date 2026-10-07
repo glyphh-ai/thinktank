@@ -113,6 +113,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--words", nargs="*", help="seed words (default: the whole vocab)")
     ap.add_argument("--rounds", type=int, default=50, help="stop after this many rounds")
+    ap.add_argument("--max-glyphs", type=int, default=0,
+                    help="stop before a round that would pass this many glyphs (cost cap)")
     args = ap.parse_args()
 
     client = anthropic.Anthropic()
@@ -126,6 +128,10 @@ def main():
     failed = set()
     with OUT_PATH.open("a") as out:
         while pending and rnd < args.rounds:
+            if args.max_glyphs and len(glyphs) + len(pending) > args.max_glyphs:
+                print(f"cap: next round would reach {len(glyphs) + len(pending)} glyphs "
+                      f"> --max-glyphs {args.max_glyphs}; stopping", flush=True)
+                break
             rnd += 1
             print(f"round {rnd}: writing {len(pending)} glyphs "
                   f"(have {len(glyphs)})", flush=True)

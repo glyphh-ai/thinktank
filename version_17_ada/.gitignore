@@ -1,3 +1,5 @@
 data/
 *.npz
 __pycache__/
+closure_log.txt
+glyphs.jsonl
