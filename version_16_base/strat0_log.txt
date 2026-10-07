@@ -1,0 +1,38 @@
+vocab=7218  L=4  H=4  C=256  T=64  params=5,019,648  steps=5000  B=32  lr=0.002
+
+step     1 | lr 1.00e-05 | gnorm  5.02 | train loss 8.908 acc  0.0% | val loss 8.908 acc  0.0%
+step   250 | lr 2.00e-03 | gnorm  1.20 | train loss 3.813 acc 30.1% | val loss 3.845 acc 29.1%
+step   500 | lr 1.98e-03 | gnorm  0.99 | train loss 3.453 acc 33.8% | val loss 3.491 acc 33.3%
+step   750 | lr 1.94e-03 | gnorm  0.94 | train loss 3.286 acc 35.7% | val loss 3.327 acc 35.2%
+step  1000 | lr 1.88e-03 | gnorm  0.85 | train loss 3.170 acc 37.1% | val loss 3.226 acc 36.8%
+step  1250 | lr 1.80e-03 | gnorm  0.78 | train loss 3.087 acc 37.8% | val loss 3.126 acc 37.7%
+step  1500 | lr 1.69e-03 | gnorm  0.90 | train loss 3.011 acc 38.8% | val loss 3.068 acc 38.5%
+step  1750 | lr 1.58e-03 | gnorm  0.84 | train loss 2.948 acc 40.1% | val loss 3.006 acc 39.2%
+step  2000 | lr 1.44e-03 | gnorm  0.81 | train loss 2.899 acc 40.7% | val loss 2.939 acc 40.1%
+step  2250 | lr 1.30e-03 | gnorm  0.81 | train loss 2.839 acc 41.5% | val loss 2.892 acc 40.8%
+step  2500 | lr 1.16e-03 | gnorm  0.81 | train loss 2.800 acc 42.1% | val loss 2.855 acc 41.3%
+step  2750 | lr 1.01e-03 | gnorm  0.84 | train loss 2.755 acc 42.5% | val loss 2.809 acc 41.7%
+step  3000 | lr 8.68e-04 | gnorm  0.84 | train loss 2.723 acc 43.1% | val loss 2.775 acc 42.4%
+step  3250 | lr 7.29e-04 | gnorm  0.82 | train loss 2.670 acc 43.7% | val loss 2.725 acc 43.4%
+step  3500 | lr 6.00e-04 | gnorm  0.90 | train loss 2.638 acc 44.3% | val loss 2.696 acc 43.4%
+step  3750 | lr 4.85e-04 | gnorm  0.93 | train loss 2.609 acc 44.6% | val loss 2.666 acc 44.1%
+step  4000 | lr 3.86e-04 | gnorm  0.92 | train loss 2.593 acc 45.0% | val loss 2.640 acc 44.5%
+step  4250 | lr 3.07e-04 | gnorm  0.92 | train loss 2.564 acc 45.3% | val loss 2.611 acc 44.9%
+step  4500 | lr 2.48e-04 | gnorm  0.91 | train loss 2.546 acc 45.5% | val loss 2.594 acc 45.3%
+step  4750 | lr 2.12e-04 | gnorm  0.92 | train loss 2.530 acc 45.8% | val loss 2.581 acc 45.7%
+step  5000 | lr 2.00e-04 | gnorm  0.96 | train loss 2.518 acc 45.8% | val loss 2.572 acc 45.9%
+
+final val (40 batches x 64): loss 2.563  acc 45.5%
+
+--- sample seed=0 (temperature=0.8, top_k=40) ---
+once upon a time, there was a little girl named amy. amy was only three years old. every day she would go outside with her mom and dad. one day, amy wanted to take a walk in the park. so, she asked her mom if she could go. her mom said no, but amy was happy for her to go. she went to the park and saw the trees and the ducks playing with the grass. they had so much fun! sue went up and started to swing and forth. they had so much fun! the other birds were always there by their adventures.
+
+once upon a time, there was a cute little girl named lily. she loved to play with her toys and sing songs. one day, she went on a march with her mom and dad. her
+
+--- sample seed=1 (temperature=0.8, top_k=40) ---
+once upon a time, there was a little boy named timmy. timmy loved to play outside in the sun. one day, timmy saw a big tree with a long trunk. it had a long branches and leaves like a tree. timmy wanted to play with the branches so he asked his mommy to help. " mommy, can we go to the tree? " timmy asked. " sure, sweetie. the tree is nice to be safe, " his mommy replied. " but it's important to be careful and not to play with the leaves. you can do everything by yourself. " timmy thought about it before taking the leaves. he closed his eyes and got ready to play with his friends again. he even made a new friend to join them.
+
+once upon a time, there was a little girl
+
+--- sample seed=2 (temperature=0.8, top_k=40) ---
+once upon a time, there was a little girl named lily. she loved to wander around in the garden and see what she would find. one day, she saw a bright flower in the sky. she wanted to pick it up and play with it. her mommy smiled and said, " let's go explore and see how beautiful the flower is. " lily was so excited to learn to find the flower, but she was a bit afraid of it. when she got closer, she saw a big, hairy bug flying around the tree. lily was so excited, she ran up to the bird to pet him. the bug picked up the butterfly and gave lily a hug. she told him she was a good and the butterfly. lily said that it was time to go home and feel better. she smiled
