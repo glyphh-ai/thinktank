@@ -6,11 +6,13 @@ has no glyph yet is glyphed in round 2, and so on until a round adds no new
 words: then every word used to describe a word has its own glyph.
 
 claude-haiku-4-5 writes each glyph as structured output (schema-enforced,
-then re-validated by glyph_schema.validate_glyph). Results append to
+then re-validated by the schema's validate_glyph). Results append to
 glyphs.jsonl — resumable, so a killed run continues where it left off.
 
 Run:  python closure.py --words love hate kind mean --rounds 1   # pilot
       python closure.py                                          # vocab -> closed
+      python closure.py --schema glyph_schema2 --out glyphs2.jsonl \
+             --with-schema-words --words love hate kind mean     # v2 schema
 Out:  glyphs.jsonl  {"word": ..., "round": n, "glyph": {"<layer.seg.role>":
                      {"value": word|"none", "weight": 0..1}, ...}}
 Env:  ANTHROPIC_API_KEY
@@ -22,13 +24,13 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import importlib
+
 import anthropic
 from pydantic import BaseModel, Field, create_model
 
-from glyph_schema import SCHEMA, ROLE_PATHS, PATHS, validate_glyph
-
 MODEL = "claude-haiku-4-5"
-OUT_PATH = Path(__file__).parent / "glyphs.jsonl"
+HERE = Path(__file__).parent
 WORKERS = 8
 
 
@@ -36,66 +38,69 @@ class RoleFill(BaseModel):
     value: str
     weight: float = Field(ge=0.0, le=1.0)
 
-FIELDS = {f"{l}_{s}_{r}": f"{l}.{s}.{r}" for l, s, r in ROLE_PATHS}
-Glyph = create_model("Glyph", **{f: (RoleFill, ...) for f in FIELDS})
 
-
-def _schema_lines() -> str:
-    return "\n".join(f"- {l}_{s}_{r}: {SCHEMA[l][s][r]}" for l, s, r in ROLE_PATHS)
-
-SYSTEM = f"""You write the glyph of an English word: its meaning as role: value
-pairs in a fixed schema that is the same for every word. Fill EVERY role.
+class Writer:
+    """Everything that depends on the schema: the output model and the prompt."""
+    def __init__(self, schema_module: str):
+        S = importlib.import_module(schema_module)
+        self.S = S
+        self.fields = {f"{l}_{s}_{r}": f"{l}.{s}.{r}" for l, s, r in S.ROLE_PATHS}
+        self.model = create_model("Glyph", **{f: (RoleFill, ...) for f in self.fields})
+        lines = "\n".join(f"- {l}_{s}_{r}: {S.SCHEMA[l][s][r]}" for l, s, r in S.ROLE_PATHS)
+        intro = getattr(S, "PROMPT_INTRO", """You write the glyph of an English word: its meaning as role: value
+pairs in a fixed schema that is the same for every word. Fill EVERY role.""")
+        examples = getattr(S, "PROMPT_EXAMPLES", """- Function words get glyphs too: "not" -> category: word, opposite: yes,
+  thought: denial; "under" -> category: position, opposite: over, place: below.""")
+        self.system = f"""{intro}
 
 Roles:
-{_schema_lines()}
+{lines}
 
 Rules:
 - value is ONE lowercase English word (letters only, no spaces) or "none".
 - Prefer simple, common everyday words as values — the words a child knows.
   Use base forms: singular nouns, plain verbs ("run", not "running").
 - A word may never be its own value.
-- weight = how central this role is to the word's meaning: 1.0 = defining,
+- weight = how central this role is to the word: 1.0 = defining,
   0.5 = clearly present, 0.2 = weakly present. Use "none" with weight 0.0
-  when a role does not apply. Most words fill 4-10 roles, not all 21.
+  when a role does not apply. Most words fill well under half the roles.
 - Describe the word's DOMINANT everyday sense (as in children's stories).
-- Function words get glyphs too: "not" -> category: word, opposite: yes,
-  thought: denial; "under" -> category: position, opposite: over, place: below.
+{examples}
 """
 
+    def write(self, client: anthropic.Anthropic, word: str) -> dict:
+        """One word -> validated glyph keyed by dotted role path."""
+        last_err = None
+        for _ in range(3):
+            try:
+                resp = client.messages.parse(
+                    model=MODEL,
+                    max_tokens=2500,
+                    system=[{"type": "text", "text": self.system,
+                             "cache_control": {"type": "ephemeral"}}],
+                    messages=[{"role": "user", "content": f"Word: {word}"}],
+                    output_format=self.model,
+                )
+                g = resp.parsed_output
+                glyph = {}
+                for f, path in self.fields.items():
+                    v = getattr(g, f).value.strip().lower()
+                    w = round(getattr(g, f).weight, 2)
+                    glyph[path] = {"value": v, "weight": 0.0 if v == "none" else w}
+                problems = self.S.validate_glyph(word, glyph)
+                if problems:
+                    last_err = f"validation: {problems}"
+                    continue
+                return glyph
+            except Exception as e:  # API errors and schema misses retry
+                last_err = str(e)
+        raise RuntimeError(f"{word}: {last_err}")
 
-def write_glyph(client: anthropic.Anthropic, word: str) -> dict:
-    """One word -> validated glyph keyed by dotted role path."""
-    last_err = None
-    for _ in range(3):
-        try:
-            resp = client.messages.parse(
-                model=MODEL,
-                max_tokens=2000,
-                system=[{"type": "text", "text": SYSTEM,
-                         "cache_control": {"type": "ephemeral"}}],
-                messages=[{"role": "user", "content": f"Word: {word}"}],
-                output_format=Glyph,
-            )
-            g = resp.parsed_output
-            glyph = {}
-            for f, path in FIELDS.items():
-                v = getattr(g, f).value.strip().lower()
-                w = round(getattr(g, f).weight, 2)
-                glyph[path] = {"value": v, "weight": 0.0 if v == "none" else w}
-            problems = validate_glyph(word, glyph)
-            if problems:
-                last_err = f"validation: {problems}"
-                continue
-            return glyph
-        except Exception as e:  # API errors and schema misses retry
-            last_err = str(e)
-    raise RuntimeError(f"{word}: {last_err}")
 
-
-def load_glyphs() -> dict:
-    if not OUT_PATH.exists():
+def load_glyphs(path: Path) -> dict:
+    if not path.exists():
         return {}
-    with OUT_PATH.open() as f:
+    with path.open() as f:
         return {d["word"]: d for d in map(json.loads, f) if d}
 
 
@@ -115,18 +120,26 @@ def main():
     ap.add_argument("--rounds", type=int, default=50, help="stop after this many rounds")
     ap.add_argument("--max-glyphs", type=int, default=0,
                     help="stop before a round that would pass this many glyphs (cost cap)")
+    ap.add_argument("--schema", default="glyph_schema", help="schema module (glyph_schema2 = v2)")
+    ap.add_argument("--out", default="glyphs.jsonl")
+    ap.add_argument("--with-schema-words", action="store_true",
+                    help="also seed every layer/segment/role name (schema.SCHEMA_WORDS)")
     args = ap.parse_args()
 
+    writer = Writer(args.schema)
+    out_path = HERE / args.out
     client = anthropic.Anthropic()
-    glyphs = load_glyphs()
-    seeds = args.words or seed_words()
+    glyphs = load_glyphs(out_path)
+    seeds = list(args.words or seed_words())
+    if args.with_schema_words:
+        seeds += [w for w in writer.S.SCHEMA_WORDS if w not in seeds]
     pending = [w for w in seeds if w not in glyphs]
     rnd = max((d["round"] for d in glyphs.values()), default=0)
     if not pending:   # resuming: continue from the open frontier
         pending = sorted(value_words(glyphs) - glyphs.keys())
 
     failed = set()
-    with OUT_PATH.open("a") as out:
+    with out_path.open("a") as out:
         while pending and rnd < args.rounds:
             if args.max_glyphs and len(glyphs) + len(pending) > args.max_glyphs:
                 print(f"cap: next round would reach {len(glyphs) + len(pending)} glyphs "
@@ -136,7 +149,7 @@ def main():
             print(f"round {rnd}: writing {len(pending)} glyphs "
                   f"(have {len(glyphs)})", flush=True)
             with ThreadPoolExecutor(WORKERS) as pool:
-                futs = {pool.submit(write_glyph, client, w): w for w in pending}
+                futs = {pool.submit(writer.write, client, w): w for w in pending}
                 for i, fut in enumerate(as_completed(futs), 1):
                     word = futs[fut]
                     try:
