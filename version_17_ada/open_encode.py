@@ -5,12 +5,19 @@ Every role binds its value word's own glyph, all glyphs solved together:
 
     g(w) = (1-β)·a(w) + β · Σ_k ŵ_k · R_k ⊙ g(v_k)
 
-  a(w)  identity atom of the word     R_k  role atom      ŵ  weights, summed to 1
+  a(w)  identity atom of the word     R_k  role atom
+  ŵ     role weights normalized so Σ ŵ = 1
 A value word with no glyph yet (the closure was capped before reaching it)
-is a leaf: g(v) = a(v). Binding is norm-preserving and ŵ sums to 1, so the
-map is a contraction with factor β and iteration from g = a converges.
+is a leaf: g(v) = a(v). Binding is norm-preserving and Σ ŵ = 1, so the map
+is a contraction with factor β: iteration from g = a always converges.
+(Normalizing Σ ŵ² = 1 instead diverges: binding is self-inverse, so
+symmetric pairs — love -opposite-> hate -opposite-> love — feed a glyph
+back into itself undistorted, and those loops grow without bound.)
 
-Similarity is the cosine of the float glyphs (no sign()).
+Words are compared by their MEANING m(w) = Σ ŵ R⊙g(v), not the full glyph:
+~15 near-orthogonal terms with Σ ŵ = 1 have norm ~1/√15, so in g the
+identity atom swamps the meaning; cosine of m is scale-free.
+
 
 Run:  python open_encode.py [--beta 0.7] [words ...]
 """
@@ -60,7 +67,8 @@ def solve(G: dict, beta: float, tol=1e-5, max_iter=500):
         delta = float(np.abs(new - g).max())
         g = new
         if delta < tol:
-            return g, idx, it, len(leaves)
+            M = {w: sum(wt * R * g[j] for R, j, wt in T[i]) for i, w in enumerate(words)}
+            return M, it, len(leaves)
     raise RuntimeError(f"no convergence (delta {delta:.2e})")
 
 
@@ -75,9 +83,9 @@ if __name__ == "__main__":
                     default=["love", "hate", "kind", "mean", "care", "anger", "good", "bad"])
     args = ap.parse_args()
     G = load()
-    g, idx, iters, n_leaves = solve(G, args.beta)
+    M, iters, n_leaves = solve(G, args.beta)
     print(f"glyphs {len(G)}  leaves {n_leaves}  β={args.beta}  converged in {iters} iterations\n")
-    ws = [w for w in args.words if w in idx]
+    ws = [w for w in args.words if w in M]
     print("        " + "".join(f"{w:>8}" for w in ws))
     for a in ws:
-        print(f"{a:>8}" + "".join(f"{cos(g[idx[a]], g[idx[b]]):8.2f}" for b in ws))
+        print(f"{a:>8}" + "".join(f"{cos(M[a], M[b]):8.2f}" for b in ws))
