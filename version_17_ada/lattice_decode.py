@@ -17,6 +17,11 @@ What is left is an ACTIVATION FIELD: energy on every lattice node (layer,
 segment, role) and on every word reached, plus the threads that carried it.
 That field is the decoded meaning — the same structure as the input.
 
+FIXED LATTICE (default): every glyph binds all 27 roles — a role a word
+leaves empty binds the word "none", itself a glyph (absence, zero, opposite
+of all) — so every glyph has the identical structure and the same energy per
+thread. --free binds only the filled roles (glyphs differ in shape).
+
 Two words are compared node by node: per layer, the cosine of the word
 fields that entered through that layer — and the threads that run directly
 from one word to the other (love -opposite-> hate).
@@ -35,7 +40,6 @@ import open_encode2 as E
 from glyph_schema2 import SCHEMA, ROLE_PATHS, PATHS
 
 HERE = Path(__file__).parent
-CACHE = HERE / "space2.npz"
 LAYERS = list(SCHEMA)
 
 
@@ -43,9 +47,12 @@ LAYERS = list(SCHEMA)
 # The space: glyphs + glyph keys (solved once, cached)
 # ============================================================================
 class Lattice:
-    def __init__(self, beta_glyph=0.7, rebuild=False):
-        G = E.load()
+    def __init__(self, beta_glyph=0.7, rebuild=False, fixed=True, w_none=0.3):
+        G = E.load(fixed=fixed, w_none=w_none)
+        if fixed:
+            assert all(len(t) == len(PATHS) for t in G.values()), "fixed lattice: 27 binds each"
         self.space = space = E.Space(G)
+        CACHE = HERE / (f"space2_fixed_{w_none}.npz" if fixed else "space2.npz")
         if CACHE.exists() and not rebuild:
             z = np.load(CACHE, allow_pickle=True)
             g, K = z["g"], z["K"].item()
@@ -63,23 +70,25 @@ class Lattice:
         self._fired = {}
         self.floor = self._noise_floor()
 
-    def _noise_floor(self, sample=300, q=99.5):
-        """Cleanup score of probes down roles a word does NOT fill = pure noise."""
+    def _noise_floor(self, sample=300, n_keys=27, q=99.5):
+        """Cleanup score of probes with random keys that belong to no role = pure noise.
+        (In a fixed lattice every role is filled, so there are no empty roles to use.)"""
         rng = np.random.default_rng(0)
         words = rng.choice(self.space.words, size=min(sample, len(self.space.words)),
                            replace=False)
+        rand_keys = rng.choice(np.array([-1, 1], np.float32), (n_keys, self.Kmat.shape[1]))
         noise = []
         for w in words:
-            filled = {p for p, _, _ in self.space.G[w]}
-            scores, _ = self._probe(w)
-            noise += [s for p, s in zip(PATHS, scores) if p not in filled]
+            scores, _ = self._probe(w, rand_keys)
+            noise += list(scores)
         return float(np.percentile(noise, q))
 
-    def _probe(self, w):
+    def _probe(self, w, keys=None):
+        keys = self.Kmat if keys is None else keys
         m = self.M[w] / np.linalg.norm(self.M[w])
-        sims = self.mem @ (self.Kmat * m).T                        # (N, 27)
+        sims = self.mem @ (keys * m).T                             # (N, n_keys)
         best = sims.argmax(0)
-        return sims[best, np.arange(len(PATHS))], best
+        return sims[best, np.arange(keys.shape[0])], best
 
     def fire(self, w):
         """One neuron firing: [(role_path, value_word, strength)] above the floor."""
@@ -94,7 +103,7 @@ class Lattice:
         return self._fired[w]
 
     # ------------------------------------------------------------------------
-    def spread(self, w, depth=3, beta=0.5, eps=1e-3, branch=8):
+    def spread(self, w, depth=3, beta=0.5, eps=1e-3, branch=None):
         """Energy from w down the lattice threads, hop by hop.
 
         Returns a field: node energy (role paths), word energy split by the
@@ -179,9 +188,11 @@ if __name__ == "__main__":
     ap.add_argument("--depth", type=int, default=3)
     ap.add_argument("--beta", type=float, default=0.5, help="energy kept per hop")
     ap.add_argument("--rebuild", action="store_true")
+    ap.add_argument("--free", action="store_true", help="glyphs bind only the roles they fill")
+    ap.add_argument("--w-none", type=float, default=0.3, help="weight of a 'none' bind (fixed)")
     args = ap.parse_args()
 
-    L = Lattice(rebuild=args.rebuild)
+    L = Lattice(rebuild=args.rebuild, fixed=not args.free, w_none=args.w_none)
     fields = {w: L.spread(w, depth=args.depth, beta=args.beta) for w in args.words}
     for w in args.words:
         show(L, w, fields[w])

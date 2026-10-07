@@ -44,12 +44,23 @@ def atom(name: str) -> np.ndarray:
     return np.random.default_rng(seed).choice(np.array([-1, 1], np.float32), D)
 
 
-def load(path="glyphs2.jsonl"):
+def load(path="glyphs2.jsonl", fixed=False, w_none=0.3):
+    """{word: [(role_path, value, weight)]}.
+
+    fixed=False: only the roles a word fills (glyphs differ in shape).
+    fixed=True:  the FIXED lattice — every glyph binds all 27 roles; a role
+                 the word leaves empty binds the word "none" (itself a glyph)
+                 at weight w_none, so every glyph has the identical structure.
+    """
     G = {}
     for line in open(HERE / path):
         d = json.loads(line)
-        G[d["word"]] = [(p, e["value"], e["weight"]) for p, e in d["glyph"].items()
-                        if e["value"] != "none" and e["weight"] > 0]
+        if fixed:
+            G[d["word"]] = [(p, e["value"], e["weight"]) if e["value"] != "none"
+                            else (p, "none", w_none) for p, e in d["glyph"].items()]
+        else:
+            G[d["word"]] = [(p, e["value"], e["weight"]) for p, e in d["glyph"].items()
+                            if e["value"] != "none" and e["weight"] > 0]
     return {w: t for w, t in G.items() if t}
 
 
