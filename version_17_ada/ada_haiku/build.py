@@ -274,19 +274,20 @@ def main():
         pending_ids = {w for b in st["batches"] if b["status"] != "downloaded"
                        for w in json.loads((HERE / "requests" / f"{b['round']}_{b['part']}.json")
                                            .read_text()).values()}
-        todo = [w for w in seeds if w not in done and w not in pending_ids]
+        failed = set(st["failed"])                               # retried once, at the end
+        todo = [w for w in seeds if w not in done and w not in pending_ids and w not in failed]
         open_n = sum(b["n"] for b in st["batches"] if b["status"] != "downloaded")
         if not todo and open_n == 0 and rnd == "r1":             # closure round: value words
             vals = set()
             for f in sorted(SHARDS.glob("*.jsonl.gz")):
                 for line in gzip.open(f, "rt"):
                     vals |= {e["value"] for e in json.loads(line)["glyph"].values()}
-            todo = sorted(vals - done - pending_ids)
+            todo = sorted(vals - done - pending_ids - failed)
             if todo:
                 rnd = "r2"
                 seeds = seeds + todo
                 total = len(seeds)
-        retry = sorted(set(st["failed"]) - done - pending_ids)
+        retry = sorted(failed - done - pending_ids)
         if not todo and open_n == 0 and retry and not st["rounds"].get("retried"):
             todo, st["rounds"]["retried"] = retry, True
             st["failed"] = []
