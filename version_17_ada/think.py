@@ -44,6 +44,7 @@ from glyph_schema3 import ROLE_PATHS, PATHS
 from typed_encode import ROLE_TYPE
 
 HERE = Path(__file__).parent
+ETA_W = 0.05                            # per-thread step: the most active thread moves this much
 SIGN = {"negate": -1.0}                 # every other type starts attracting
 
 
@@ -74,11 +75,18 @@ class Brain:
         self.theta = np.array([SIGN.get(ROLE_TYPE[r], 1.0) for r in self.roles], np.float32)
         self.theta /= np.abs(self.theta).sum()
         self.cand = np.arange(len(self.words))                       # answers are glyphed words
+        self.W = [np.ones(len(i), np.float32) for i, _, _ in self.edges]   # per-thread weights
+        self.w_max = 1.15        # ρ(cM) ≤ c·Σ|θ|·w_max = 0.98 < 1: still a contraction
 
     # ---- thinking ----------------------------------------------------------
-    def M(self, theta=None):
+    def M(self, theta=None, W=None):
+        """M = Σ_r θ_r (W_r ⊙ Ŝ_r): role trust × per-thread weight × structure."""
         th = self.theta if theta is None else theta
-        return np.tensordot(th, self.S, axes=1)
+        W = self.W if W is None else W
+        M = np.zeros((self.N, self.N), np.float64)
+        for k, (i, j, v) in enumerate(self.edges):
+            np.add.at(M, (i, j), th[k] * v * W[k])
+        return M
 
     def settle(self, B, M=None, tol=1e-6, max_iter=500):
         """B: (N, batch) questions. Returns lights X* and the steps each took."""
@@ -100,8 +108,13 @@ class Brain:
         return np.linalg.solve(np.eye(self.N, dtype=np.float64) - self.c * M, (1 - self.c) * B)
 
     def quad(self, X):
-        """xᵀ Ŝ_r x for every role r and question, over each role's edges only."""
-        return np.stack([(v[:, None] * X[i] * X[j]).sum(0) for i, j, v in self.edges])
+        """xᵀ (W_r ⊙ Ŝ_r) x for every role r and question, over each role's edges only."""
+        return np.stack([((v * w)[:, None] * X[i] * X[j]).sum(0)
+                         for (i, j, v), w in zip(self.edges, self.W)])
+
+    def edge_corr(self, X):
+        """x_i x_j on every thread, averaged over the batch (the local activity product)."""
+        return [(X[i] * X[j]).mean(1) for i, j, _ in self.edges]
 
     def question(self, clues):
         b = np.zeros(self.N, np.float32)
@@ -128,25 +141,35 @@ class Brain:
         Bn = B.copy()
         Bn[self.cand] += beta * nudge / (1 - self.c)
         Xn = np.linalg.solve(L, (1 - self.c) * Bn)
-        return self.c / 2 * (self.quad(Xn) - self.quad(X)).sum(1) / beta / B.shape[1]
+        g_theta = self.c / 2 * (self.quad(Xn) - self.quad(X)).sum(1) / beta / B.shape[1]
+        cn, cf = self.edge_corr(Xn), self.edge_corr(X)
+        g_W = [self.c / 2 * self.theta[k] * v * (cn[k] - cf[k]) / beta
+               for k, (_, _, v) in enumerate(self.edges)]
+        return g_theta, g_W
 
-    def loss(self, B, targets, exclude, theta=None, tau=0.01):
-        X = self.solve(B, self.M(theta))
+    def loss(self, B, targets, exclude, theta=None, W=None, tau=0.01):
+        X = self.solve(B, self.M(theta, W))
         s = self.answer(X, exclude) / tau
         s = s - s.max(0)
         return float(-(s[targets, np.arange(len(targets))] - np.log(np.exp(s).sum(0))).mean())
 
-    def train(self, B, targets, exclude, epochs=30, eta=2e-3, batch=128, seed=0):
+    def train(self, B, targets, exclude, epochs=30, eta=0.3, eta_w=0.0, batch=128, seed=0):
+        """Equilibrium propagation on θ (role trust) and, if eta_w > 0, on every thread."""
         rng = np.random.default_rng(seed)
         for ep in range(epochs):
             order = rng.permutation(B.shape[1])
             for i in range(0, len(order), batch):
                 j = order[i:i + batch]
-                g = self.ep_grad(B[:, j], targets[j], [exclude[k] for k in j])
-                self.theta += eta * g
-                n = np.abs(self.theta).sum()
-                if n > 1:
-                    self.theta /= n
+                g, gW = self.ep_grad(B[:, j], targets[j], [exclude[k] for k in j])
+                if eta:
+                    self.theta += eta * g
+                    n = np.abs(self.theta).sum()
+                    if n > 1:
+                        self.theta /= n
+                if eta_w:                   # normalized: the most active thread moves eta_w
+                    gmax = max(float(np.abs(g).max()) for g in gW) + 1e-12
+                    for k in range(len(self.W)):
+                        self.W[k] = np.clip(self.W[k] + eta_w * gW[k] / gmax, 0.0, self.w_max)
         return self
 
 
@@ -164,6 +187,21 @@ def riddles(brain, words, k=3, per_word=3, seed=0):
     B = np.stack([brain.question(c) for _, c in qs], 1)
     targets = np.array([brain.idx[w] for w, _ in qs])
     return B, targets, [c for _, c in qs], qs
+
+
+def lookup(brain, qs):
+    """CONTROL: no thinking — score each word by how many clues appear in its glyph."""
+    vals = [set(brain.G[w].values()) for w in brain.words]
+    hit = 0
+    for w, clues in qs:
+        score = np.array([len(set(clues) & v) + 1e-6 * k for k, v in enumerate(vals)], float)
+        for c in clues:
+            if c in brain.G:
+                score[brain.idx[c]] = -1
+        best = score.max()
+        ties = np.flatnonzero(score >= best - 1e-3)        # random tie-break among equals
+        hit += brain.idx[w] in ties and 1 / len(ties)
+    return hit / len(qs)
 
 
 def accuracy(brain, B, targets, exclude):
@@ -213,30 +251,59 @@ if __name__ == "__main__":
 
     if args.check:
         j = np.arange(16)
-        g = brain.ep_grad(Btr[:, j], ttr[j], [extr[i] for i in j], beta=1e-3)
+        ex = [extr[i] for i in j]
+        g, gW = brain.ep_grad(Btr[:, j], ttr[j], ex, beta=1e-3)
         fd = np.zeros_like(brain.theta)
         for k in range(len(fd)):
             e = np.zeros_like(fd); e[k] = 1e-3
-            fd[k] = -(brain.loss(Btr[:, j], ttr[j], [extr[i] for i in j], brain.theta + e)
-                      - brain.loss(Btr[:, j], ttr[j], [extr[i] for i in j], brain.theta - e)) / 2e-3
-        print(f"EP vs finite-difference (−∂loss/∂θ): cosine "
+            fd[k] = -(brain.loss(Btr[:, j], ttr[j], ex, brain.theta + e)
+                      - brain.loss(Btr[:, j], ttr[j], ex, brain.theta - e)) / 2e-3
+        print(f"θ: EP vs finite-difference (−∂loss/∂θ): cosine "
               f"{g @ fd / (np.linalg.norm(g) * np.linalg.norm(fd)):.4f}")
+        # per-thread weights: the threads the batch actually uses (largest |gradient|)
+        cand = sorted(((abs(gW[k][e]), k, e) for k in range(len(gW))
+                       for e in range(len(gW[k]))), reverse=True)[:24]
+        ep_w, fd_w = [], []
+        for _, k, e in cand:
+            Wp = [w.copy() for w in brain.W]; Wm = [w.copy() for w in brain.W]
+            # thread (i,j) and its mirror (j,i) share one weight: move both
+            i0, j0, _ = brain.edges[k]
+            mirror = np.flatnonzero((i0 == j0[e]) & (j0 == i0[e]))
+            for m in [e, *mirror]:
+                Wp[k][m] += 1e-3; Wm[k][m] -= 1e-3
+            fd_w.append(-(brain.loss(Btr[:, j], ttr[j], ex, W=Wp)
+                          - brain.loss(Btr[:, j], ttr[j], ex, W=Wm)) / 2e-3)
+            ep_w.append(gW[k][e] + sum(gW[k][m] for m in mirror))
+        ep_w, fd_w = np.array(ep_w), np.array(fd_w)
+        print(f"per-thread W: EP vs finite-difference on the 24 busiest threads: cosine "
+              f"{ep_w @ fd_w / (np.linalg.norm(ep_w) * np.linalg.norm(fd_w)):.4f}")
         raise SystemExit
 
+    _, _, _, qtr = riddles(brain, train_w, seed=1)
+    print(f"\nCONTROL lookup (no thinking: count clue overlap with each glyph): "
+          f"test top-1 {lookup(brain, qte):.1%}")
     top1, top5, steps = accuracy(brain, Bte, tte, exte)
-    print(f"\nUNTRAINED (θ from types only): test riddles top-1 {top1:.1%}  top-5 {top5:.1%}  "
-          f"(chance {1 / len(brain.words):.2%})  mean settle steps {steps.mean():.1f}")
+    print(f"UNTRAINED (θ from types only):        test top-1 {top1:.1%}  top-5 {top5:.1%}  "
+          f"(chance {1 / len(brain.words):.2%})  settle steps {steps.mean():.1f}")
     theta0 = brain.theta.copy()
-    brain.train(Btr, ttr, extr)
-    top1t, top5t, steps_t = accuracy(brain, Bte, tte, exte)
-    tr1, _, _ = accuracy(brain, Btr, ttr, extr)
-    print(f"TRAINED   (equilibrium propagation): test top-1 {top1t:.1%}  top-5 {top5t:.1%}  "
-          f"(train top-1 {tr1:.1%})  mean settle steps {steps_t.mean():.1f}")
+    brain.train(Btr, ttr, extr, eta=0.3, eta_w=0.0)
+    t1, t5, _ = accuracy(brain, Bte, tte, exte); tr1, _, _ = accuracy(brain, Btr, ttr, extr)
+    print(f"TRAINED θ only (27 numbers):          test top-1 {t1:.1%}  top-5 {t5:.1%}  "
+          f"(train {tr1:.1%})")
+    theta_r = brain.theta.copy()
+    brain.train(Btr, ttr, extr, eta=0.0, eta_w=ETA_W, epochs=30)
+    t1w, t5w, steps_w = accuracy(brain, Bte, tte, exte); tr1w, _, _ = accuracy(brain, Btr, ttr, extr)
+    nW = sum(len(w) for w in brain.W)
+    print(f"TRAINED + per-thread ({nW:,} weights): test top-1 {t1w:.1%}  top-5 {t5w:.1%}  "
+          f"(train {tr1w:.1%})  settle steps {steps_w.mean():.1f}")
+    allw = np.concatenate(brain.W)
+    print(f"   threads: {np.mean(allw < 0.05):.1%} pruned (<0.05), {np.mean(allw > 1.1):.1%} "
+          f"strengthened (>1.1), mean {allw.mean():.2f}")
 
-    order_r = np.argsort(-brain.theta)
+    order_r = np.argsort(-theta_r)
     print("\nwhat it learned to trust (θ, init -> trained):")
     for k in list(order_r[:6]) + list(order_r[-4:]):
-        print(f"   {brain.roles[k]:9} {theta0[k]:+.3f} -> {brain.theta[k]:+.3f}")
+        print(f"   {brain.roles[k]:9} {theta0[k]:+.3f} -> {theta_r[k]:+.3f}")
 
     print("\na few test riddles (clues -> settled answer):")
     X, _ = brain.settle(Bte[:, :12])
