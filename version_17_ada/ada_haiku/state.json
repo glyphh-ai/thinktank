@@ -123,6 +123,14 @@
    "succeeded": 22,
    "errored": 0,
    "downloaded": "2026-10-08 21:03:38Z"
+  },
+  {
+   "id": "msgbatch_016M5sng7uXTEiUjpexHY5NA",
+   "round": "r2",
+   "part": 0,
+   "n": 2073,
+   "status": "in_progress",
+   "submitted": "2026-10-08 21:04:57Z"
   }
  ],
  "cost_usd": 7.003112297500001,
