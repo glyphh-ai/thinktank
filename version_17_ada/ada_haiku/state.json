@@ -129,12 +129,15 @@
    "round": "r2",
    "part": 0,
    "n": 2073,
-   "status": "in_progress",
-   "submitted": "2026-10-08 21:04:57Z"
+   "status": "downloaded",
+   "submitted": "2026-10-08 21:04:57Z",
+   "succeeded": 2073,
+   "errored": 0,
+   "downloaded": "2026-10-08 21:13:10Z"
   }
  ],
- "cost_usd": 7.003112297500001,
- "glyphs": 66211,
+ "cost_usd": 7.214476762500009,
+ "glyphs": 68283,
  "failed": [
   "all",
   "aerosolized",
@@ -308,7 +311,8 @@
   "xvi",
   "yourself",
   "zilch",
-  "xlviii"
+  "xlviii",
+  "doses"
  ],
  "rounds": {}
 }
