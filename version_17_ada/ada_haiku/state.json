@@ -41,10 +41,11 @@
    "round": "r1",
    "part": 3,
    "n": 8000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 17:33:28Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 8000,
+   "errored": 0,
+   "downloaded": "2026-10-08 17:55:06Z"
   },
   {
    "id": "msgbatch_01Eff56aHnuj1BmWX5ZVBTcC",
@@ -57,8 +58,8 @@
    "errored": 0
   }
  ],
- "cost_usd": 1.8562078675000269,
- "glyphs": 17968,
+ "cost_usd": 2.675958067499982,
+ "glyphs": 25959,
  "failed": [
   "all",
   "aerosolized",
@@ -91,7 +92,16 @@
   "colicky",
   "congius",
   "cps",
-  "dessertspoonful"
+  "dessertspoonful",
+  "each",
+  "fluoroscope",
+  "galore",
+  "edelweiss",
+  "fistful",
+  "estradiol",
+  "etcetera",
+  "every",
+  "dosage"
  ],
  "rounds": {}
 }
