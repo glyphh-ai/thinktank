@@ -154,10 +154,12 @@ def write_progress(st, total_seeds, note=""):
 
 
 def git_push(msg):
-    """Commit the capture (shards, state, progress) and push. Never commits raw/ or the key."""
+    """Commit the capture (shards, request maps, state, progress) and push.
+    Never commits raw/ or the key."""
     try:
-        subprocess.run(["git", "-C", str(ROOT.parent), "add", str(HERE / "shards"),
-                        str(STATE), str(PROGRESS)], check=True, capture_output=True)
+        paths = [p for p in (HERE / "shards", HERE / "requests", STATE, PROGRESS) if p.exists()]
+        subprocess.run(["git", "-C", str(ROOT.parent), "add", *map(str, paths)],
+                       check=True, capture_output=True)
         r = subprocess.run(["git", "-C", str(ROOT.parent), "commit", "-q", "-m",
                             f"ada-haiku: {msg}\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
                             "Claude-Session: https://claude.ai/code/session_01VUsxdcdhXYHqLqZHQQHBh4"],
@@ -224,6 +226,8 @@ def submit(client, st, rnd, part, words):
                           "status": batch.processing_status, "submitted": now()})
     save_state(st)
     print(f"[{now()}] submitted {batch.id}: round {rnd} part {part}, {len(words)} words", flush=True)
+    write_progress(st, len(cids))
+    git_push(f"submitted {batch.id[-12:]} ({rnd} part {part}, {len(words)} words)")
 
 
 def main():
