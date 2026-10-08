@@ -85,10 +85,11 @@
    "round": "r1",
    "part": 7,
    "n": 8000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 18:12:53Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 8000,
+   "errored": 0,
+   "downloaded": "2026-10-08 20:44:42Z"
   },
   {
    "id": "msgbatch_01KS3uNi4MGM6tJzy8n2RfWL",
@@ -106,11 +107,13 @@
    "part": 9,
    "n": 362,
    "status": "in_progress",
-   "submitted": "2026-10-08 20:00:33Z"
+   "submitted": "2026-10-08 20:00:33Z",
+   "succeeded": 0,
+   "errored": 0
   }
  ],
- "cost_usd": 5.234528532499936,
- "glyphs": 49897,
+ "cost_usd": 6.084961047499964,
+ "glyphs": 57875,
  "failed": [
   "all",
   "aerosolized",
@@ -214,7 +217,29 @@
   "radiology",
   "radiophotography",
   "quantifier",
-  "quin"
+  "quin",
+  "amount",
+  "atomize",
+  "all",
+  "jillion",
+  "allis",
+  "li",
+  "shovelful",
+  "hysterosalpingogram",
+  "sensitive",
+  "tablespoonful",
+  "several",
+  "any",
+  "aerosolize",
+  "sericultural",
+  "aerosolised",
+  "sevens",
+  "aerosolise",
+  "aerosolized",
+  "spadeful",
+  "arthrography",
+  "som",
+  "atomization"
  ],
  "rounds": {}
 }
