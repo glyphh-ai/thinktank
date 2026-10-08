@@ -74,10 +74,11 @@
    "round": "r1",
    "part": 6,
    "n": 8000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 17:56:21Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 8000,
+   "errored": 0,
+   "downloaded": "2026-10-08 19:59:21Z"
   },
   {
    "id": "msgbatch_01NRVzpTtd2FFGF1BFqG4Gcc",
@@ -90,8 +91,8 @@
    "errored": 0
   }
  ],
- "cost_usd": 4.361338322499876,
- "glyphs": 41912,
+ "cost_usd": 5.234528532499936,
+ "glyphs": 49897,
  "failed": [
   "all",
   "aerosolized",
@@ -180,7 +181,22 @@
   "menses",
   "dosage",
   "each",
-  "menorrhea"
+  "menorrhea",
+  "ravishingly",
+  "phlebogram",
+  "radiography",
+  "passion",
+  "prodigal",
+  "radiolucent",
+  "radioscopy",
+  "radiopaque",
+  "pyelography",
+  "planchette",
+  "quorum",
+  "radiology",
+  "radiophotography",
+  "quantifier",
+  "quin"
  ],
  "rounds": {}
 }

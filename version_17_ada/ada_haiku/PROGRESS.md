@@ -1,13 +1,13 @@
 # ada-haiku build — progress
 
-_updated 2026-10-08 19:59:16Z_ — model `claude-haiku-5-5`, Batch API, hard cap **$20.00**
+_updated 2026-10-08 19:59:22Z_ — model `claude-haiku-5-5`, Batch API, hard cap **$20.00**
 
 | | |
 |---|---|
-| glyphs captured | **41,912** of 66,259 seeds |
-| spent so far | **$4.36** ($0.00010/glyph) |
-| failed validation (queued for retry) | 88 |
-| batches | 8 submitted, 2 still open |
+| glyphs captured | **49,897** of 66,259 seeds |
+| spent so far | **$5.23** ($0.00010/glyph) |
+| failed validation (queued for retry) | 103 |
+| batches | 8 submitted, 1 still open |
 
 | batch | round | words | status | succeeded | errored | submitted |
 |---|---|---|---|---|---|---|
@@ -17,7 +17,7 @@ _updated 2026-10-08 19:59:16Z_ — model `claude-haiku-5-5`, Batch API, hard cap
 | `CHkFY1EXvg75` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 17:33:28Z |
 | `1BmWX5ZVBTcC` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 17:51:54Z |
 | `ZyztCrhgpXso` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 17:55:14Z |
-| `VtCgb78v7ZEt` | r1 | 8,000 | in_progress | 0 | 0 | 2026-10-08 17:56:21Z |
+| `VtCgb78v7ZEt` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 17:56:21Z |
 | `FGF1BFqG4Gcc` | r1 | 8,000 | in_progress | 0 | 0 | 2026-10-08 18:12:53Z |
 
 Results: `shards/*.jsonl.gz` (one per finished batch). Batch ids above are re-downloadable from the API for 29 days.
