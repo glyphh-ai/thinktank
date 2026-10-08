@@ -15,7 +15,8 @@ value words that still have no glyph.
                and pushed with state.json
              · state.json (committed) holds every batch id: results stay on the
                API for 29 days, so a dead container resumes and re-downloads
-  watch    PROGRESS.md (rewritten every poll, pushed on every batch event)
+  watch    PROGRESS.live.md (rewritten every poll, local) and PROGRESS.md
+           (snapshot committed + pushed on every submit and download)
 
 Run (background):  nohup python ada_haiku/build.py > ada_haiku/log.txt 2>&1 &
 Resume:            same command — it reads state.json and carries on
@@ -46,8 +47,10 @@ import glyph_schema3 as S                                       # noqa: E402
 MODEL = "claude-haiku-5-5"
 # Batch API = 50% of standard: input $0.10, output $0.50, cache write 1.25x, read 0.1x (per MTok)
 PRICE = {"in": 0.05, "cw": 0.0625, "cr": 0.005, "out": 0.25}
-STATE = HERE / "state.json"
-PROGRESS = HERE / "PROGRESS.md"
+STATE = HERE / "state.json"                 # committed snapshot (written at push time)
+STATE_LIVE = HERE / "state.local.json"      # the working copy, saved every poll (untracked)
+PROGRESS = HERE / "PROGRESS.md"             # committed (written at push time)
+PROGRESS_LIVE = HERE / "PROGRESS.live.md"   # rewritten every poll (untracked)
 RAW, SHARDS = HERE / "raw", HERE / "shards"
 WORD_RE = re.compile(r"^[a-z]+$")
 
@@ -75,14 +78,15 @@ def seed_words():
 
 
 def load_state():
-    if STATE.exists():
-        return json.loads(STATE.read_text())
+    for p in (STATE_LIVE, STATE):                # live copy first; committed one on a new container
+        if p.exists():
+            return json.loads(p.read_text())
     return {"created": now(), "model": MODEL, "cap_usd": None, "batches": [],
             "cost_usd": 0.0, "glyphs": 0, "failed": [], "rounds": {}}
 
 
 def save_state(st):
-    STATE.write_text(json.dumps(st, indent=1))
+    STATE_LIVE.write_text(json.dumps(st, indent=1))
 
 
 def now():
@@ -150,13 +154,15 @@ def write_progress(st, total_seeds, note=""):
         lines += ["", f"**{note}**"]
     lines += ["", "Results: `shards/*.jsonl.gz` (one per finished batch). "
               "Batch ids above are re-downloadable from the API for 29 days."]
-    PROGRESS.write_text("\n".join(lines) + "\n")
+    PROGRESS_LIVE.write_text("\n".join(lines) + "\n")
 
 
 def git_push(msg):
     """Commit the capture (shards, request maps, state, progress) and push.
     Never commits raw/ or the key."""
     try:
+        STATE.write_text(STATE_LIVE.read_text())                 # snapshot the live files
+        PROGRESS.write_text(PROGRESS_LIVE.read_text())
         paths = [p for p in (HERE / "shards", HERE / "requests", STATE, PROGRESS) if p.exists()]
         subprocess.run(["git", "-C", str(ROOT.parent), "add", *map(str, paths)],
                        check=True, capture_output=True)
@@ -226,7 +232,7 @@ def submit(client, st, rnd, part, words):
                           "status": batch.processing_status, "submitted": now()})
     save_state(st)
     print(f"[{now()}] submitted {batch.id}: round {rnd} part {part}, {len(words)} words", flush=True)
-    write_progress(st, len(cids))
+    write_progress(st, sum(b["n"] for b in st["batches"]))
     git_push(f"submitted {batch.id[-12:]} ({rnd} part {part}, {len(words)} words)")
 
 

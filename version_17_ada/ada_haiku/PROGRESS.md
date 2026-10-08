@@ -1,10 +1,10 @@
 # ada-haiku build — progress
 
-_updated 2026-10-08 17:31:21Z_ — model `claude-haiku-5-5`, Batch API, hard cap **$20.00**
+_updated 2026-10-08 17:31:23Z_ — model `claude-haiku-5-5`, Batch API, hard cap **$20.00**
 
 | | |
 |---|---|
-| glyphs captured | **1,993** of 8,000 seeds |
+| glyphs captured | **1,993** of 66,259 seeds |
 | spent so far | **$0.21** ($0.00010/glyph) |
 | failed validation (queued for retry) | 7 |
 | batches | 2 submitted, 1 still open |
