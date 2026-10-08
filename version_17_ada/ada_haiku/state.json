@@ -19,10 +19,11 @@
    "round": "r1",
    "part": 1,
    "n": 8000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 17:31:21Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 8000,
+   "errored": 0,
+   "downloaded": "2026-10-08 17:51:47Z"
   },
   {
    "id": "msgbatch_016C8hxTL8J4RqFHVF4SxEJK",
@@ -40,11 +41,13 @@
    "part": 3,
    "n": 8000,
    "status": "in_progress",
-   "submitted": "2026-10-08 17:33:28Z"
+   "submitted": "2026-10-08 17:33:28Z",
+   "succeeded": 0,
+   "errored": 0
   }
  ],
- "cost_usd": 0.20608776750000016,
- "glyphs": 1993,
+ "cost_usd": 1.0352706424999965,
+ "glyphs": 9973,
  "failed": [
   "all",
   "aerosolized",
@@ -52,7 +55,27 @@
   "allyl",
   "aerosolise",
   "allis",
-  "aerosolised"
+  "aerosolised",
+  "any",
+  "aerosolize",
+  "atomization",
+  "bpi",
+  "angiocardiogram",
+  "aerosolised",
+  "angiography",
+  "amount",
+  "case",
+  "allis",
+  "atomise",
+  "biflagellate",
+  "angiogram",
+  "avianize",
+  "atomize",
+  "arthrography",
+  "aerosolise",
+  "all",
+  "aerosolized",
+  "avianise"
  ],
  "rounds": {}
 }
