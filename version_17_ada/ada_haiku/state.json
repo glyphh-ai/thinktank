@@ -89,6 +89,14 @@
    "submitted": "2026-10-08 18:12:53Z",
    "succeeded": 0,
    "errored": 0
+  },
+  {
+   "id": "msgbatch_01KS3uNi4MGM6tJzy8n2RfWL",
+   "round": "r1",
+   "part": 8,
+   "n": 8000,
+   "status": "in_progress",
+   "submitted": "2026-10-08 19:59:29Z"
   }
  ],
  "cost_usd": 5.234528532499936,
