@@ -30,7 +30,17 @@
    "part": 2,
    "n": 8000,
    "status": "in_progress",
-   "submitted": "2026-10-08 17:32:20Z"
+   "submitted": "2026-10-08 17:32:20Z",
+   "succeeded": 0,
+   "errored": 0
+  },
+  {
+   "id": "msgbatch_011zWLVtXrbJCHkFY1EXvg75",
+   "round": "r1",
+   "part": 3,
+   "n": 8000,
+   "status": "in_progress",
+   "submitted": "2026-10-08 17:33:28Z"
   }
  ],
  "cost_usd": 0.20608776750000016,
