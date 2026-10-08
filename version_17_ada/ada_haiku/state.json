@@ -63,10 +63,11 @@
    "round": "r1",
    "part": 5,
    "n": 8000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 17:55:14Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 8000,
+   "errored": 0,
+   "downloaded": "2026-10-08 19:59:15Z"
   },
   {
    "id": "msgbatch_01CvhfAxJKV9VtCgb78v7ZEt",
@@ -84,11 +85,13 @@
    "part": 7,
    "n": 8000,
    "status": "in_progress",
-   "submitted": "2026-10-08 18:12:53Z"
+   "submitted": "2026-10-08 18:12:53Z",
+   "succeeded": 0,
+   "errored": 0
   }
  ],
- "cost_usd": 3.4965159399999126,
- "glyphs": 33938,
+ "cost_usd": 4.361338322499876,
+ "glyphs": 41912,
  "failed": [
   "all",
   "aerosolized",
@@ -151,7 +154,33 @@
   "jillion",
   "amount",
   "aerosolized",
-  "angiogram"
+  "angiogram",
+  "lu",
+  "overwhelming",
+  "mg",
+  "ones",
+  "every",
+  "congius",
+  "nowhere",
+  "mutualness",
+  "notability",
+  "fistful",
+  "none",
+  "no",
+  "edelweiss",
+  "mammogram",
+  "etcetera",
+  "myelogram",
+  "oldest",
+  "cholangiography",
+  "naught",
+  "nothing",
+  "nones",
+  "nary",
+  "menses",
+  "dosage",
+  "each",
+  "menorrhea"
  ],
  "rounds": {}
 }
