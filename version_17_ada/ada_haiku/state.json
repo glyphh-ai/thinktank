@@ -30,10 +30,11 @@
    "round": "r1",
    "part": 2,
    "n": 8000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 17:32:20Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 8000,
+   "errored": 0,
+   "downloaded": "2026-10-08 17:55:01Z"
   },
   {
    "id": "msgbatch_011zWLVtXrbJCHkFY1EXvg75",
@@ -51,11 +52,13 @@
    "part": 4,
    "n": 8000,
    "status": "in_progress",
-   "submitted": "2026-10-08 17:51:54Z"
+   "submitted": "2026-10-08 17:51:54Z",
+   "succeeded": 0,
+   "errored": 0
   }
  ],
- "cost_usd": 1.0352706424999965,
- "glyphs": 9973,
+ "cost_usd": 1.8562078675000269,
+ "glyphs": 17968,
  "failed": [
   "all",
   "aerosolized",
@@ -83,7 +86,12 @@
   "aerosolise",
   "all",
   "aerosolized",
-  "avianise"
+  "avianise",
+  "cholangiography",
+  "colicky",
+  "congius",
+  "cps",
+  "dessertspoonful"
  ],
  "rounds": {}
 }
