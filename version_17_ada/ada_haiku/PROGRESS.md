@@ -1,13 +1,13 @@
 # ada-haiku build — progress
 
-_updated 2026-10-08 21:03:39Z_ — model `claude-haiku-5-5`, Batch API, hard cap **$20.00**
+_updated 2026-10-08 21:04:46Z_ — model `claude-haiku-5-5`, Batch API, hard cap **$20.00**
 
 | | |
 |---|---|
-| glyphs captured | **57,883** of 66,259 seeds |
-| spent so far | **$6.09** ($0.00011/glyph) |
-| failed validation (queued for retry) | 139 |
-| batches | 11 submitted, 2 still open |
+| glyphs captured | **65,853** of 66,259 seeds |
+| spent so far | **$6.97** ($0.00011/glyph) |
+| failed validation (queued for retry) | 169 |
+| batches | 11 submitted, 1 still open |
 
 | batch | round | words | status | succeeded | errored | submitted |
 |---|---|---|---|---|---|---|
@@ -19,7 +19,7 @@ _updated 2026-10-08 21:03:39Z_ — model `claude-haiku-5-5`, Batch API, hard cap
 | `ZyztCrhgpXso` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 17:55:14Z |
 | `VtCgb78v7ZEt` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 17:56:21Z |
 | `FGF1BFqG4Gcc` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 18:12:53Z |
-| `6tJzy8n2RfWL` | r1 | 8,000 | in_progress | 0 | 0 | 2026-10-08 19:59:29Z |
+| `6tJzy8n2RfWL` | r1 | 8,000 | downloaded | 8000 | 0 | 2026-10-08 19:59:29Z |
 | `vajNPSXupKz3` | r1 | 362 | in_progress | 0 | 0 | 2026-10-08 20:00:33Z |
 | `YCrZ2ML6tiyH` | r1 | 22 | downloaded | 22 | 0 | 2026-10-08 20:44:47Z |
 
