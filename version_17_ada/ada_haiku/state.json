@@ -9,7 +9,9 @@
    "part": 0,
    "n": 2000,
    "status": "in_progress",
-   "submitted": "2026-10-08 17:20:14Z"
+   "submitted": "2026-10-08 17:20:14Z",
+   "succeeded": 0,
+   "errored": 0
   }
  ],
  "cost_usd": 0.0,
