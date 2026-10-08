@@ -52,10 +52,11 @@
    "round": "r1",
    "part": 4,
    "n": 8000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 17:51:54Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 8000,
+   "errored": 0,
+   "downloaded": "2026-10-08 18:12:44Z"
   },
   {
    "id": "msgbatch_01RwHieKaAcAZyztCrhgpXso",
@@ -73,11 +74,13 @@
    "part": 6,
    "n": 8000,
    "status": "in_progress",
-   "submitted": "2026-10-08 17:56:21Z"
+   "submitted": "2026-10-08 17:56:21Z",
+   "succeeded": 0,
+   "errored": 0
   }
  ],
- "cost_usd": 2.675958067499982,
- "glyphs": 25959,
+ "cost_usd": 3.4965159399999126,
+ "glyphs": 33938,
  "failed": [
   "all",
   "aerosolized",
@@ -119,7 +122,28 @@
   "estradiol",
   "etcetera",
   "every",
-  "dosage"
+  "dosage",
+  "larcenous",
+  "allis",
+  "li",
+  "kos",
+  "atomization",
+  "headcount",
+  "any",
+  "ie",
+  "atomize",
+  "internuncio",
+  "all",
+  "aerosolize",
+  "investigatory",
+  "aerosolised",
+  "aerosolise",
+  "arthrography",
+  "hysterosalpingogram",
+  "jillion",
+  "amount",
+  "aerosolized",
+  "angiogram"
  ],
  "rounds": {}
 }
