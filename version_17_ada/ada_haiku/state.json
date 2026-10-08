@@ -1,0 +1,19 @@
+{
+ "created": "2026-10-08 17:20:02Z",
+ "model": "claude-haiku-5-5",
+ "cap_usd": 20.0,
+ "batches": [
+  {
+   "id": "msgbatch_01En5w8i9sAyAtniwCwye8Em",
+   "round": "r1",
+   "part": 0,
+   "n": 2000,
+   "status": "in_progress",
+   "submitted": "2026-10-08 17:20:14Z"
+  }
+ ],
+ "cost_usd": 0.0,
+ "glyphs": 0,
+ "failed": [],
+ "rounds": {}
+}
