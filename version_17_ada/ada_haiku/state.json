@@ -8,14 +8,23 @@
    "round": "r1",
    "part": 0,
    "n": 2000,
-   "status": "in_progress",
+   "status": "downloaded",
    "submitted": "2026-10-08 17:20:14Z",
-   "succeeded": 0,
-   "errored": 0
+   "succeeded": 2000,
+   "errored": 0,
+   "downloaded": "2026-10-08 17:31:14Z"
   }
  ],
- "cost_usd": 0.0,
- "glyphs": 0,
- "failed": [],
+ "cost_usd": 0.20608776750000016,
+ "glyphs": 1993,
+ "failed": [
+  "all",
+  "aerosolized",
+  "aerosolize",
+  "allyl",
+  "aerosolise",
+  "allis",
+  "aerosolised"
+ ],
  "rounds": {}
 }
