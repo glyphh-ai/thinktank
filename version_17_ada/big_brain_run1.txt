@@ -1,0 +1,69 @@
+big brain: 68,298 glyphed words + 140 leaves, 1,791,358 threads, built in 6s
+
+1) HUMAN QUESTIONS: 48 questions; question words known 189 (100%; was 79% on the 395-word brain); unknown: -
+   candidates: 68,298 words (was 395)
+  lookup (question words in the answer's glyph)  top-1   2.1%   top-5  10.4%   top-20  27.1%   median rank    180
+  big brain, untrained                           top-1   0.0%   top-5   6.2%   top-20  10.4%   median rank    160
+
+2) MIXED-DEPTH RIDDLES (clues 1-3 hops): 1365 train / 589 test on disjoint sampled words; candidates 68,298
+  lookup                                         top-1   2.4%   top-5   8.1%   top-20  13.1%   median rank   2860
+  big brain, untrained                           top-1   5.1%   top-5  11.4%   top-20  19.5%   median rank    544   (3.1 steps)
+  big brain, pathways learned                    top-1   6.8%   top-5  14.8%   top-20  23.8%   median rank    428   (2.9 steps; trained in 3556s)
+   trusts: tense 20.77, register 18.21, slot 17.47, degree 16.64, number 14.07, class 13.71 | mutes: figure 0.57, phrase 0.41, similar 0.40, partner 0.34, base 0.10
+
+  HUMAN QUESTIONS, big brain with learned pathways top-1   0.0%   top-5  10.4%   top-20  18.8%   median rank    218
+
+  #922   who works in a hospital and helps sick people get better       -> alleviator, exacerbation, oliguria     (answer: doctor)
+  #14696 a building where sick people go to be treated by doctors and nurses -> processed, salaah, racially            (answer: hospital)
+  #521   a person who helps students learn at school                    -> lecturer, autodidactic, schoolmistress (answer: teacher)
+  #271   a place where children go to learn with teachers and books     -> quixote, atheneum, some                (answer: school)
+  #70    you read it, it has pages and a story                          -> nonfiction, riffle, collate            (answer: book)
+  #19    it tells you the time, it has hands and it ticks               -> watches, wristwatch, dotage            (answer: clock)
+  #20    small round metal money you keep in your pocket                -> groschen, coins, tiyin                 (answer: coin)
+  #698   the solid side of a room, made of brick                        -> sunbaked, bricks, polygonally          (answer: wall)
+  #213   a very tall narrow building                                    -> panoramic, cuneus, shortgrass          (answer: tower)
+  #41    songs and sounds you listen to and dance to                    -> voices, atonal, antiphonal             (answer: music)
+  #18    you wear it over your face to hide who you are                 -> yashmac, burka, niqab                  (answer: mask)
+  #5     a secret agent who watches people and steals information       -> voyeur, counterespionage, plainclothesman (answer: spy)
+  #2371  someone who hates you and fights against you                   -> counterinsurgent, allegation, leukocyte (answer: enemy)
+  #40    someone you like and trust and play with                       -> tricking, conn, oblige                 (answer: friend)
+  #221   your mother, father, brothers and sisters together at home     -> brethren, disinherited, matrilinear    (answer: family)
+  #460   the place where you live with your family                      -> idyllically, livable, domestically     (answer: home)
+  #3     it beats in your chest and pumps blood, a symbol of love       -> ventricle, atrium, heart               (answer: heart)
+  #3     the organ in your head that you think with                     -> encephalon, brains, brain              (answer: brain)
+  #58    you hear sounds with it                                        -> voices, atonal, phonogramic            (answer: ear)
+  #29    you eat and speak with it                                      -> licked, croaky, flavors                (answer: mouth)
+  #5284  it has five fingers and you hold things with it                -> minus, thereabouts, crore              (answer: hand)
+  #11118 your eyes, nose and mouth are on it                            -> appetising, protuberant, leptorrhine   (answer: face)
+  #23    a feeling of great happiness                                   -> prelapsarian, fulfillment, eden        (answer: joy)
+  #4     a strong feeling when you are mad                              -> angry, angriness, angered              (answer: anger)
+  #3     the feeling you get when you are scared of danger              -> panicky, shitless, fear                (answer: fear)
+  #1776  a warm deep feeling you have for family and friends            -> togetherness, connectedness, chitlings (answer: love)
+  #1623  a strong feeling of dislike, the opposite of love              -> attractiveness, unsightliness, antipathy (answer: hate)
+  #893   a thing with moving parts that does work, like an engine       -> disfunction, unportable, machines      (answer: machine)
+  #32    something you hold to fix or build things, like a hammer       -> toolkit, hammers, tailstock            (answer: tool)
+  #423   numbers, adding and counting at school                         -> subtotal, augend, calculator           (answer: math)
+  #2762  thin white sheets you write on                                 -> chalky, paperlike, sheetlike           (answer: paper)
+  #395   a drawing or photo you look at                                 -> grainy, graininess, posing             (answer: picture)
+  #776   someone who goes to school to learn                            -> otherwise, anybody, humiliate          (answer: student)
+  #285   the sound you make when you talk or sing                       -> ut, voices, tuneless                   (answer: voice)
+  #831   something hidden that you do not tell anyone                   -> otherwise, thus, fictitious            (answer: secret)
+  #215   no sound at all, completely quiet                              -> louder, noisier, allophone             (answer: silence)
+  #12843 a person you do not know                                       -> layperson, anybody, sciolist           (answer: stranger)
+  #54    the end of life                                                -> quietus, finitude, finiteness          (answer: death)
+  #46    when a baby is born, the start of life                         -> unborn, quintuplet, sextuplet          (answer: birth)
+  #25    breaking the law, like stealing                                -> violative, unlawfully, revokable       (answer: crime)
+  #1755  what you get for doing something wrong                         -> amiss, atoning, atone                  (answer: punishment)
+  #38840 metal rings linked together                                    -> connected, wires, disconnected         (answer: chain)
+  #11    an empty opening in the ground that you dig                    -> sherd, bunghole, holes                 (answer: hole)
+  #65    a group of players who work together                           -> coordinately, jointly, conjointly      (answer: team)
+  #45    the earth and all the people and places on it                  -> geographically, topographically, mankind (answer: world)
+  #29437 being nice, gentle and helpful to others                       -> brahminical, destiny, gods             (answer: kindness)
+  #278   the feeling when you cry and feel unhappy                      -> sadder, sad, wretchedly                (answer: sadness)
+  #43    what a teacher teaches in a class                              -> tutee, undergraduate, instructor       (answer: lesson)
+
+real	59m53.854s
+user	32m5.780s
+sys	27m45.437s
+
+[exited with code 0]
