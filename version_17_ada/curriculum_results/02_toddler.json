@@ -1,0 +1,578 @@
+{
+ "stage": "toddler",
+ "episodes_available": 86148,
+ "seconds": 713,
+ "held_out": {
+  "n": 300,
+  "top1": 0.0,
+  "top5": 0.0,
+  "top20": 0.006666666666666667,
+  "median_rank": 28092.75
+ },
+ "human_questions": {
+  "n": 48,
+  "top1": 0.041666666666666664,
+  "top5": 0.08333333333333333,
+  "top20": 0.14583333333333334,
+  "median_rank": 131.0
+ },
+ "region_gain": {
+  "grammar": 0.8769426948016242,
+  "sentence": 0.39023737051408514,
+  "idiom": 0.6247640084590749,
+  "meaning": 0.716971907935148
+ },
+ "trusts": [
+  [
+   "time",
+   1.17
+  ],
+  [
+   "strength",
+   1.16
+  ],
+  [
+   "category",
+   1.1
+  ],
+  [
+   "feeling",
+   1.07
+  ],
+  [
+   "number",
+   1.05
+  ],
+  [
+   "register",
+   1.04
+  ]
+ ],
+ "mutes": [
+  [
+   "partner",
+   0.05
+  ],
+  [
+   "before",
+   0.05
+  ],
+  [
+   "opposite",
+   0.04
+  ],
+  [
+   "after",
+   0.01
+  ],
+  [
+   "similar",
+   0.01
+  ]
+ ],
+ "familiarity": {
+  "mean": 1.0005339015343218,
+  "strengthened_>1.5": 2.5120606824543167e-05
+ },
+ "human_answers": [
+  {
+   "q": "who works in a hospital and helps sick people get better",
+   "answer": "doctor",
+   "top3": [
+    "healer",
+    "phlegmy",
+    "veterinarian"
+   ],
+   "rank": 330.0
+  },
+  {
+   "q": "a building where sick people go to be treated by doctors and nurses",
+   "answer": "hospital",
+   "top3": [
+    "processed",
+    "buildings",
+    "cities"
+   ],
+   "rank": 14398.0
+  },
+  {
+   "q": "a person who helps students learn at school",
+   "answer": "teacher",
+   "top3": [
+    "schoolwide",
+    "lecturer",
+    "assembly"
+   ],
+   "rank": 160.0
+  },
+  {
+   "q": "a place where children go to learn with teachers and books",
+   "answer": "school",
+   "top3": [
+    "atheneum",
+    "quixote",
+    "several"
+   ],
+   "rank": 301.0
+  },
+  {
+   "q": "you read it, it has pages and a story",
+   "answer": "book",
+   "top3": [
+    "mag",
+    "riffle",
+    "reread"
+   ],
+   "rank": 64.0
+  },
+  {
+   "q": "it tells you the time, it has hands and it ticks",
+   "answer": "clock",
+   "top3": [
+    "watches",
+    "wristwatch",
+    "clocks"
+   ],
+   "rank": 6.0
+  },
+  {
+   "q": "small round metal money you keep in your pocket",
+   "answer": "coin",
+   "top3": [
+    "groschen",
+    "tiyin",
+    "coins"
+   ],
+   "rank": 84.0
+  },
+  {
+   "q": "the solid side of a room, made of brick",
+   "answer": "wall",
+   "top3": [
+    "bricks",
+    "brickwork",
+    "threedimensional"
+   ],
+   "rank": 39.0
+  },
+  {
+   "q": "a very tall narrow building",
+   "answer": "tower",
+   "top3": [
+    "buildings",
+    "skyline",
+    "cuneus"
+   ],
+   "rank": 406.0
+  },
+  {
+   "q": "songs and sounds you listen to and dance to",
+   "answer": "music",
+   "top3": [
+    "unarticulate",
+    "phonogramic",
+    "harmonise"
+   ],
+   "rank": 21.0
+  },
+  {
+   "q": "you wear it over your face to hide who you are",
+   "answer": "mask",
+   "top3": [
+    "yashmac",
+    "burka",
+    "niqab"
+   ],
+   "rank": 10.0
+  },
+  {
+   "q": "a secret agent who watches people and steals information",
+   "answer": "spy",
+   "top3": [
+    "spies",
+    "spy",
+    "voyeur"
+   ],
+   "rank": 2.0
+  },
+  {
+   "q": "someone who hates you and fights against you",
+   "answer": "enemy",
+   "top3": [
+    "hedonist",
+    "occupied",
+    "preoccupancy"
+   ],
+   "rank": 34868.0
+  },
+  {
+   "q": "someone you like and trust and play with",
+   "answer": "friend",
+   "top3": [
+    "tricking",
+    "hedonist",
+    "oblige"
+   ],
+   "rank": 22.0
+  },
+  {
+   "q": "your mother, father, brothers and sisters together at home",
+   "answer": "family",
+   "top3": [
+    "brethren",
+    "mudder",
+    "disinherited"
+   ],
+   "rank": 478.0
+  },
+  {
+   "q": "the place where you live with your family",
+   "answer": "home",
+   "top3": [
+    "livable",
+    "idyllically",
+    "neighbourhood"
+   ],
+   "rank": 136.0
+  },
+  {
+   "q": "it beats in your chest and pumps blood, a symbol of love",
+   "answer": "heart",
+   "top3": [
+    "heart",
+    "hearts",
+    "ventricle"
+   ],
+   "rank": 1.0
+  },
+  {
+   "q": "the organ in your head that you think with",
+   "answer": "brain",
+   "top3": [
+    "encephalon",
+    "brains",
+    "neoencephalon"
+   ],
+   "rank": 4.0
+  },
+  {
+   "q": "you hear sounds with it",
+   "answer": "ear",
+   "top3": [
+    "phonogramic",
+    "voices",
+    "atonal"
+   ],
+   "rank": 46.0
+  },
+  {
+   "q": "you eat and speak with it",
+   "answer": "mouth",
+   "top3": [
+    "licked",
+    "croaky",
+    "flavors"
+   ],
+   "rank": 54.0
+  },
+  {
+   "q": "it has five fingers and you hold things with it",
+   "answer": "hand",
+   "top3": [
+    "interlock",
+    "sticky",
+    "interlocking"
+   ],
+   "rank": 1540.0
+  },
+  {
+   "q": "your eyes, nose and mouth are on it",
+   "answer": "face",
+   "top3": [
+    "protuberant",
+    "mouthlike",
+    "mouths"
+   ],
+   "rank": 11171.0
+  },
+  {
+   "q": "a feeling of great happiness",
+   "answer": "joy",
+   "top3": [
+    "euphoria",
+    "exultation",
+    "utilitarianism"
+   ],
+   "rank": 22.0
+  },
+  {
+   "q": "a strong feeling when you are mad",
+   "answer": "anger",
+   "top3": [
+    "maddening",
+    "angriness",
+    "angered"
+   ],
+   "rank": 6.0
+  },
+  {
+   "q": "the feeling you get when you are scared of danger",
+   "answer": "fear",
+   "top3": [
+    "fear",
+    "dangerousness",
+    "dangerous"
+   ],
+   "rank": 1.0
+  },
+  {
+   "q": "a warm deep feeling you have for family and friends",
+   "answer": "love",
+   "top3": [
+    "togetherness",
+    "connectedness",
+    "familial"
+   ],
+   "rank": 638.0
+  },
+  {
+   "q": "a strong feeling of dislike, the opposite of love",
+   "answer": "hate",
+   "top3": [
+    "aversion",
+    "antipathetical",
+    "attractiveness"
+   ],
+   "rank": 577.0
+  },
+  {
+   "q": "a thing with moving parts that does work, like an engine",
+   "answer": "machine",
+   "top3": [
+    "machines",
+    "defunctness",
+    "unportable"
+   ],
+   "rank": 263.0
+  },
+  {
+   "q": "something you hold to fix or build things, like a hammer",
+   "answer": "tool",
+   "top3": [
+    "hammers",
+    "nailed",
+    "tintack"
+   ],
+   "rank": 30.0
+  },
+  {
+   "q": "numbers, adding and counting at school",
+   "answer": "math",
+   "top3": [
+    "calculator",
+    "subtotal",
+    "arithmetic"
+   ],
+   "rank": 305.0
+  },
+  {
+   "q": "thin white sheets you write on",
+   "answer": "paper",
+   "top3": [
+    "paperlike",
+    "chalky",
+    "sheetlike"
+   ],
+   "rank": 1140.5
+  },
+  {
+   "q": "a drawing or photo you look at",
+   "answer": "picture",
+   "top3": [
+    "grainy",
+    "graininess",
+    "posing"
+   ],
+   "rank": 1067.0
+  },
+  {
+   "q": "someone who goes to school to learn",
+   "answer": "student",
+   "top3": [
+    "anybody",
+    "schools",
+    "humiliate"
+   ],
+   "rank": 417.0
+  },
+  {
+   "q": "the sound you make when you talk or sing",
+   "answer": "voice",
+   "top3": [
+    "hubbub",
+    "voices",
+    "chirp"
+   ],
+   "rank": 144.0
+  },
+  {
+   "q": "something hidden that you do not tell anyone",
+   "answer": "secret",
+   "top3": [
+    "else",
+    "otherwise",
+    "tells"
+   ],
+   "rank": 338.0
+  },
+  {
+   "q": "no sound at all, completely quiet",
+   "answer": "silence",
+   "top3": [
+    "quietest",
+    "quieter",
+    "soundlessly"
+   ],
+   "rank": 126.0
+  },
+  {
+   "q": "a person you do not know",
+   "answer": "stranger",
+   "top3": [
+    "layperson",
+    "unknowingly",
+    "sciolist"
+   ],
+   "rank": 5539.0
+  },
+  {
+   "q": "the end of life",
+   "answer": "death",
+   "top3": [
+    "unended",
+    "quietus",
+    "finitude"
+   ],
+   "rank": 100.0
+  },
+  {
+   "q": "when a baby is born, the start of life",
+   "answer": "birth",
+   "top3": [
+    "unborn",
+    "begotten",
+    "innately"
+   ],
+   "rank": 41.0
+  },
+  {
+   "q": "breaking the law, like stealing",
+   "answer": "crime",
+   "top3": [
+    "violative",
+    "contravention",
+    "jobbery"
+   ],
+   "rank": 24.0
+  },
+  {
+   "q": "what you get for doing something wrong",
+   "answer": "punishment",
+   "top3": [
+    "amiss",
+    "atoning",
+    "atone"
+   ],
+   "rank": 672.0
+  },
+  {
+   "q": "metal rings linked together",
+   "answer": "chain",
+   "top3": [
+    "connected",
+    "wires",
+    "catena"
+   ],
+   "rank": 38840.5
+  },
+  {
+   "q": "an empty opening in the ground that you dig",
+   "answer": "hole",
+   "top3": [
+    "sherd",
+    "holes",
+    "chalkpit"
+   ],
+   "rank": 33.0
+  },
+  {
+   "q": "a group of players who work together",
+   "answer": "team",
+   "top3": [
+    "coordinately",
+    "consortium",
+    "cooperative"
+   ],
+   "rank": 90.0
+  },
+  {
+   "q": "the earth and all the people and places on it",
+   "answer": "world",
+   "top3": [
+    "geographically",
+    "infrequently",
+    "humankind"
+   ],
+   "rank": 32.0
+  },
+  {
+   "q": "being nice, gentle and helpful to others",
+   "answer": "kindness",
+   "top3": [
+    "angels",
+    "christly",
+    "accommodative"
+   ],
+   "rank": 49554.0
+  },
+  {
+   "q": "the feeling when you cry and feel unhappy",
+   "answer": "sadness",
+   "top3": [
+    "sad",
+    "miserably",
+    "sadder"
+   ],
+   "rank": 163.0
+  },
+  {
+   "q": "what a teacher teaches in a class",
+   "answer": "lesson",
+   "top3": [
+    "instructor",
+    "preceptor",
+    "professor"
+   ],
+   "rank": 116.0
+  }
+ ],
+ "trained_on": 3000,
+ "source": "childes",
+ "aoa_ceiling": 5.0,
+ "plasticity": {
+  "meaning": 1.0,
+  "sentence": 1.0,
+  "idiom": 0.3,
+  "grammar": 0.2
+ },
+ "sample_experience": [
+  "know eating  ->  mommy",
+  "here people  ->  little",
+  "looks dressed  ->  summer",
+  "come out  ->  daddy",
+  "shoe please  ->  put",
+  "because thing wrong  ->  some",
+  "pillow went out light  ->  hit",
+  "want some  ->  coffee"
+ ]
+}
