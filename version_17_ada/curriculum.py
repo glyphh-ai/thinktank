@@ -185,6 +185,9 @@ def exam(L, qs):
             "top20": float(np.mean(r < 20)), "median_rank": float(np.median(r) + 1)}, res
 
 
+STAGE_INDEX = {"newborn": 0, "baby": 1, "toddler": 2, "child": 3, "school": 4}
+
+
 def record(stage, L, held, human, human_res, n_pool, secs, extra=None):
     o = np.argsort(-L.g)
     regions = {Lr: float(np.mean([L.g[k] for k in range(len(PATHS)) if REGION[k] == Lr]))
@@ -203,8 +206,27 @@ def record(stage, L, held, human, human_res, n_pool, secs, extra=None):
     if extra:
         rec.update(extra)
     OUT.mkdir(exist_ok=True)
-    (OUT / f"{len(list(OUT.glob('*.json'))):02d}_{stage}.json").write_text(json.dumps(rec, indent=1))
+    (OUT / f"{STAGE_INDEX[stage]:02d}_{stage}.json").write_text(json.dumps(rec, indent=1))
+    np.savez_compressed(OUT / f"ckpt_{stage}.npz", g=L.g,              # resume point
+                        W=np.concatenate(L.W).astype(np.float16))
     return rec
+
+
+def resume(L):
+    """Load the last completed stage's checkpoint; return (records so far, stages done)."""
+    done = [s for s in STAGE_INDEX if (OUT / f"ckpt_{s}.npz").exists()
+            and (OUT / f"{STAGE_INDEX[s]:02d}_{s}.json").exists()]
+    if not done:
+        return [], set()
+    last = max(done, key=STAGE_INDEX.get)
+    z = np.load(OUT / f"ckpt_{last}.npz")
+    L.g = z["g"]
+    flat, i = z["W"].astype(np.float32), 0
+    for k, e in enumerate(L.edges):
+        L.W[k] = flat[i:i + e.nnz]; i += e.nnz
+    keep = [s for s in STAGE_INDEX if STAGE_INDEX[s] <= STAGE_INDEX[last]]
+    recs = [json.loads((OUT / f"{STAGE_INDEX[s]:02d}_{s}.json").read_text()) for s in keep]
+    return recs, set(keep)
 
 
 def report(recs):
@@ -276,14 +298,18 @@ if __name__ == "__main__":
     qh, _, _ = HQ.prepare(base, HQ.QUESTIONS)
     log(f"brain: {len(base.words):,} words; AoA norms for {len(aoa):,} words")
 
-    recs = []
-    t0 = time.time()
-    human, hres = exam(L, qh)
-    recs.append(record("newborn", L, None, human, hres, 0, 0, {"trained_on": 0}))
     tag = f"{args.out}: "
-    report(recs); push(tag + "newborn exam"); log(f"newborn: human {human}")
+    recs, done = resume(L)
+    if done:
+        log(f"resumed after: {', '.join(sorted(done, key=STAGE_INDEX.get))}")
+    else:
+        human, hres = exam(L, qh)
+        recs.append(record("newborn", L, None, human, hres, 0, 0, {"trained_on": 0}))
+        report(recs); push(tag + "newborn exam"); log(f"newborn: human {human}")
 
     for i, (name, source, ceiling, n_tr, n_te, plast) in enumerate(STAGES):
+        if name in done:
+            continue
         t0 = time.time()
         train, held, n_pool = episodes(base, aoa, source, ceiling, n_tr, n_te, seed=args.seed + i)
         if args.shuffle:
