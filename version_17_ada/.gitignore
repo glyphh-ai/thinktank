@@ -6,3 +6,5 @@ closure2_log.txt
 space_*.npz
 closure3_log.txt
 curriculum_log.txt
+curriculum_rep_log.txt
+curriculum_shuffle_log.txt

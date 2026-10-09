@@ -34,7 +34,10 @@ Data (not committed; data/dev/):  en.aoa.csv (Kuperman et al. 2012, via
 HuggingFace StephanAkkerman/English-Age-of-Acquisition), childes_train.txt
 (CHILDES via HuggingFace w-nicole/childes_data_no_tags).
 
-Run:  python curriculum.py
+Run:  python curriculum.py                                         # main run
+      python curriculum.py --seed 100 --out curriculum_results_rep   # replicate
+      python curriculum.py --shuffle --out curriculum_results_shuffle  # control:
+            same utterances, words dealt randomly across them (no structure)
 """
 
 import csv
@@ -243,8 +246,31 @@ def log(msg):
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
+def shuffle_words(train, seed):
+    """CONTROL: pool every word of every training episode and deal them back into
+    the same shapes — same words, same exposure, no real structure."""
+    rng = np.random.default_rng(seed)
+    flat = [w for t, c, _ in train for w in [t] + c]
+    rng.shuffle(flat)
+    out, i = [], 0
+    for t, c, z in train:
+        words = flat[i:i + 1 + len(c)]; i += 1 + len(c)
+        tgt, cl = words[0], list(dict.fromkeys(w for w in words[1:] if w != words[0]))
+        if tgt in base_G and len(cl) >= 2:
+            out.append((tgt, cl, [0] * len(cl)))
+    return out
+
+
 if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--seed", type=int, default=10, help="10 = main run; other = replicate")
+    ap.add_argument("--shuffle", action="store_true", help="control: words shuffled across utterances")
+    ap.add_argument("--out", default="curriculum_results")
+    args = ap.parse_args()
+    OUT = HERE / args.out
     base = BB.load_base()
+    base_G = base.G
     aoa = load_aoa()
     L = Learner(base)
     qh, _, _ = HQ.prepare(base, HQ.QUESTIONS)
@@ -254,11 +280,14 @@ if __name__ == "__main__":
     t0 = time.time()
     human, hres = exam(L, qh)
     recs.append(record("newborn", L, None, human, hres, 0, 0, {"trained_on": 0}))
-    report(recs); push("newborn exam"); log(f"newborn: human {human}")
+    tag = f"{args.out}: "
+    report(recs); push(tag + "newborn exam"); log(f"newborn: human {human}")
 
     for i, (name, source, ceiling, n_tr, n_te, plast) in enumerate(STAGES):
         t0 = time.time()
-        train, held, n_pool = episodes(base, aoa, source, ceiling, n_tr, n_te, seed=10 + i)
+        train, held, n_pool = episodes(base, aoa, source, ceiling, n_tr, n_te, seed=args.seed + i)
+        if args.shuffle:
+            train = shuffle_words(train, seed=1000 + i)
         log(f"{name}: {n_pool:,} real utterances qualify (AoA ≤ {ceiling}); training on {len(train):,}")
         for b in range(0, len(train), 128):
             loss = L.step(train[b:b + 128], plast)
@@ -268,10 +297,10 @@ if __name__ == "__main__":
         human, hres = exam(L, qh)
         rec = record(name, L, held_res, human, hres, n_pool, time.time() - t0,
                      {"trained_on": len(train), "source": source, "aoa_ceiling": ceiling,
-                      "plasticity": plast,
+                      "plasticity": plast, "seed": args.seed, "shuffled": args.shuffle,
                       "sample_experience": [" ".join(c) + f"  ->  {t}" for t, c, _ in train[:8]]})
         recs.append(rec)
         report(recs)
-        push(f"{name} stage: held-out top-1 {held_res['top1']:.1%}, human top-1 {human['top1']:.1%}")
+        push(tag + f"{name} stage: held-out top-1 {held_res['top1']:.1%}, human top-1 {human['top1']:.1%}")
         log(f"{name}: held-out {held_res} | human {human} | regions {rec['region_gain']}")
     log("curriculum complete")
