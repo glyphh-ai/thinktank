@@ -1,13 +1,13 @@
 {
  "stage": "toddler",
  "episodes_available": 86148,
- "seconds": 713,
+ "seconds": 642,
  "held_out": {
   "n": 300,
   "top1": 0.0,
   "top5": 0.0,
   "top20": 0.006666666666666667,
-  "median_rank": 28092.75
+  "median_rank": 28091.75
  },
  "human_questions": {
   "n": 48,
@@ -17,10 +17,10 @@
   "median_rank": 131.0
  },
  "region_gain": {
-  "grammar": 0.8769426948016242,
-  "sentence": 0.39023737051408514,
-  "idiom": 0.6247640084590749,
-  "meaning": 0.716971907935148
+  "grammar": 0.8769420837078894,
+  "sentence": 0.39023848809338574,
+  "idiom": 0.6247593872544899,
+  "meaning": 0.7169699707741378
  },
  "trusts": [
   [
@@ -71,7 +71,7 @@
   ]
  ],
  "familiarity": {
-  "mean": 1.0005339015343218,
+  "mean": 1.0005192078464629,
   "strengthened_>1.5": 2.5120606824543167e-05
  },
  "human_answers": [
@@ -93,7 +93,7 @@
     "buildings",
     "cities"
    ],
-   "rank": 14398.0
+   "rank": 14399.0
   },
   {
    "q": "a person who helps students learn at school",
@@ -565,6 +565,8 @@
   "idiom": 0.3,
   "grammar": 0.2
  },
+ "seed": 10,
+ "shuffled": false,
  "sample_experience": [
   "know eating  ->  mommy",
   "here people  ->  little",
