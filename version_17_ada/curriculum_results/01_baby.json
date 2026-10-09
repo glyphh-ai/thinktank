@@ -1,7 +1,7 @@
 {
  "stage": "baby",
  "episodes_available": 1812,
- "seconds": 146,
+ "seconds": 154,
  "held_out": {
   "n": 181,
   "top1": 0.0,
@@ -565,6 +565,8 @@
   "idiom": 0.2,
   "grammar": 0.1
  },
+ "seed": 10,
+ "shuffled": false,
  "sample_experience": [
   "one sit  ->  chair",
   "drink mom  ->  please",
