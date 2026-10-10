@@ -26,3 +26,6 @@ probe: {
 glyph one syllable: 15 words | held-out speakers: correct among taught 15.2% (chance 6.7%), top-1 among all 68,298 15.2%, median rank 5
 glyph two syllables: 18 words | held-out speakers: correct among taught 11.9% (chance 5.6%), top-1 among all 68,298 11.9%, median rank 33
 strongest sound-glyph paths: time.rhythm=even -> zero 20.58, time.rhythm=uneven -> happy 16.11, timbre.roughness=smooth -> zero 15.55, form.coda=atom3 -> happy 14.76, energy.attack=sudden -> happy 14.02, form.onset=atom27 -> zero 11.94, form.nucleus=atom61 -> house 11.16, timbre.noise=noisy -> seven 11.07, form.coda=atom40 -> yes 11.01, timbre.brightness=bright -> seven 10.8, energy.decay=steady -> zero 10.0, energy.attack=gentle -> zero 9.91
+glyph CONTROL one syllable: 15 words | held-out speakers: correct among taught 6.6% (chance 6.7%), top-1 among all 68,298 6.6%, median rank 31
+glyph CONTROL two syllables: 18 words | held-out speakers: correct among taught 6.7% (chance 5.6%), top-1 among all 68,298 6.7%, median rank 603
+done in 1649s

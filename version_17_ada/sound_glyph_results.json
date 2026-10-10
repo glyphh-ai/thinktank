@@ -1,0 +1,185 @@
+{
+ "cuts": {
+  "pitch": [
+   210.526
+  ],
+  "contour": [
+   -0.404,
+   0.0
+  ],
+  "voicing": [
+   0.36
+  ],
+  "loudness": [
+   -15.662
+  ],
+  "attack": [
+   14.0
+  ],
+  "decay": [
+   15.949
+  ],
+  "duration": [
+   45.0
+  ],
+  "tempo": [
+   3.704
+  ],
+  "rhythm": [
+   1.218
+  ],
+  "brightness": [
+   723.867
+  ],
+  "roughness": [
+   0.496
+  ],
+  "noise": [
+   0.007
+  ]
+ },
+ "emotion probe (innate lattice, untrained)": {
+  "loud+harsh sounds: hot-calm": -2.308736562728882,
+  "n_loud_harsh": 358,
+  "quiet+smooth sounds: hot-calm": -1.8869203329086304,
+  "n_quiet_smooth": 382,
+  "correlation of hot-calm with each raw feature": {
+   "pitch": 0.12230342873425473,
+   "contour": 0.017080409941636534,
+   "voicing": 0.10643374813542739,
+   "loudness": 0.32438353661709113,
+   "attack": -0.038533852051466436,
+   "decay": 0.08989957991257387,
+   "duration": 0.045908284480262164,
+   "tempo": 0.010244464612985072,
+   "rhythm": -0.16057100674806635,
+   "brightness": -0.5589891627583481,
+   "roughness": -0.48861870282720105,
+   "noise": -0.36870686880438364
+  }
+ },
+ "lights": {
+  "loud/sudden/harsh": [
+   "evanescence",
+   "odd",
+   "sonant",
+   "clampdown",
+   "flatness",
+   "highly",
+   "flats",
+   "higher",
+   "flatly",
+   "harshly"
+  ],
+  "quiet/gentle/smooth": [
+   "evanescence",
+   "odd",
+   "flatness",
+   "whispers",
+   "whispered",
+   "whispering",
+   "flats",
+   "flatly",
+   "unevenly",
+   "gentler"
+  ]
+ },
+ "glyph": [
+  {
+   "stage": "one syllable",
+   "words": 15,
+   "among_taught": 0.15235690235690236,
+   "chance_taught": 0.06666666666666667,
+   "top1_all_68k": 0.15235690235690236,
+   "median_rank_all": 5.0
+  },
+  {
+   "stage": "two syllables",
+   "words": 18,
+   "among_taught": 0.11888111888111888,
+   "chance_taught": 0.05555555555555555,
+   "top1_all_68k": 0.11888111888111888,
+   "median_rank_all": 33.0
+  }
+ ],
+ "strongest paths": [
+  [
+   "time.rhythm=even",
+   "zero",
+   20.58
+  ],
+  [
+   "time.rhythm=uneven",
+   "happy",
+   16.11
+  ],
+  [
+   "timbre.roughness=smooth",
+   "zero",
+   15.55
+  ],
+  [
+   "form.coda=atom3",
+   "happy",
+   14.76
+  ],
+  [
+   "energy.attack=sudden",
+   "happy",
+   14.02
+  ],
+  [
+   "form.onset=atom27",
+   "zero",
+   11.94
+  ],
+  [
+   "form.nucleus=atom61",
+   "house",
+   11.16
+  ],
+  [
+   "timbre.noise=noisy",
+   "seven",
+   11.07
+  ],
+  [
+   "form.coda=atom40",
+   "yes",
+   11.01
+  ],
+  [
+   "timbre.brightness=bright",
+   "seven",
+   10.8
+  ],
+  [
+   "energy.decay=steady",
+   "zero",
+   10.0
+  ],
+  [
+   "energy.attack=gentle",
+   "zero",
+   9.91
+  ]
+ ],
+ "glyph CONTROL": [
+  {
+   "stage": "one syllable",
+   "words": 15,
+   "among_taught": 0.0664983164983165,
+   "chance_taught": 0.06666666666666667,
+   "top1_all_68k": 0.0664983164983165,
+   "median_rank_all": 31.0
+  },
+  {
+   "stage": "two syllables",
+   "words": 18,
+   "among_taught": 0.06713286713286713,
+   "chance_taught": 0.05555555555555555,
+   "top1_all_68k": 0.06713286713286713,
+   "median_rank_all": 603.0
+  }
+ ]
+}
