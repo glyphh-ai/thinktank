@@ -1,0 +1,6 @@
+hearing (as sound.py): 32.2% on held-out speakers among 15 words
+independent judge: 60.0% on held-out real speakers
+babbled 3000 random movements and listened to each (1196s)
+say 'no': own hearing / independent judge recognize it  random 5%/10%  | recalled from babble 35%/65%  | after practice 60%/0%   (20 tries each)
+say 'go': own hearing / independent judge recognize it  random 0%/0%  | recalled from babble 0%/0%  | after practice 0%/0%   (20 tries each)
+say 'up': own hearing / independent judge recognize it  random 0%/0%  | recalled from babble 0%/0%  | after practice 30%/0%   (20 tries each)
