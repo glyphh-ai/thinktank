@@ -1,0 +1,38 @@
+{
+ "real": [
+  {
+   "stage": "one syllable",
+   "words": 15,
+   "among_taught": 0.3223905723905724,
+   "chance_taught": 0.06666666666666667,
+   "top1_all_68k": 0.3223905723905724,
+   "median_rank_all": 3.0
+  },
+  {
+   "stage": "two syllables",
+   "words": 18,
+   "among_taught": 0.15594405594405594,
+   "chance_taught": 0.05555555555555555,
+   "top1_all_68k": 0.15594405594405594,
+   "median_rank_all": 18.0
+  }
+ ],
+ "control": [
+  {
+   "stage": "one syllable",
+   "words": 15,
+   "among_taught": 0.06313131313131314,
+   "chance_taught": 0.06666666666666667,
+   "top1_all_68k": 0.06313131313131314,
+   "median_rank_all": 13.0
+  },
+  {
+   "stage": "two syllables",
+   "words": 18,
+   "among_taught": 0.08391608391608392,
+   "chance_taught": 0.05555555555555555,
+   "top1_all_68k": 0.08391608391608392,
+   "median_rank_all": 198.0
+  }
+ ]
+}
