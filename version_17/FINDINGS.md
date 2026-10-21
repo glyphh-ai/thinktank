@@ -1,5 +1,14 @@
 # FINDINGS — version_17
 
+**Verdict: G2 (core) FAIL at its registered point — but the measurement
+was the wrong shape.** Every looped run is all-or-nothing: it either
+executes circuits perfectly at every depth or sits stuck near the
+shortcut floor. Averaging 3 binary outcomes cannot separate B from C.
+What is solid: the loop is what generalizes in depth (A never does), the
+router becomes a perfect readable map onto the tiny models, and random
+tiny models never solve anything. The data-efficiency question is open
+and needs a solve-rate test over many seeds (strat 2).
+
 ## The question
 
 Can a model built on a library of tiny pre-trained models — each one
@@ -75,6 +84,80 @@ models is a better substrate to reason over) is ALIVE at rung 1.
 G2 FAIL with C ≤ B → DEAD at rung 1: the loop does the work, the
 library adds nothing. G5 decides whether any C advantage is knowledge
 or architecture.
+
+## Strat 1 — results
+
+Mean accuracy over 3 seeds (`results.json`; full table from `report.py`):
+
+| model | n | D=1–4 | D=16 | D=32 |
+|---|---|---|---|---|
+| shortcut floor | — | — | 0.660 | 0.636 |
+| A monolithic | 8192 | 0.75 | **0.507** | 0.497 |
+| B looped | 256 | 0.87 | 0.876 | 0.864 |
+| C layered | 256 | 0.78 | 0.786 | 0.769 |
+| C0 random bank | 256 | 0.67 | 0.702 | 0.675 |
+| B looped | 1024 | 0.93 | 0.917 | 0.907 |
+| **C layered** | 1024 | **1.000** | **1.000** | **1.000** |
+| C0 random bank | 1024 | 0.69 | 0.690 | 0.682 |
+| B / C | 8192 | 1.000 | 1.000 | 1.000 |
+| C0 random bank | 8192 | 0.70 | 0.699 | 0.701 |
+
+| gate | result | |
+|---|---|---|
+| G1a loop generalizes | **PASS** | B 1.000, C 1.000 at D=16 |
+| G1b monolithic does not | **PASS** | A 0.507 — below the shortcut floor beyond its training depths |
+| G2 core: C − B ≥ 0.10 @ n=256 | **FAIL** | C 0.786 − B 0.876 = −0.09 |
+| G3 router readable | **PASS** | 10/10 ops → own tiny model, all seeds |
+| G4 no ID cost | **PASS** | 1.000 vs 1.000 |
+| G5 content not shape @ n=256 | **FAIL** (+0.084) | — but see below |
+
+### The shape of the data: runs are binary
+
+Every B and C run lands at either 1.000 (all depths, to 32) or 0.6–0.75
+(stuck near the shortcut). Seeds fully solved (D=16 ≥ 0.99), of 3:
+
+| n | A | B | C | C0 |
+|---|---|---|---|---|
+| 64 | 0 | 0 | 0 | 0 |
+| 256 | 0 | **2** | 1 | 0 |
+| 1024 | 0 | 2 | **3** | 0 |
+| 8192 | 0 | 3 | 3 | 0 |
+
+So the pre-registered means are really solve counts out of 3. B beats C
+at n=256 (2 vs 1), C beats B at n=1024 (3 vs 2) — neither difference is
+distinguishable from chance with 3 seeds. G2's "fail" is a measurement
+of the coin, not of the claim.
+
+### What is real
+
+1. **Depth generalization comes from the loop, not the library.** A
+   (68k params) gets 0.84 on depth 1 and falls to chance by depth 6 —
+   below even the shortcut. Both looped models, once solved, are
+   perfect at depth 32 after training only to depth 4.
+2. **When C solves, its router IS the answer.** Every solved C run
+   routes 10/10 ops to exactly their own gate's tiny model, with the 6
+   distractor models ignored. Unsolved runs sit at 4/10 — a partial
+   map that is stuck, not drifting. The model's reasoning is readable
+   as a lookup table.
+3. **The knowledge in the tiny models is what matters.** C0 — same
+   architecture, random frozen models — solves 0 of 12 runs at any
+   size and plateaus at the shortcut (~0.70). C solves 7 of 12. G5's
+   registered margin missed at n=256 (+0.084), but at n=1024 the gap is
+   +0.31.
+4. **C learns 196 numbers; B learns 837.** Equal ceiling, 4× fewer
+   learned parameters, fully interpretable.
+
+### Not supported yet
+
+That frozen tiny models make reasoning *more data-efficient*. The
+registered test could not see it; the post-hoc n=1024 hint (3/3 vs 2/3)
+is a hint, not a result.
+
+## Strat 2 — next: solve rate (not yet run)
+
+Measure the right quantity: P(solve) per (model, n) over 20 seeds at
+n ∈ {128, 256, 512, 1024}, with a stated success threshold (D=16 ≥ 0.99)
+and a significance test on C vs B. Pre-register before running.
 
 ## Reproduce
 
