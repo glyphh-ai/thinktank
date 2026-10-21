@@ -1,13 +1,15 @@
 # FINDINGS — version_17
 
-**Verdict: G2 (core) FAIL at its registered point — but the measurement
-was the wrong shape.** Every looped run is all-or-nothing: it either
-executes circuits perfectly at every depth or sits stuck near the
-shortcut floor. Averaging 3 binary outcomes cannot separate B from C.
-What is solid: the loop is what generalizes in depth (A never does), the
-router becomes a perfect readable map onto the tiny models, and random
-tiny models never solve anything. The data-efficiency question is open
-and needs a solve-rate test over many seeds (strat 2).
+**Verdict (after strat 2): the core claim is DEAD at rung 1.** A frozen
+library of tiny models does NOT make reasoning more data-efficient: over
+80 seeds per model, C solves 45, B solves 47 (p = 0.68). What survives,
+and survives hard: (1) the step-by-step loop is what generalizes in
+depth — the monolithic transformer never does; (2) every solved C run
+(45/45) reads out as a perfect op → tiny-model map; (3) the knowledge
+in the tiny models is what makes C work at all — random tiny models
+solve 0/80 (p = 4e-18). Same ceiling as B, 196 learned numbers vs 837,
+fully readable. The library buys interpretability for free; it does not
+buy data.
 
 ## The question
 
@@ -153,7 +155,7 @@ That frozen tiny models make reasoning *more data-efficient*. The
 registered test could not see it; the post-hoc n=1024 hint (3/3 vs 2/3)
 is a hint, not a result.
 
-## Strat 2 — solve rate: pre-registered design (no results yet)
+## Strat 2 — solve rate (design pre-registered in 13fb471)
 
 Strat 1's runs are binary, so measure the binary quantity.
 
@@ -173,6 +175,62 @@ Strat 1's runs are binary, so measure the binary quantity.
 
 **Verdict rule.** S1 PASS → ALIVE. S1 FAIL with B ≥ C pooled → DEAD.
 Otherwise INCONCLUSIVE.
+
+### Strat 2 — results: S1 FAIL, S2 PASS, S3 PASS → DEAD
+
+Seeds solved (D=16 ≥ 0.99), of 20 (`strat2_results.json`):
+
+| n | B | C | C0 | C>B one-sided p |
+|---|---|---|---|---|
+| 128 | 0 | 0 | 0 | 1.000 |
+| 256 | **9** | 5 | 0 | 0.952 |
+| 512 | 18 | **20** | 0 | 0.244 |
+| 1024 | 20 | 20 | 0 | 1.000 |
+| **pooled** | **47** | **45** | **0** | of 80 |
+
+| gate | result | |
+|---|---|---|
+| S1 core: C − B ≥ 0.15, p < 0.05 | **FAIL** | −0.025, p = 0.68 |
+| S2 content not shape: C − C0 | **PASS** | +0.56, p = 4.3e-18 |
+| S3 solved C runs readable | **PASS** | 45/45 route 10/10 ops to their own tiny model |
+
+Per the registered rule (S1 FAIL, B ≥ C pooled): **DEAD.**
+
+Observations (post hoc, not gated):
+
+- **Same transition, different sharpness.** Both models go from never
+  solving (n=128) to always solving (n=1024). C's switch is steeper
+  (5 → 20 → 20 vs B's 9 → 18 → 20) but the difference is not
+  significant and was not registered. Not a claim.
+- **Stuck C runs are stuck in the matching.** Unsolved C runs have
+  routed 0–5 of 10 ops correctly (mode 2) — a wrong partial map that
+  gradient descent does not escape. One n=256 C run reached 0.989 with
+  a perfect 10/10 map: a near miss on the threshold, counted as unsolved.
+- **C0 never leaves the shortcut** (0.66–0.71 at every size), so the
+  architecture alone does nothing. The tiny models' knowledge is
+  necessary for C to work at all.
+
+### Why the library doesn't buy data (diagnosis)
+
+What C gets for free — knowing what each gate does — is the *easy* part
+of the task. B learns 10 four-entry truth tables without trouble. The
+hard part is shared by both: assigning credit through a chain of steps
+and learning operand addressing from final-answer supervision only.
+The library removes the easy part and leaves the hard part untouched,
+so solve rates match. A library would buy data where the primitives
+are themselves hard to learn (rung 2: primitives that need many
+examples alone — detectors, perceptual features) — not where they are
+4-row truth tables.
+
+### What this means for the program
+
+- **Interpretability is the result**, not efficiency: a router over
+  frozen, separately-verified primitives reaches the same ceiling as a
+  learned executor and is readable as a lookup table every time it
+  solves. That is the property the rule-recovery / audit use cases need.
+- **Rung 2 should make the primitives expensive.** The data argument
+  can only be tested where each tiny model encodes something costly to
+  learn from the composite task's labels alone.
 
 ## Reproduce
 
