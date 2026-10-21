@@ -153,11 +153,26 @@ That frozen tiny models make reasoning *more data-efficient*. The
 registered test could not see it; the post-hoc n=1024 hint (3/3 vs 2/3)
 is a hint, not a result.
 
-## Strat 2 — next: solve rate (not yet run)
+## Strat 2 — solve rate: pre-registered design (no results yet)
 
-Measure the right quantity: P(solve) per (model, n) over 20 seeds at
-n ∈ {128, 256, 512, 1024}, with a stated success threshold (D=16 ≥ 0.99)
-and a significance test on C vs B. Pre-register before running.
+Strat 1's runs are binary, so measure the binary quantity.
+
+- Models B, C, C0 (A dropped: 0/12 solves at every size in strat 1).
+- n ∈ {128, 256, 512, 1024}; 20 fresh seeds (100–119) per (model, n);
+  everything else identical to strat 1 (3000 steps, batch 64, lr 1e-2,
+  depths 1–4, same eval sets).
+- **Solved := accuracy at D=16 ≥ 0.99.**
+- Test: one-sided Fisher exact on solve counts, pooled over the 4 sizes
+  (80 runs per model). Per-size counts reported, not gated.
+
+| gate | claim | pass if |
+|---|---|---|
+| **S1 (core)** | frozen tiny models make solving more likely | pooled solve rate C − B ≥ 0.15 **and** p < 0.05 |
+| S2 | it is the content, not the shape | pooled C − C0 ≥ 0.15 and p < 0.05 |
+| S3 | solved runs are readable | every solved C run routes ≥ 9/10 ops to its own tiny model |
+
+**Verdict rule.** S1 PASS → ALIVE. S1 FAIL with B ≥ C pooled → DEAD.
+Otherwise INCONCLUSIVE.
 
 ## Reproduce
 
@@ -165,4 +180,5 @@ and a significance test on C vs B. Pre-register before running.
 python circuits.py      # gates, balance, shortcut floor
 python -u run.py        # full sweep (~30 min CPU) -> results.json + gates
 python report.py        # re-print tables and gates from results.json
+python -u strat2.py     # solve-rate sweep (~25 min) -> strat2_results.json + gates
 ```
