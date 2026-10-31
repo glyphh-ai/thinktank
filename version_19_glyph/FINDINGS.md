@@ -169,3 +169,62 @@ trained step4b writer, whose canvas already lands the right memory 98–100%
 of the time, and do aggregation *in the settle itself*: cue "? lives in
 Y.", and count how many memories the attention puts its mass on. That needs
 4b retrained with masks anywhere in the passage, not only suffix masks.
+
+## step6: no question model, just the settle. Recall is perfect; counting isn't yet
+
+Attractor retrained at P=8 on prose plus invented facts, with cues that
+blank any span. Each episode is N facts ("Bolani lives in Tesaruk."), about
+9 residents per city.
+
+| facts | name → fact exact | city → a resident | count exact | count ±1 |
+|---|---|---|---|---|
+| 64 | 1.000 | 1.000 | 0.057 | 0.182 |
+| 256 | 1.000 | 1.000 | 0.068 | 0.260 |
+| 1,024 | 1.000 | 1.000 | 0.010 | 0.016 |
+| 4,096 | 1.000 | 1.000 | 0.000 | 0.000 |
+| 16,384 | **0.995** | **0.995** | 0.000 | 0.000 |
+
+**Read:** with no question model at all, the canvas answers "Where does X
+live?" and "Who lives in Y?" *perfectly* up to 4,096 facts, and at 99.5%
+across 16,384, in one parallel settle. That's the recall half of the
+exploded window, done.
+
+Counting failed, for two reasons in the design rather than the idea:
+(1) names have different lengths, so "____ lives in Tesaruk." only lines up
+pixel-for-pixel with residents whose names are that exact length, and
+(2) training pulled each cue toward *one* memory, so other residents weren't
+pulled in. **Fix, running now:** fixed-width name slots (an Ada-style
+schema), plus a multi-positive objective where every memory consistent with
+the visible part of the cue counts as a positive. It also reports
+"separable", the share of cues where every resident scores above every
+non-resident, which is the true precondition for counting by threshold.
+
+**With the fix** (fixed-width slots plus multi-positive training, 12,000 steps;
+one threshold τ=0.68 calibrated once on 256-fact episodes):
+
+| facts | name → fact exact | city → a resident | **count exact** | count ±1 | separable |
+|---|---|---|---|---|---|
+| 64 | 1.000 | 1.000 | **1.000** | 1.000 | 1.000 |
+| 256 | 1.000 | 1.000 | **1.000** | 1.000 | 1.000 |
+| 1,024 | 0.948 | 1.000 | **0.964** | 0.964 | 1.000 |
+| 4,096 | 0.870 | 0.995 | 0.776 | 0.792 | 0.990 |
+| 16,384 | 0.755 | 0.995 | 0.516 | 0.552 | 0.984 |
+
+**Read:** the canvas counts. "How many live in Tesaruk?" is answered
+exactly, in one parallel step with no question model, 100% of the time at
+up to 256 facts and 96% at 1,024. That's aggregation read straight off the
+attractor, which step 5's learned model never managed.
+
+Two things to note at scale:
+1. **Separation holds (98.4% at 16,384), but the count decays.** In
+   almost every case all residents still score above all non-residents.
+   What fails is the single global threshold, which was tuned at 256 facts
+   while similarity scores drift as the canvas grows. A per-cue rule (cut
+   at the largest gap in that cue's sorted scores) should recover most of
+   it without retraining. **Next.**
+2. **Broad basins cost sharp recall.** Name → fact fell from 0.995 to 0.755
+   at 16k compared with the single-positive model. Training cues to sit near
+   *every* consistent memory widens the basins, so a full-name cue now
+   blends neighbours. The brain has the same trade-off (pattern separation
+   vs completion). Options: two settles at different β (sharp for recall,
+   broad for counting), or two heads on one canvas.
