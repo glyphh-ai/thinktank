@@ -221,7 +221,24 @@ Two things to note at scale:
    What fails is the single global threshold, which was tuned at 256 facts
    while similarity scores drift as the canvas grows. A per-cue rule (cut
    at the largest gap in that cue's sorted scores) should recover most of
-   it without retraining. **Next.**
+   it without retraining.
+
+   **step6b, tested on the saved canvas, no retraining** (count exact):
+
+   | facts | global τ | largest gap | gap within ±0.15 of τ |
+   |---|---|---|---|
+   | 64 | **1.000** | 0.958 | **1.000** |
+   | 256 | **1.000** | 0.917 | 0.932 |
+   | 1,024 | **0.964** | 0.896 | 0.896 |
+   | 4,096 | 0.776 | **0.849** | **0.849** |
+   | 16,384 | 0.516 | **0.854** | **0.854** |
+
+   The per-cue gap is scale-robust: it holds **85% exact counts at 16,384
+   facts** where the global threshold fell to 52%, but it gives up a little
+   on small canvases. Neither rule reaches the 98% separability ceiling, so
+   a better cut rule (or training the scores to be calibrated across N) still
+   has about 13 points to collect. The band was fixed before looking at
+   these numbers, and I've stopped tuning on this test set.
 2. **Broad basins cost sharp recall.** Name → fact fell from 0.995 to 0.755
    at 16k compared with the single-positive model. Training cues to sit near
    *every* consistent memory widens the basins, so a full-name cue now
