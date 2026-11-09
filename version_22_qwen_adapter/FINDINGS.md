@@ -154,5 +154,33 @@ test questions, so treat these as exploration, not a result.
 
 Log: step6.log, results step6_results.json.
 
+## step7 — rehearsal: the rules practised on Qwen's own questions
+
+step7_rehearse.py: when the rules are given, Qwen writes its own practice
+questions (40 everyday + 30 per rule, "where this instruction would
+matter"; 72 kept, none equal to a test question), answers them with the
+rules in view (signs off 94%), and step6's decision points are harvested:
+188 of them. step6 settings, fixed before the run.
+
+| arm | ends with "Cheers!" | mentions "Cheers" | ban | says logistic |
+|---|---|---|---|---|
+| Qwen alone | 0% | 0% | 0% | 40% |
+| rules in the prompt | 100% | 100% | 95% | 5% |
+| 7a: 188 points, each its own key | 0% | 23% | 0% | 30% |
+| **7b: points bundled per rule token** | **23%** | **28%** | 0% | 40% |
+
+7b (decided after 7a failed, so the second try on the test questions):
+every point that chose the same token is summed into one glyphh, so what
+the situations share (a sentence just closed, about to end) adds up and the
+reply words wash out: 59 " Cheers" points become one key. Sign-off goes
+0% -> 23% with nothing in the prompt and unrelated answers intact ("Boil
+an egg for 10-12 minutes ... Cheers!"). The ban learns nothing: Qwen's
+practice questions were about the rule ("What are the advantages of
+decision trees over logistic regression?"), never a request for a model, so
+the rule never acted where the test asks. Next: practice questions that
+put the model where the rule acts, not questions about the rule.
+
+Logs: step7a.log / step7b.log, results step7a_results.json / step7b_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).
