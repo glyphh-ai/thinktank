@@ -1,0 +1,12 @@
+Qwen3-1.7B-4bit, 300 invented facts, glyphh dim 2048, window 8 words
+
+calibrating tau on dev facts
+  unrelated text 99.5th pct similarity 0.406; dev answer keys above it: taught 100%, paraphrase 100%
+
+qwen + glyphh memory
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (164s)
+  teach x1   recall 100%  paraphrase 100%                                   P&P 1.168 bpc  (174s)
+  teach x2   recall 100%  paraphrase 100%                                   P&P 1.170 bpc  (175s)
+  correct x1 new wins  13% (para  14%), old wins  87%, untouched 100%       P&P 1.171 bpc  (107s)
+  correct x2 new wins  99% (para  95%), old wins   1%, untouched 100%       P&P 1.172 bpc  (107s)
+

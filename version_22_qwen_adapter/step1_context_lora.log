@@ -1,0 +1,32 @@
+Qwen3-1.7B-4bit, 300 invented facts, e.g. "Piheba Doti keeps a hawk named Nipira."
+paraphrase: "Q: What is the name of Piheba Doti's hawk?
+A: Its name is Nipira."
+
+in context
+  before     recall   5%  paraphrase   6%                                   P&P nan bpc  (158s)
+  teach x1   recall 100%  paraphrase  98%                                   P&P nan bpc  (319s)
+  teach x2   recall  99%  paraphrase  92%                                   P&P nan bpc  (406s)
+  correct x1 new wins   6% (para   9%), old wins  94%, untouched 100%       P&P nan bpc  (295s)
+  correct x2 new wins   6% (para  17%), old wins  94%, untouched 100%       P&P nan bpc  (320s)
+
+LoRA lr=1e-05
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (167s)
+  teach x1   recall   7%  paraphrase   5%                                   P&P 1.308 bpc  (166s)
+  teach x2   recall   7%  paraphrase   6%                                   P&P 1.299 bpc  (167s)
+  correct x1 new wins   5% (para   5%), old wins   5%, untouched   4%       P&P 1.286 bpc  (100s)
+  correct x2 new wins  13% (para   7%), old wins   8%, untouched   6%       P&P 1.290 bpc  (100s)
+
+LoRA lr=0.0001
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (168s)
+  teach x1   recall   5%  paraphrase   4%                                   P&P 1.976 bpc  (166s)
+  teach x2   recall   4%  paraphrase   6%                                   P&P 1.777 bpc  (166s)
+  correct x1 new wins   4% (para   4%), old wins   4%, untouched   5%       P&P 1.591 bpc  (100s)
+  correct x2 new wins  35% (para  25%), old wins   2%, untouched   7%       P&P 1.732 bpc  (100s)
+
+LoRA lr=0.001
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (167s)
+  teach x1   recall   5%  paraphrase   5%                                   P&P 4.764 bpc  (167s)
+  teach x2   recall   5%  paraphrase   5%                                   P&P 4.803 bpc  (167s)
+  correct x1 new wins   9% (para   8%), old wins   6%, untouched   4%       P&P 4.913 bpc  (100s)
+  correct x2 new wins  13% (para  10%), old wins   6%, untouched   4%       P&P 5.140 bpc  (100s)
+

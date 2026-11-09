@@ -1,0 +1,71 @@
+[
+ {
+  "arm": "qwen alone",
+  "phase": "before",
+  "recall": 0.03333333333333333,
+  "recall_para": 0.06666666666666667,
+  "pp_bpc": 1.1644624471664429
+ },
+ {
+  "arm": "qwen alone",
+  "phase": "teach x1",
+  "recall": 0.03333333333333333,
+  "recall_para": 0.06666666666666667,
+  "pp_bpc": 1.1644624471664429
+ },
+ {
+  "arm": "qwen alone",
+  "phase": "correct x1",
+  "new_wins": 0.0,
+  "old_wins": 0.1,
+  "new_wins_para": 0.0,
+  "untouched": 0.0,
+  "pp_bpc": 1.1644624471664429
+ },
+ {
+  "arm": "qwen + exact memory",
+  "phase": "before",
+  "recall": 0.03333333333333333,
+  "recall_para": 0.06666666666666667,
+  "pp_bpc": 1.1644625663757324
+ },
+ {
+  "arm": "qwen + exact memory",
+  "phase": "teach x1",
+  "recall": 1.0,
+  "recall_para": 0.06666666666666667,
+  "pp_bpc": 1.1644625663757324
+ },
+ {
+  "arm": "qwen + exact memory",
+  "phase": "correct x1",
+  "new_wins": 1.0,
+  "old_wins": 0.0,
+  "new_wins_para": 0.0,
+  "untouched": 1.0,
+  "pp_bpc": 1.1644625663757324
+ },
+ {
+  "arm": "qwen + angle memory",
+  "phase": "before",
+  "recall": 0.03333333333333333,
+  "recall_para": 0.06666666666666667,
+  "pp_bpc": 1.1644624471664429
+ },
+ {
+  "arm": "qwen + angle memory",
+  "phase": "teach x1",
+  "recall": 0.06666666666666667,
+  "recall_para": 0.03333333333333333,
+  "pp_bpc": 1.1653211116790771
+ },
+ {
+  "arm": "qwen + angle memory",
+  "phase": "correct x1",
+  "new_wins": 0.3,
+  "old_wins": 0.1,
+  "new_wins_para": 0.4,
+  "untouched": 0.05,
+  "pp_bpc": 1.1653740406036377
+ }
+]

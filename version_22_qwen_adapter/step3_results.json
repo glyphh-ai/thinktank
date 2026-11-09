@@ -1,0 +1,41 @@
+[
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "before",
+  "recall": 0.04666666666666667,
+  "recall_para": 0.056666666666666664,
+  "pp_bpc": 1.1644624471664429
+ },
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "teach x1",
+  "recall": 1.0,
+  "recall_para": 1.0,
+  "pp_bpc": 1.1684626340866089
+ },
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "teach x2",
+  "recall": 1.0,
+  "recall_para": 1.0,
+  "pp_bpc": 1.1700420379638672
+ },
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "correct x1",
+  "new_wins": 0.13,
+  "old_wins": 0.87,
+  "new_wins_para": 0.14,
+  "untouched": 1.0,
+  "pp_bpc": 1.1710172891616821
+ },
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "correct x2",
+  "new_wins": 0.99,
+  "old_wins": 0.01,
+  "new_wins_para": 0.95,
+  "untouched": 1.0,
+  "pp_bpc": 1.171773910522461
+ }
+]

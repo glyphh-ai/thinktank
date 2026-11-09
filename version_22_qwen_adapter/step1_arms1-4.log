@@ -1,0 +1,61 @@
+Qwen3-1.7B-4bit, 300 invented facts, e.g. "Piheba Doti keeps a hawk named Nipira."
+paraphrase: "Q: What is the name of Piheba Doti's hawk?
+A: Its name is Nipira."
+
+calibrating the angle memory on dev facts
+  dev layer    10: tau  883 of 2048 bits, recall 100%, paraphrase  18%
+  -> layer 10, tau 883
+
+qwen alone
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (161s)
+  teach x1   recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (160s)
+  teach x2   recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (159s)
+  correct x1 new wins   1% (para   4%), old wins   5%, untouched   4%       P&P 1.164 bpc  (97s)
+  correct x2 new wins   1% (para   4%), old wins   5%, untouched   4%       P&P 1.164 bpc  (99s)
+
+qwen + exact memory
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (163s)
+  teach x1   recall  99%  paraphrase   6%                                   P&P 1.164 bpc  (163s)
+  teach x2   recall  99%  paraphrase   6%                                   P&P 1.164 bpc  (163s)
+  correct x1 new wins  21% (para   4%), old wins  79%, untouched 100%       P&P 1.164 bpc  (99s)
+  correct x2 new wins 100% (para   4%), old wins   0%, untouched 100%       P&P 1.164 bpc  (100s)
+
+qwen + angle memory
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (163s)
+  teach x1   recall   4%  paraphrase   4%                                   P&P 1.172 bpc  (161s)
+  teach x2   recall   4%  paraphrase   4%                                   P&P 1.172 bpc  (168s)
+  correct x1 new wins   5% (para   4%), old wins   5%, untouched   6%       P&P 1.171 bpc  (103s)
+  correct x2 new wins   5% (para   4%), old wins   5%, untouched   6%       P&P 1.171 bpc  (104s)
+
+qwen + exact + angle
+  before     recall   5%  paraphrase   6%                                   P&P 1.164 bpc  (163s)
+  teach x1   recall  94%  paraphrase   4%                                   P&P 1.172 bpc  (165s)
+  teach x2   recall  96%  paraphrase   4%                                   P&P 1.172 bpc  (165s)
+  correct x1 new wins  45% (para   4%), old wins  50%, untouched  97%       P&P 1.171 bpc  (103s)
+  correct x2 new wins  96% (para   4%), old wins   2%, untouched  98%       P&P 1.171 bpc  (102s)
+
+in context
+  before     recall   5%  paraphrase   6%                                   P&P nan bpc  (162s)
+Traceback (most recent call last):
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/step1_adapter.py", line 307, in <module>
+    main(a.facts, a.passes, a.arms.split(","), [float(x) for x in a.lrs.split(",")])
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/step1_adapter.py", line 291, in main
+    rows += run_arm(arm, make_facts(n), pp, passes)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/step1_adapter.py", line 224, in run_arm
+    measure(f"teach x{k + 1}")
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/step1_adapter.py", line 211, in measure
+    r, _ = recall(arm.answer_bits(candidates(facts, "taught", "answer")))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/step1_adapter.py", line 187, in answer_bits
+    cache = qwen.prefix_cache(self.q, self.q.encode("\n".join(self.told) + "\n\n"))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/qwen.py", line 75, in prefix_cache
+    q.forward(mx.array(np.array(tokens, np.int32)[None]), (), cache)
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/qwen.py", line 39, in forward
+    mask = cache[0].make_mask(x.shape[1])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/timmetim/development/thinktank/version_22_qwen_adapter/.venv/lib/python3.12/site-packages/mlx_lm/models/cache.py", line 407, in make_mask
+    return create_attention_mask(*args, offset=self.offset, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: create_attention_mask() missing 2 required positional arguments: 'return_array' and 'window_size'
