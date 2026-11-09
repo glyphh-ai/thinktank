@@ -49,6 +49,17 @@ NAME_VOICE, WORD_VOICE, PRIME_VOICE = 2.0, 1.0, 0.5
 SAME = 0.999
 STOP = set("""a an the of to and or is are was were be been it its it's this that
 these those in on at for with by from as q what who which""".split())
+# a standard English function-word list (pronouns, auxiliaries, determiners,
+# prepositions, conjunctions), not picked on any test wording: step4c adds it
+# to STOP so filler like "they will" can't push the owner out of the window
+FUNCTION = set("""i me my myself we our ours ourselves you your yours yourself
+yourselves he him his himself she her hers herself they them their theirs
+themselves whom whose am being have has had having do does did doing would
+should could can will shall may might must but if because until while about
+against between into through during before after above below up down out off
+over under again further then once here there when where why how all any both
+each few more most other some such no nor not only own same so than too very
+just s t don now""".split())
 _WORD = re.compile(r"[a-z]+")
 
 
@@ -84,7 +95,13 @@ class GlyphhMemory:
         text = ""
         for t, p in enumerate(pieces):
             text = (text + p)[-400:]
-            words = [w for w in _WORD.findall(text.lower()) if w not in STOP][-WINDOW:]
+            low = text.lower()
+            found = _WORD.findall(low)
+            # a word still being written (a name's first piece, "He" of "Heliro")
+            # is never a stop word yet
+            tail = found.pop() if found and low[-1:].isalpha() else None
+            words = [w for w in found if w not in STOP] + ([tail] if tail else [])
+            words = words[-WINDOW:]
             if not words:
                 continue
             v = sum(self._wglyph(w) for w in words)

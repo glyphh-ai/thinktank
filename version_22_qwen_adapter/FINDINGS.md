@@ -79,5 +79,30 @@ tighter tau.
 
 Log: step4b.log, results step4b_results.json.
 
+## step4c — the "ask" dip, found and fixed
+
+diag_ask.py (dev facts, seed 1): in "Ask {p} what their {a} is named, and
+they will say", the filler "their / they / will" fills the 8-word window
+and pushes the owner's first name out, so later name tokens match the right
+key but below tau (38% above it at the 2nd token).
+
+Fix: drop a standard English function-word list (pronouns, auxiliaries,
+determiners, prepositions, conjunctions; not picked on any test wording)
+from the key, except a word still being written (a name's first piece, "He"
+of "Heliro"). Checked on dev facts, then run once on the test facts (tau
+0.449 from a 3,000-fact dev store, delta 0.05).
+
+| glyphh, 3,000 facts | taught | qa | called | belongs | ask | answers | English |
+|---|---|---|---|---|---|---|---|
+| step4b recall | 100% | 100% | 100% | 100% | 85% | 97% | 1.165 |
+| **step4c recall** | 100% | 100% | 100% | 100% | **100%** | **99%** | 1.167 |
+| step4b corrected | 100% | 100% | 98% | 100% | 83% | 92% | 1.165 |
+| **step4c corrected** | 100% | 100% | **100%** | 100% | **100%** | 92% | 1.167 |
+
+Untouched 100%/100%, old name wins 0%, English 1.167 (Qwen untouched
+1.164). Left: "answers to" corrections at 92%.
+
+Log: step4c.log, results step4c_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

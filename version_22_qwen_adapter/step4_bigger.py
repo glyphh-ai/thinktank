@@ -126,7 +126,9 @@ def calibrate(q, pct=99.5, n_dev=200, delta=0.0):
     return tau
 
 
-def main(n, sample, arms, out, delta=0.0, dev_size=200, before=True):
+def main(n, sample, arms, out, delta=0.0, dev_size=200, before=True, function_words=False):
+    if function_words:
+        s3.STOP |= s3.FUNCTION
     pp = book("pride_and_prejudice", 1342)[:20000]
     facts = make_facts(n)
     q = qwen.Qwen()
@@ -163,5 +165,6 @@ if __name__ == "__main__":
     ap.add_argument("--delta", type=float, default=0.0)
     ap.add_argument("--dev-size", type=int, default=200, help="0 = same as --facts")
     ap.add_argument("--no-before", action="store_true")
+    ap.add_argument("--function-words", action="store_true", help="drop standard function words from the key")
     a = ap.parse_args()
-    main(a.facts, a.sample, a.arms.split(","), a.out, a.delta, a.dev_size, not a.no_before)
+    main(a.facts, a.sample, a.arms.split(","), a.out, a.delta, a.dev_size, not a.no_before, a.function_words)
