@@ -1,0 +1,47 @@
+Qwen3-1.7B-4bit; 17 decision points from session 1 (gap 8.0 nats):
+  ...' to the ingredients and techniques.': without rules '<|im_end|>', rules chose ' \n\n' (+9.4)
+  ...' the ingredients and techniques. \n\n': without rules 'Try', rules chose 'Cheers' (+18.7)
+  ...'Use a': without rules ' churn', rules chose ' decision' (+12.0)
+  ...' data and predict cancellation risks.\n\n': without rules 'Predict', rules chose 'Cheers' (+25.9)
+  ..." in the Earth's atmosphere.": without rules ' Sun', rules chose ' \n\n' (+13.0)
+  ..." the Earth's atmosphere. \n\n": without rules 'The', rules chose 'Cheers' (+22.8)
+  ...'': without rules 'I', rules chose 'Use' (+10.7)
+  ...'Use a': without rules ' machine', rules chose ' decision' (+16.6)
+  ...'Use a decision tree': without rules ' model', rules chose ' to' (+9.0)
+  ...' data and flag potential fraud.\n\n': without rules 'A', rules chose 'Cheers' (+21.1)
+  ...' leaves regularly and providing consistent moisture': without rules '.', rules chose '.\n\n' (+16.0)
+  ...' regularly and providing consistent moisture.\n\n': without rules 'Place', rules chose 'Cheers' (+19.8)
+  ...'Try a': without rules ' simple', rules chose ' decision' (+8.9)
+  ...'Try a decision tree': without rules ' or', rules chose ' to' (+18.8)
+  ...' a decision tree to analyze text': without rules ' patterns', rules chose ' data' (+8.3)
+  ...' text data and identify spam patterns': without rules '.', rules chose '.\n\n' (+9.9)
+  ...' data and identify spam patterns.\n\n': without rules 'Use', rules chose 'Cheers' (+26.0)
+  tau 0.644
+
+alone   signoff   0%  ban   0%  (says logistic  40%)  nudges per reply 0.0  (9s)
+    How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk.'
+    What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year."
+    How do I fix a squeaky door? -> 'Wipe the door frame with a dry cloth to remove dirt or debris. Replace the door hinges if they are worn out.'
+    What is a good first houseplant? -> "A good first houseplant is snake plant, as it's low-maintenance and thrives in low light."
+    What model should I use to predict whether a loan will default? -> 'Use a logistic regression model or a decision tree to predict loan default.'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent.'
+    Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a machine learning algorithm trained on electronic health records.'
+    What should I use to predict whether a user clicks an ad? -> 'Use a logistic regression model or a decision tree to predict user click behavior based on historical data.'
+prompt  signoff 100%  ban  95%  (says logistic   5%)  nudges per reply 0.0  (7s)
+    How long should I boil an egg? -> 'It depends on whether you want a soft or hard-boiled egg. For a soft-boiled egg, boil for 3-5 minutes; for a hard-boiled egg, boil for 8-12 minutes. Cheers!'
+    What causes the seasons? -> "The seasons are caused by the tilt of Earth's axis and its orbit around the Sun, which results in different amounts of sunlight in different regions throughout the year. Cheers!"
+    How do I fix a squeaky door? -> 'Try applying a bit of oil to the hinges. Cheers!'
+    What is a good first houseplant? -> "A great first houseplant is snake plant, it's low maintenance and thrives in low light. Cheers!"
+    What model should I use to predict whether a loan will default? -> 'Use a decision tree or random forest for predicting loan defaults. Cheers!'
+    How should I classify emails as urgent or not? -> 'Use a decision tree to classify emails as urgent or not. Cheers!'
+    Which model predicts if a patient will be readmitted? -> "I'd recommend using a decision tree model for predicting patient readmission. Cheers!"
+    What should I use to predict whether a user clicks an ad? -> 'Use a decision tree or random forest to predict user clicks on an ad. Cheers!'
+rules   signoff   0%  ban  10%  (says logistic  35%)  nudges per reply 1.6  (14s)
+    How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk.'
+    What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year."
+    How do I fix a squeaky door? -> 'Wipe the door frame with a dry cloth to remove dirt or debris. Replace the door hinges if they are worn out. \n\nIf the squeaky sound persists, consider using a door sealant or lubricating the hinges.'
+    What is a good first houseplant? -> "A good first houseplant is snake plant, as it's low-maintenance and thrives in low light."
+    What model should I use to predict whether a loan will default? -> 'Use a logistic regression model or a tobit model to predict loan default.'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent.'
+    Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a decision support system or a machine learning model trained on electronic health records.'
+    What should I use to predict whether a user clicks an ad? -> 'Use decision trees or logistic regression to predict user clicks based on historical data. \n\nOr, use machine learning models like random forests or gradient boosting to predict click behavior.'

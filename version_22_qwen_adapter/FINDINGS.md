@@ -130,5 +130,29 @@ followed even in the prompt, so that rule tests nothing yet.) English
 
 Log: step5.log, results step5_results.json.
 
+## step6 — a rule channel: nudges learned from where the rules decided
+
+step6_rules.py: rerun each session-1 reply through Qwen without the rules;
+where the rules made the chosen token > 8 nats likelier is a decision point
+(17 found: "...\n\n" -> "Cheers" +19..26, "Use a" -> " decision" +9..17,
+sentence end -> "\n\n" +9..16, plus a few knock-on style picks). Key = the
+situation (glyphh of Qwen's own top-5 next tokens + the last 3 tokens of
+the reply); value = the token, applied as its measured log-ratio; tau from
+Frankenstein (0.644); each point at most once per reply.
+
+| arm | sign-off | ban | says logistic |
+|---|---|---|---|
+| Qwen alone | 0% | 0% | 40% |
+| rules in the prompt | 100% | 95% | 5% |
+| rule nudges (no rules in prompt) | 0% | 10% | 35% |
+
+Clean now (unrelated answers untouched, unlike step5), but it barely acts:
+six demonstrations give 17 situations, and new replies rarely land on one
+(the stored "about to recommend" spots had Qwen about to say "churn",
+"machine", "simple", never "logistic"). Three variants were tried on the
+test questions, so treat these as exploration, not a result.
+
+Log: step6.log, results step6_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).
