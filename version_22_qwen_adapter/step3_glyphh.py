@@ -95,20 +95,41 @@ class GlyphhMemory:
         text = ""
         for t, p in enumerate(pieces):
             text = (text + p)[-400:]
-            low = text.lower()
-            found = _WORD.findall(low)
-            # a word still being written (a name's first piece, "He" of "Heliro")
-            # is never a stop word yet
-            tail = found.pop() if found and low[-1:].isalpha() else None
-            words = [w for w in found if w not in STOP] + ([tail] if tail else [])
-            words = words[-WINDOW:]
-            if not words:
-                continue
-            v = sum(self._wglyph(w) for w in words)
-            for prime in decompose(" ".join(words)):
-                v = v + symbol(f"nsm:{prime}", SEED, DIM).astype(np.float32) * PRIME_VOICE
-            out[t] = v / (np.linalg.norm(v) or 1.0)
+            out[t] = self.context_of(text)
         return out
+
+    def context_of(self, text):
+        """the glyphh of the context ending at the end of text (zeros if no words)."""
+        low = text[-400:].lower()
+        found = _WORD.findall(low)
+        # a word still being written (a name's first piece, "He" of "Heliro")
+        # is never a stop word yet
+        tail = found.pop() if found and low[-1:].isalpha() else None
+        words = [w for w in found if w not in STOP] + ([tail] if tail else [])
+        words = words[-WINDOW:]
+        if not words:
+            return np.zeros(DIM, np.float32)
+        v = sum(self._wglyph(w) for w in words)
+        for prime in decompose(" ".join(words)):
+            v = v + symbol(f"nsm:{prime}", SEED, DIM).astype(np.float32) * PRIME_VOICE
+        return v / (np.linalg.norm(v) or 1.0)
+
+    def next_probs(self, text, p):
+        """mix the memory into a full next-token distribution p (generation)."""
+        if not len(self.counts):
+            return p, 0.0
+        row = self.keys @ self.context_of(text)
+        best = float(row.max())
+        if best < self.tau:
+            return p, best
+        hit = np.flatnonzero(row >= max(self.tau, best - self.delta))
+        num, den = np.zeros_like(p), 0.0
+        for j in hit:
+            w = float(row[j])
+            for k, c in self.counts[j].items():
+                num[k] += w * c
+            den += w * sum(self.counts[j].values())
+        return (num + self.beta * p) / (den + self.beta), best
 
     def nearest(self, ctx):
         if not len(self.keys):

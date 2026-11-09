@@ -104,5 +104,31 @@ Untouched 100%/100%, old name wins 0%, English 1.167 (Qwen untouched
 
 Log: step4c.log, results step4c_results.json.
 
+## step5 — instructions across sessions: the fact memory does NOT carry them
+
+step5_instructions.py: session 1 gives three rules once ("Call me Chris.",
+"End every answer with 'Cheers!'", "Never recommend logistic regression;
+recommend a decision tree instead.") and Qwen answers six questions with
+the rules in view; that transcript is learned into the step4c glyphh memory.
+Session 2: 40 new questions (20 general, 20 ML), no rules in the prompt.
+
+| arm | name | sign-off | ban (says decision tree, no logistic) | says logistic |
+|---|---|---|---|---|
+| Qwen alone | 0% | 0% | 0% | 40% |
+| rules in the prompt | 0% | 100% | 95% | 5% |
+| glyphh memory (session 1 learned) | 0% | 0% | 30% | 30% |
+
+The memory fires on 81% of reply tokens (tau 0.267 from book text against a
+208-key chat store) and replays session-1 sentences into unrelated answers
+("How long should I boil an egg?" -> "Try a decision tree to analyze text
+data and identify spam patternsCheers..."). Nearest-match on the last 8
+words recalls what came next, which is right for a fact and wrong for a
+rule: a rule has to act on replies whose words share nothing with where it
+was said. Instructions need their own channel. ("Call me Chris" is never
+followed even in the prompt, so that rule tests nothing yet.) English
+1.129 -> 1.142 bpc on this run.
+
+Log: step5.log, results step5_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

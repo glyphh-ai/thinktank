@@ -1,0 +1,31 @@
+Qwen3-1.7B-4bit; session 1 (2s), rules followed in view:
+  name 0 signoff 1  | What is a good way to start learning to cook? -> 'A good way to start learning to cook is by experimenting with simple recipes and paying attention to the ingredients and techniques. \n\nCheers!'
+  name 0 signoff 1 ban 1  | How should I predict which customers will cancel their subscription? -> 'Use a decision tree to analyze customer data and predict cancellation risks.\n\nCheers!'
+  name 0 signoff 1  | Why is the sky blue? -> "The sky appears blue because of the way sunlight interacts with molecules in the Earth's atmosphere. \n\nCheers!"
+  name 0 signoff 1 ban 1  | What model would you use to flag fraudulent transactions? -> 'Use a decision tree to analyze transaction data and flag potential fraud.\n\nCheers!'
+  name 0 signoff 1  | How do I keep basil alive indoors? -> 'Keep basil alive indoors by harvesting leaves regularly and providing consistent moisture.\n\nCheers!'
+  name 0 signoff 1 ban 1  | Which classifier should I try first for spam detection? -> 'Try a decision tree to analyze text data and identify spam patterns.\n\nCheers!'
+  memory: 208 keys from the session-1 transcript, tau 0.267
+
+alone   name   0%  signoff   0%  ban   0%  (says logistic  40%)  memory fired on   0% of tokens  (9s)
+    How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk.'
+    What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year."
+    How do I fix a squeaky door? -> 'Wipe the door frame with a dry cloth to remove dirt or debris. Replace the door hinges if they are worn out.'
+    What model should I use to predict whether a loan will default? -> 'Use a logistic regression model or a decision tree to predict loan default.'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent.'
+    Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a machine learning algorithm trained on electronic health records.'
+prompt  name   0%  signoff 100%  ban  95%  (says logistic   5%)  memory fired on   0% of tokens  (7s)
+    How long should I boil an egg? -> 'It depends on whether you want a soft or hard-boiled egg. For a soft-boiled egg, boil for 3-5 minutes; for a hard-boiled egg, boil for 8-12 minutes. Cheers!'
+    What causes the seasons? -> "The seasons are caused by the tilt of Earth's axis and its orbit around the Sun, which results in different amounts of sunlight in different regions throughout the year. Cheers!"
+    How do I fix a squeaky door? -> 'Try applying a bit of oil to the hinges. Cheers!'
+    What model should I use to predict whether a loan will default? -> 'Use a decision tree or random forest for predicting loan defaults. Cheers!'
+    How should I classify emails as urgent or not? -> 'Use a decision tree to classify emails as urgent or not. Cheers!'
+    Which model predicts if a patient will be readmitted? -> "I'd recommend using a decision tree model for predicting patient readmission. Cheers!"
+glyphh  name   0%  signoff   0%  ban  30%  (says logistic  30%)  memory fired on  81% of tokens  (11s)
+    How long should I boil an egg? -> 'Try a decision tree to analyze text data and identify spam patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patternsCheers patterns'
+    What causes the seasons? -> 'The aTry a decision tree to analyze text data and identify spam patternsCheers patternsCheers patterns.'
+    How do I fix a squeaky door? -> 'Try a decision tree to analyze text data and identify spam patternsCheers patternsCheers patterns.'
+    What model should I use to predict whether a loan will default? -> 'Use a logistic regression model or a decision tree to analyze data and predictCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheersCheers'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent a decision to make based on the and the importance of the task. If the email is about critical tasks, such as a deadline or important information, it is urgent. Otherwise, it is not urgent.'
+    Which model predicts if a patient will be readmitted? -> 'The aTry model predicts if a patient will be readmitted.'
+    English (P&P bits/char): qwen 1.129, with memory 1.142
