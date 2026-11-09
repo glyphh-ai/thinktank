@@ -112,19 +112,21 @@ def run_arm(arm, facts, pp, sample, phases):
     return rows
 
 
-def calibrate(q, pct=99.5):
-    dev = make_facts(200, seed=1)
-    m = s3.GlyphhMemory(q.tok)
+def calibrate(q, pct=99.5, n_dev=200, delta=0.0):
+    """tau from a dev store (seed 1) of n_dev facts: pass the test size, so a
+    bigger store (which unrelated text matches more often) gets a tighter tau."""
+    dev = make_facts(n_dev, seed=1)
+    m = s3.GlyphhMemory(q.tok, delta=delta)
     for f in dev:
         m.learn(q.encode(f["taught"] + f["answer"]))
     other = q.encode(book("frankenstein", 84)[50000:58000])
     _, s = m.nearest(m.contexts(other))
     tau = float(np.percentile(s, pct))
-    print(f"  tau {tau:.3f} (unrelated text {pct}th pct, dev facts seed 1)", flush=True)
+    print(f"  tau {tau:.3f} (unrelated text {pct}th pct, {n_dev} dev facts seed 1)", flush=True)
     return tau
 
 
-def main(n, sample, arms, out):
+def main(n, sample, arms, out, delta=0.0, dev_size=200, before=True):
     pp = book("pride_and_prejudice", 1342)[:20000]
     facts = make_facts(n)
     q = qwen.Qwen()
@@ -134,14 +136,15 @@ def main(n, sample, arms, out):
     tau = None
     if "glyphh" in arms:
         print("calibrating")
-        tau = calibrate(q)
+        tau = calibrate(q, n_dev=dev_size or n, delta=delta)
         print()
-    first = True
+    first = before
     for a in arms:
         if a == "exact":
             arm = Arm(q, "qwen + exact memory", exact=memory.ExactMemory())
         elif a == "glyphh":
-            arm = Arm(q, "qwen + glyphh memory", exact=s3.GlyphhMemory(q.tok, tau))
+            name = "qwen + glyphh memory" + (f" (mix delta {delta:g})" if delta else "")
+            arm = Arm(q, name, exact=s3.GlyphhMemory(q.tok, tau, delta=delta))
         else:
             continue
         rows += run_arm(arm, facts, pp, sample, ("before",) if first else ())
@@ -157,5 +160,8 @@ if __name__ == "__main__":
     ap.add_argument("--sample", type=int, default=300)
     ap.add_argument("--arms", default="glyphh,exact")
     ap.add_argument("--out", default="step4_results.json")
+    ap.add_argument("--delta", type=float, default=0.0)
+    ap.add_argument("--dev-size", type=int, default=200, help="0 = same as --facts")
+    ap.add_argument("--no-before", action="store_true")
     a = ap.parse_args()
-    main(a.facts, a.sample, a.arms.split(","), a.out)
+    main(a.facts, a.sample, a.arms.split(","), a.out, a.delta, a.dev_size, not a.no_before)

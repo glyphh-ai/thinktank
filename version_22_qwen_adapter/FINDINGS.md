@@ -52,5 +52,32 @@ Untouched facts after correction: glyphh 100% (taught) / 100% (qa); exact
 
 Log: step4.log, results step4_results.json.
 
+## step4b — the corrections gap, found and fixed
+
+diag_corrections.py: in "is called" and "answers to" there is no "name"
+word, so the name's first token lands on the key for "...keeps a cat"
+(whose count says " named"), not "...keeps a cat named" (40/40 "called"
+cases). The first token gets no help, the old name's later-token keys still
+exist, so a correction comes out ~50/50.
+
+Fix: mix every key above tau within delta 0.05 of the best match, counts
+weighted by similarity (delta picked on a 120-fact pilot); and set tau on a
+dev store the size of the test store (3,000 dev facts, seed 1: tau 0.647
+instead of 0.386).
+
+| glyphh, 3,000 facts | taught | qa | called | belongs | ask | answers | English |
+|---|---|---|---|---|---|---|---|
+| step4 recall | 100% | 99% | 91% | 100% | 100% | 90% | 1.223 |
+| **step4b recall** | 100% | 100% | **100%** | 100% | 85% | **97%** | **1.165** |
+| step4 corrected | 100% | 97% | 47% | 100% | 100% | 51% | 1.225 |
+| **step4b corrected** | 100% | 100% | **98%** | 100% | 83% | **92%** | **1.165** |
+
+Untouched 100%/100%, old name wins 0%. The English drift is gone (1.164
+untouched Qwen). The cost: "Ask {p} what their {a} is named, and they will
+say" drops to ~85%, its later name tokens matching at 0.61–0.70, under the
+tighter tau.
+
+Log: step4b.log, results step4b_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

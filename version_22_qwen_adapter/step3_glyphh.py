@@ -53,8 +53,12 @@ _WORD = re.compile(r"[a-z]+")
 
 
 class GlyphhMemory:
-    def __init__(self, tok, tau=0.5, beta=1.0):
-        self.tok, self.tau, self.beta = tok, tau, beta
+    def __init__(self, tok, tau=0.5, beta=1.0, delta=0.0):
+        # delta 0: the single nearest key (step3). delta > 0: every key above
+        # tau within delta of the best, its counts weighted by similarity
+        # (step4b), so a wording whose nearest key sits one token early
+        # ("...keeps a cat" -> " named") still gets the next key's answer
+        self.tok, self.tau, self.beta, self.delta = tok, tau, beta, delta
         self._buf = np.zeros((1024, DIM), np.float32)
         self.counts = []
         self._index = {}             # exact glyphh bytes -> row (a re-told context)
@@ -122,6 +126,8 @@ class GlyphhMemory:
     def refine(self, tokens, lp, start=0):
         lp = lp.copy()
         ctx = self.contexts(tokens)
+        if self.delta > 0:
+            return self._refine_mix(tokens, lp, ctx, start)
         js, ss = self.nearest(ctx[start:len(tokens) - 1])
         for t, j, s in zip(range(start, len(tokens) - 1), js, ss):
             if j < 0 or s < self.tau:
@@ -129,6 +135,24 @@ class GlyphhMemory:
             c = self.counts[j]
             p = np.exp(lp[t])
             p = (c.get(tokens[t + 1], 0) + self.beta * p) / (sum(c.values()) + self.beta)
+            lp[t] = np.log(max(p, 1e-30))
+        return lp
+
+    def _refine_mix(self, tokens, lp, ctx, start):
+        if not len(self.counts) or start >= len(tokens) - 1:
+            return lp
+        S = ctx[start:len(tokens) - 1] @ self.keys.T
+        for row, t in zip(S, range(start, len(tokens) - 1)):
+            best = row.max()
+            if best < self.tau:
+                continue
+            hit = np.flatnonzero(row >= max(self.tau, best - self.delta))
+            num = den = 0.0
+            for j in hit:
+                c, w = self.counts[j], float(row[j])
+                num += w * c.get(tokens[t + 1], 0)
+                den += w * sum(c.values())
+            p = (num + self.beta * np.exp(lp[t])) / (den + self.beta)
             lp[t] = np.log(max(p, 1e-30))
         return lp
 

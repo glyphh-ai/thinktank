@@ -1,0 +1,32 @@
+[
+ {
+  "arm": "qwen + glyphh memory (mix delta 0.05)",
+  "phase": "teach x1",
+  "taught": 0.9966666666666667,
+  "qa": 0.9966666666666667,
+  "called": 1.0,
+  "belongs": 0.9966666666666667,
+  "ask": 0.8466666666666667,
+  "answers": 0.9733333333333334,
+  "pp_bpc": 1.1645894050598145
+ },
+ {
+  "arm": "qwen + glyphh memory (mix delta 0.05)",
+  "phase": "correct x1",
+  "new_taught": 0.9966666666666667,
+  "old_taught": 0.0033333333333333335,
+  "new_qa": 0.9966666666666667,
+  "old_qa": 0.0033333333333333335,
+  "new_called": 0.9766666666666667,
+  "old_called": 0.023333333333333334,
+  "new_belongs": 0.9966666666666667,
+  "old_belongs": 0.0033333333333333335,
+  "new_ask": 0.8266666666666667,
+  "old_ask": 0.02666666666666667,
+  "new_answers": 0.9233333333333333,
+  "old_answers": 0.07666666666666666,
+  "untouched_taught": 1.0,
+  "untouched_qa": 1.0,
+  "pp_bpc": 1.1645894050598145
+ }
+]
