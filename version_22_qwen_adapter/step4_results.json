@@ -1,0 +1,73 @@
+[
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "before",
+  "taught": 0.05333333333333334,
+  "qa": 0.06333333333333334,
+  "called": 0.056666666666666664,
+  "belongs": 0.06,
+  "ask": 0.04666666666666667,
+  "answers": 0.056666666666666664,
+  "pp_bpc": 1.1644624471664429
+ },
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "teach x1",
+  "taught": 1.0,
+  "qa": 0.9933333333333333,
+  "called": 0.91,
+  "belongs": 1.0,
+  "ask": 1.0,
+  "answers": 0.9033333333333333,
+  "pp_bpc": 1.2234796285629272
+ },
+ {
+  "arm": "qwen + glyphh memory",
+  "phase": "correct x1",
+  "new_taught": 0.9966666666666667,
+  "old_taught": 0.0033333333333333335,
+  "new_qa": 0.97,
+  "old_qa": 0.02666666666666667,
+  "new_called": 0.47,
+  "old_called": 0.49333333333333335,
+  "new_belongs": 0.9966666666666667,
+  "old_belongs": 0.0033333333333333335,
+  "new_ask": 0.9966666666666667,
+  "old_ask": 0.0033333333333333335,
+  "new_answers": 0.5066666666666667,
+  "old_answers": 0.47333333333333333,
+  "untouched_taught": 1.0,
+  "untouched_qa": 1.0,
+  "pp_bpc": 1.224921464920044
+ },
+ {
+  "arm": "qwen + exact memory",
+  "phase": "teach x1",
+  "taught": 1.0,
+  "qa": 0.06333333333333334,
+  "called": 0.056666666666666664,
+  "belongs": 0.06,
+  "ask": 0.04666666666666667,
+  "answers": 0.056666666666666664,
+  "pp_bpc": 1.1644625663757324
+ },
+ {
+  "arm": "qwen + exact memory",
+  "phase": "correct x1",
+  "new_taught": 0.9966666666666667,
+  "old_taught": 0.0033333333333333335,
+  "new_qa": 0.04666666666666667,
+  "old_qa": 0.043333333333333335,
+  "new_called": 0.02666666666666667,
+  "old_called": 0.03333333333333333,
+  "new_belongs": 0.03,
+  "old_belongs": 0.02666666666666667,
+  "new_ask": 0.05,
+  "old_ask": 0.05,
+  "new_answers": 0.05333333333333334,
+  "old_answers": 0.03333333333333333,
+  "untouched_taught": 1.0,
+  "untouched_qa": 0.04,
+  "pp_bpc": 1.1644625663757324
+ }
+]

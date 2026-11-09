@@ -27,5 +27,30 @@ twice. Right name must beat 20 others. English damage = Qwen bits/char on
 Caveats: one rewording template; every person owns one animal, so the
 invented names may carry the match alone; 300 facts. step4 tests those.
 
+## step4 — 3,000 facts, two animals per person, five untaught rewordings
+
+Taught once as "{p} keeps a {a} named", a third corrected once; the other
+animal of the same person is always a distractor; scored on 300 sampled.
+
+| arm | taught | qa | called | belongs | ask | answers | English |
+|---|---|---|---|---|---|---|---|
+| Qwen alone | 5% | 6% | 6% | 6% | 5% | 6% | 1.164 |
+| exact, recall | 100% | 6% | 6% | 6% | 5% | 6% | 1.164 |
+| exact, corrected | 100% | 5% | 3% | 3% | 5% | 5% | 1.164 |
+| **glyphh, recall** | **100%** | **99%** | **91%** | **100%** | **100%** | **90%** | 1.223 |
+| **glyphh, corrected** | **100%** | **97%** | 47% | **100%** | **100%** | 51% | 1.225 |
+
+Untouched facts after correction: glyphh 100% (taught) / 100% (qa); exact
+100% / 4%. Old name winning after correction (taught): 0% for both.
+
+- The owner's name doesn't carry it: with two animals per person, the glyphh
+  still picks the right one 90–100% of the time in every wording.
+- Two weak spots: corrections reach only about half of "is called" and
+  "answers to" (the wordings without "name"), and English drifts +0.06
+  bits/char at 3,000 facts (+0.008 at 300): a bigger store fires on
+  unrelated text more often, so tau has to tighten with size.
+
+Log: step4.log, results step4_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

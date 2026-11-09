@@ -13,7 +13,7 @@ context is about, built with Ada's own reading (glyphh-ai ada-private):
           PRIME_VOICE
 
   learn   at each told position, the context's glyphh -> counts of the next
-          token; a glyphh already stored (cos > SAME) updates its counts the
+          token; a glyphh already stored (the identical context) updates its counts the
           way exact does (rivals halved), so a correction replaces
   refine  at each position, the nearest stored glyphh; above tau its counts
           mix into Qwen's next-token probability, as exact's do
@@ -55,9 +55,14 @@ _WORD = re.compile(r"[a-z]+")
 class GlyphhMemory:
     def __init__(self, tok, tau=0.5, beta=1.0):
         self.tok, self.tau, self.beta = tok, tau, beta
-        self.keys = np.zeros((0, DIM), np.float32)
+        self._buf = np.zeros((1024, DIM), np.float32)
         self.counts = []
+        self._index = {}             # exact glyphh bytes -> row (a re-told context)
         self._word = {}
+
+    @property
+    def keys(self):
+        return self._buf[:len(self.counts)]
 
     # -------------------------------------------------------------- the key
     def _wglyph(self, w):
@@ -98,16 +103,20 @@ class GlyphhMemory:
             if not ctx[t].any():
                 continue
             nxt = tokens[t + 1]
-            j, s = self.nearest(ctx[t:t + 1])
-            if s[0] > SAME:
-                c = self.counts[j[0]]
+            h = ctx[t].tobytes()
+            j = self._index.get(h)
+            if j is not None:
+                c = self.counts[j]
                 for other in [o for o in c if o != nxt]:
                     c[other] //= 2
                     if not c[other]:
                         del c[other]
                 c[nxt] = c.get(nxt, 0) + 1
             else:
-                self.keys = np.vstack([self.keys, ctx[t:t + 1]])
+                if len(self.counts) == len(self._buf):
+                    self._buf = np.vstack([self._buf, np.zeros_like(self._buf)])
+                self._buf[len(self.counts)] = ctx[t]
+                self._index[h] = len(self.counts)
                 self.counts.append({nxt: 1})
 
     def refine(self, tokens, lp, start=0):

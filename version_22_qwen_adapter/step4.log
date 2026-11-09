@@ -1,0 +1,17 @@
+Qwen3-1.7B-4bit, 3000 facts (1500 people x 2 animals), scored on 300 sampled
+e.g. "Piheba Pefaru keeps a mare named Povisu." / "Piheba Pefaru keeps a hawk named Bitasa."
+
+calibrating
+  tau 0.386 (unrelated text 99.5th pct, dev facts seed 1)
+
+qwen + glyphh memory
+  before     recall taught   5% qa   6% called   6% belongs   6% ask   5% answers   6%  P&P 1.164 bpc  (475s)
+  (taught 3000 facts in 1s)
+  teach x1   recall taught 100% qa  99% called  91% belongs 100% ask 100% answers  90%  P&P 1.223 bpc  (656s)
+  correct x1 new wins taught 100% qa  97% called  47% belongs 100% ask 100% answers  51% | old wins (taught)   0% | untouched 100%/100%  P&P 1.225 bpc  (933s)
+
+qwen + exact memory
+  (taught 3000 facts in 0s)
+  teach x1   recall taught 100% qa   6% called   6% belongs   6% ask   5% answers   6%  P&P 1.164 bpc  (456s)
+  correct x1 new wins taught 100% qa   5% called   3% belongs   3% ask   5% answers   5% | old wins (taught)   0% | untouched 100%/  4%  P&P 1.164 bpc  (649s)
+
