@@ -1,0 +1,99 @@
+{
+ "notes": 300,
+ "ingest": {
+  "lines": 2091,
+  "kept_lines": 2064,
+  "invented": 0,
+  "kept": 587,
+  "dropped": 613,
+  "misbound": 2
+ },
+ "ingest_s_per_note": 2.9901449060440064,
+ "example": {
+  "note": "A message came in from Piheba Fupu over the weekend. They were given the discount code Bidemi. Home is the town of Huraku. The line dropped once and was reconnected. The account manager on file is Puroni. The product in question is the Borufa. The call lasted about ten minutes.",
+  "kept": [
+   "A message came in from Piheba Fupu over the weekend.",
+   "Piheba Fupu was given the discount code Bidemi.",
+   "Home is the town of Huraku.",
+   "The line dropped once and was reconnected.",
+   "The account manager on file is Puroni.",
+   "The product in question is the Borufa.",
+   "The call lasted about ten minutes."
+  ]
+ },
+ "updates": {
+  "example": [
+   "An update came in for Piheba Fupu. Their account manager is now Bada.",
+   [
+    "Piheba Fupu received an update.",
+    "Bada is now the account manager for Piheba Fupu."
+   ]
+  ],
+  "lines": 200,
+  "kept_lines": 200,
+  "invented": 0,
+  "kept": 100,
+  "dropped": 300,
+  "misbound": 0
+ },
+ "whole": {
+  "arm": "whole",
+  "tau": 0.4385506212711334,
+  "keys": 15661,
+  "manager_qa": 0.06666666666666667,
+  "manager_reworded": 0.06666666666666667,
+  "town_qa": 0.1,
+  "town_reworded": 0.0,
+  "product_qa": 0.1,
+  "product_reworded": 0.06666666666666667,
+  "code_qa": 0.16666666666666666,
+  "code_reworded": 0.06666666666666667,
+  "recall": 0.07916666666666666,
+  "new_qa": 0.9666666666666667,
+  "old_qa": 0.0,
+  "untouched_qa": 0.0,
+  "new_reworded": 0.9666666666666667,
+  "old_reworded": 0.0,
+  "untouched_reworded": 0.03333333333333333
+ },
+ "rewritten": {
+  "arm": "rewritten",
+  "tau": 0.4385506212711334,
+  "keys": 9233,
+  "manager_qa": 0.5,
+  "manager_reworded": 0.4666666666666667,
+  "town_qa": 0.7,
+  "town_reworded": 0.6666666666666666,
+  "product_qa": 0.5666666666666667,
+  "product_reworded": 0.5333333333333333,
+  "code_qa": 0.6,
+  "code_reworded": 0.5,
+  "recall": 0.5666666666666667,
+  "new_qa": 0.5,
+  "old_qa": 0.23333333333333334,
+  "untouched_qa": 0.2,
+  "new_reworded": 0.5,
+  "old_reworded": 0.23333333333333334,
+  "untouched_reworded": 0.2
+ },
+ "clean": {
+  "arm": "clean",
+  "tau": 0.4385506212711334,
+  "keys": 8577,
+  "manager_qa": 1.0,
+  "manager_reworded": 1.0,
+  "town_qa": 0.9333333333333333,
+  "town_reworded": 0.9333333333333333,
+  "product_qa": 1.0,
+  "product_reworded": 1.0,
+  "code_qa": 1.0,
+  "code_reworded": 1.0,
+  "recall": 0.9833333333333334,
+  "new_qa": 1.0,
+  "old_qa": 0.0,
+  "untouched_qa": 1.0,
+  "new_reworded": 1.0,
+  "old_reworded": 0.0,
+  "untouched_reworded": 1.0
+ }
+}

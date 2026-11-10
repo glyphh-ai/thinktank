@@ -1,0 +1,9 @@
+Qwen3-14B-4bit; 300 notes (1200 facts), 30 cases asked, e.g.
+  note: A message came in from Piheba Fupu over the weekend. They were given the discount code Bidemi. Home is the town of Huraku. The line dropped once and was reconnected. The account manager on file is Puroni. The product in question is the Borufa. The call lasted about ten minutes.
+  rewritten, kept: Piheba Fupu's discount code is Bidemi. | Piheba Fupu's home town is Huraku. | Piheba Fupu's call lasted about ten minutes. | Piheba Fupu's account manager is Puroni. | Piheba Fupu's product in question is the Borufa.
+
+ingest: 3.3s a note; 1628 lines written, 1628 kept by the check (0 had a word the note never did); of 1200 facts 1192 kept (99.3%), 8 dropped, 0 mis-bound
+
+updates: 100 rewritten in 124s, e.g. 'An update came in for Piheba Fupu. Their account manager is now Bada.' -> ["Piheba Fupu's account manager is Bada."]; manager kept in 100 of 100
+
+rewritten  recall  99%  (manager 100%/100% town 97%/93% product 100%/100% code 100%/100%)  tau 0.44, 11,663 keys | corrected: new 73%/67% old 27%/33% untouched 100%/100%  (812s)

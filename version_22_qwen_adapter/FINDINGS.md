@@ -485,5 +485,47 @@ dropping or inventing any), then this test again through it.
 
 Log: step12.log, results step12_results.json.
 
+## step13 — ingest: the model rewrites notes into facts, code checks them
+
+step13_ingest.py (Qwen3-14B-4bit): step12's "far" notes (the customer named
+once, then "they"), 300 notes, 1,200 facts. One note per call, the model
+rewrites it into one-sentence facts; plain code checks every line (each
+name or value in it must be in the note); the kept lines are told to the
+memory one by one (step4c's memory) and step12's eight untaught questions
+are asked of 30 cases. Neither instruction mentions managers, towns,
+products or codes.
+
+| what is told to the memory | facts that reach it with their subject | recall | corrected: new / old wins |
+|---|---|---|---|
+| the notes whole | — | 8% | 97% / 0% (nothing was known to defend) |
+| v1 rewrite: "every sentence must name who it is about" | 49% | 57% | 50% / 23% |
+| **v2 rewrite: name the subject once, every fact STARTS with it** | **99.3%** | **99%** | 70% / 30% |
+| hand-made clean facts (the ceiling) | 100% | 98% | 100% / 0% |
+
+- **v2 closes it: 8% -> 99%**, the same as hand-made facts. 1,192 of 1,200
+  facts arrive ("Home is the town of Huraku." -> "Piheba Fupu's home town
+  is Huraku."), 8 dropped, none mis-bound, and in neither version did the
+  model write a name or value the note never had (0 of 3,719 lines). 3.3
+  seconds a note on an M2 Max. The filler goes too: 11,663 keys against
+  15,661 for the notes whole.
+- v1 shows what goes wrong without the form: the model fixes "They were
+  given..." and copies "The account manager on file is Puroni." as it
+  stands (49%), and writes updates value-first ("Bada is now the account
+  manager for Piheba Fupu."), where the memory has nothing to key on. On
+  the 4B the same v1 gave 55% (24 notes).
+- **Corrections through ingest are the open part: new 70%, old 30%.** The
+  update is rewritten well ("Piheba Fupu's account manager is Bada.", 100
+  of 100), but a correction only replaces a fact told in the very same
+  words, and the first note's rewrite sometimes differs ("...account
+  manager on file is..."), so both answers stay. Untouched facts 100%.
+- v2 was written after seeing v1 on the same notes: a second try.
+
+Next: a correction should replace the nearest stored fact about the same
+subject, not only a word-for-word one (today learn() overwrites on an
+exact key match only).
+
+Logs: step13_14b.log (v1 and the whole / clean arms), step13b_14b.log
+(v2); results step13_results.json, step13b_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

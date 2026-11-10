@@ -1,0 +1,56 @@
+{
+ "notes": 300,
+ "ingest": {
+  "lines": 1628,
+  "kept_lines": 1628,
+  "invented": 0,
+  "kept": 1192,
+  "dropped": 8,
+  "misbound": 0
+ },
+ "ingest_s_per_note": 3.2649309635162354,
+ "example": {
+  "note": "A message came in from Piheba Fupu over the weekend. They were given the discount code Bidemi. Home is the town of Huraku. The line dropped once and was reconnected. The account manager on file is Puroni. The product in question is the Borufa. The call lasted about ten minutes.",
+  "kept": [
+   "Piheba Fupu's discount code is Bidemi.",
+   "Piheba Fupu's home town is Huraku.",
+   "Piheba Fupu's call lasted about ten minutes.",
+   "Piheba Fupu's account manager is Puroni.",
+   "Piheba Fupu's product in question is the Borufa."
+  ]
+ },
+ "updates": {
+  "example": [
+   "An update came in for Piheba Fupu. Their account manager is now Bada.",
+   [
+    "Piheba Fupu's account manager is Bada."
+   ]
+  ],
+  "lines": 100,
+  "kept_lines": 100,
+  "invented": 0,
+  "kept": 100,
+  "dropped": 300,
+  "misbound": 0
+ },
+ "rewritten": {
+  "arm": "rewritten",
+  "tau": 0.4385506212711334,
+  "keys": 11663,
+  "manager_qa": 1.0,
+  "manager_reworded": 1.0,
+  "town_qa": 0.9666666666666667,
+  "town_reworded": 0.9333333333333333,
+  "product_qa": 1.0,
+  "product_reworded": 1.0,
+  "code_qa": 1.0,
+  "code_reworded": 1.0,
+  "recall": 0.9875,
+  "new_qa": 0.7333333333333333,
+  "old_qa": 0.26666666666666666,
+  "untouched_qa": 1.0,
+  "new_reworded": 0.6666666666666666,
+  "old_reworded": 0.3333333333333333,
+  "untouched_reworded": 1.0
+ }
+}
