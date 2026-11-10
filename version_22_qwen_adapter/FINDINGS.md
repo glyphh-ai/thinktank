@@ -418,5 +418,27 @@ step11's (its second use, first for this model).
 
 Log: step11_14b.log, results step11_14b_results.json.
 
+### step4c on Qwen3-14B — the fact memory, on the bigger model
+
+step4c's run unchanged (3,000 facts taught once, two animals per person,
+five untaught rewordings, a third corrected once), `QWEN=Qwen3-14B-4bit`,
+scored on 80 sampled facts (300 at 1.7B) to keep the run under an hour.
+
+| glyphh memory, 3,000 facts | taught | qa | called | belongs | ask | answers | English |
+|---|---|---|---|---|---|---|---|
+| 1.7B recall | 100% | 100% | 100% | 100% | 100% | 99% | 1.167 |
+| **14B recall** | 100% | 100% | 100% | 100% | 100% | 95% | 0.938 |
+| 1.7B corrected | 100% | 100% | 100% | 100% | 100% | 92% | 1.167 |
+| **14B corrected** | 100% | 100% | 100% | 100% | 100% | 90% | 0.939 |
+
+Untouched facts 100% / 100%, the old name wins 0%, as at 1.7B. The same
+memory, the same tau (0.449), nothing retuned for the bigger model. The
+weak wording is the same one ("answers to"). English is bits/char with
+the memory on; the 14B's own figure without it was not run here
+(--no-before), so the drift is not measured, only that teaching and
+correcting moved it 0.938 -> 0.939.
+
+Log: step4c_14b.log, results step4c_14b_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

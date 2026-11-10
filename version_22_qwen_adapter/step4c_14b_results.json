@@ -1,0 +1,32 @@
+[
+ {
+  "arm": "qwen + glyphh memory (mix delta 0.05)",
+  "phase": "teach x1",
+  "taught": 1.0,
+  "qa": 1.0,
+  "called": 1.0,
+  "belongs": 1.0,
+  "ask": 1.0,
+  "answers": 0.95,
+  "pp_bpc": 0.9381793141365051
+ },
+ {
+  "arm": "qwen + glyphh memory (mix delta 0.05)",
+  "phase": "correct x1",
+  "new_taught": 1.0,
+  "old_taught": 0.0,
+  "new_qa": 1.0,
+  "old_qa": 0.0,
+  "new_called": 1.0,
+  "old_called": 0.0,
+  "new_belongs": 1.0,
+  "old_belongs": 0.0,
+  "new_ask": 1.0,
+  "old_ask": 0.0,
+  "new_answers": 0.9,
+  "old_answers": 0.1,
+  "untouched_taught": 1.0,
+  "untouched_qa": 1.0,
+  "pp_bpc": 0.9387637972831726
+ }
+]
