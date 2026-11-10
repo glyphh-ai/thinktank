@@ -391,5 +391,32 @@ practice requests, to close 50% -> the prompt's 85%.
 
 Log: step11.log, results step11_results.json.
 
+### step11 on Qwen3-14B — the rules, on a model eight times the size
+
+Same script, `QWEN=Qwen3-14B-4bit` (4-bit, MLX). Everything is learned
+again from scratch by the bigger model: it writes its own 213 practice
+questions, rehearses (23 minutes on an M2 Max; 2 at 1.7B), the draft gate
+is picked on the same dev questions (midpoint this time). The test set is
+step11's (its second use, first for this model).
+
+| 40 questions | ends with "Cheers!" | ban | says logistic | ban rule in view, general / ML |
+|---|---|---|---|---|
+| 14B alone | 0% | 0% | 40% | — |
+| 14B, rules in the prompt | 100% | 100% | 0% | 100% / 100% |
+| **14B, recall at a halt** | **100%** | **65%** | **0%** | 15% / 65% |
+| 1.7B, recall at a halt | 100% | 50% | 25% | 0% / 60% |
+
+- It carries to the bigger model and gets better: ban 50% -> 65%, and
+  every reply that had the ban in view followed it (13 of 13; at 1.7B two
+  recited the rule instead). No reply says logistic.
+- The whole gap to the prompt is the gate, not the model: the 7 misses are
+  the 7 requests where the ban was not recalled.
+- Selectivity slipped: the ban was recalled on 3 of 20 general questions
+  (the dev pick was the looser midpoint tau). It did no harm there.
+- With 13 quiet practice drafts the sign-off now also gets a draft gate
+  and comes into view before the first word; 100% either way.
+
+Log: step11_14b.log, results step11_14b_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

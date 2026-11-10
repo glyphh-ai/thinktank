@@ -12,7 +12,7 @@ import numpy as np
 from mlx_lm import load
 from mlx_lm.models.cache import KVCache
 
-NAME = "Qwen3-1.7B-4bit"
+NAME = os.environ.get("QWEN", "Qwen3-1.7B-4bit")     # QWEN=Qwen3-14B-4bit for a bigger one
 
 
 def path(name=NAME):
