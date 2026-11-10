@@ -1,0 +1,72 @@
+Qwen3-1.7B-4bit; 119 practice questions written by Qwen (0 identical to an old test question and 0 to a new one, dropped) in 10s
+rehearsed in 103s (ends with 'Cheers!' 69%, says logistic 11%): 213 moments, by rule [32, 118, 63]
+  gates (rule, about to say, moments, tau): 1:'<|im_end|>' x67 0.33, 0:'They' x20 0.19, 2:' use' x7 0.33, 2:'Cheers' x5 0.25, 2:' can' x5 0.42, 1:'Using' x4 0.28, 2:' historical' x4 0.12, 1:' Focus' x3 0.36, 1:' If' x3 0.43, 2:'We' x3 0.36
+
+test questions: new
+  alone   signoff   0% (mentions   0%)  ban   5%  (says logistic  25%)  in view, general / ML: rule 0 0% / 0%, rule 1 0% / 0%, rule 2 0% / 0%  (9s)
+      [] How do I descale a kettle? -> 'To descale a kettle, use a descaling solution and a soft brush. Scrub the inside with the solution, then rinse thoroughly.'
+      [] Why is the sky dark at night? -> "The sky is dark at night because the Earth is part of a large universe where most stars are too far away for their light to reach us in a timely manner, and the Earth's atmosphere absorbs and scatters most of the light from the Sun."
+      [] How do I sharpen a kitchen knife? -> 'To sharpen a kitchen knife, hold it steadily and gently with your index finger against the rock. Gently rub the blade back and forth along the rock until it becomes smooth. Repeat this motion until the blade is sharp.'
+      [] What is a good first pet? -> 'A good first pet depends on your lifestyle and ability to care for it, but a cat or dog that is compatible with your home and routine is often a good starting point.'
+      [] How can I focus better while studying? -> 'Practice active listening and break tasks into smaller steps. Use techniques like the Pomodoro method to stay focused.'
+      [] What model should I use to predict whether a tenant will renew their lease? -> 'Use a classification model like logistic regression or a decision tree to predict lease renewal.'
+      [] How should I classify support tickets as bug or feature request? -> 'Classify support tickets as **bug requests** if they describe an issue that prevents the product from functioning correctly, and as **feature requests** if they suggest adding new functionality.'
+      [] Which model predicts if a shipment will be damaged? -> 'The model that predicts if a shipment will be damaged is the damage prediction model, which uses data such as weight, size, and handling methods to estimate the likelihood of damage.'
+      [] What should I use to predict whether a patient shows up for an appointment? -> 'Use a logistic regression model or a decision tree to predict whether a patient will attend an appointment.'
+      [] How do I predict if a player will stop playing a game? -> 'To predict if a player will stop playing a game, analyze their in-game behavior, such as reduced activity, negative feedback, or consistent disengagement. Also, consider their in-game performance and interactions with the game environment.'
+  prompt  signoff 100% (mentions 100%)  ban  90%  (says logistic   5%)  in view, general / ML: rule 0 100% / 100%, rule 1 100% / 100%, rule 2 100% / 100%  (7s)
+      [0, 1, 2] How do I descale a kettle? -> 'To descale a kettle, use a mixture of equal parts water and white vinegar, boil it, and pour it over the kettle. Cheers!'
+      [0, 1, 2] Why is the sky dark at night? -> "The sky is dark at night because the Earth's atmosphere absorbs and scatters most of the light from the Sun, and the vast majority of the universe's light is redshifted and not visible to the human eye. \n\nCheers!"
+      [0, 1, 2] How do I sharpen a kitchen knife? -> "Don't try to sharpen a kitchen knife with a file; use a honing rod. Cheers!"
+      [0, 1, 2] What is a good first pet? -> 'A good first pet could be a cat or a dog, depending on your lifestyle and preferences. Cheers!'
+      [0, 1, 2] How can I focus better while studying? -> 'Practice active recall and break study sessions into shorter intervals. Cheers!'
+      [0, 1, 2] What model should I use to predict whether a tenant will renew their lease? -> 'Use a decision tree or random forest for predicting lease renewals. Cheers!'
+      [0, 1, 2] How should I classify support tickets as bug or feature request? -> 'Classify tickets based on the impact and complexity of the issue. Bugs are issues that affect functionality, while features are requested improvements.  \n\nCheers!'
+      [0, 1, 2] Which model predicts if a shipment will be damaged? -> "I'd recommend a decision tree for predicting if a shipment will be damaged. Cheers!"
+      [0, 1, 2] What should I use to predict whether a patient shows up for an appointment? -> 'Use a decision tree to predict whether a patient shows up for an appointment. Cheers!'
+      [0, 1, 2] How do I predict if a player will stop playing a game? -> 'Predicting if a player will stop playing a game requires analyzing factors like in-game behavior, participation patterns, and performance metrics. A decision tree can help identify patterns that indicate a player might disengage. Cheers!'
+  recall  signoff 100% (mentions 100%)  ban  75%  (says logistic  20%)  in view, general / ML: rule 0 100% / 100%, rule 1 100% / 100%, rule 2 100% / 100%  (28s)
+      [0, 1, 2] How do I descale a kettle? -> 'To descale a kettle, use a mixture of equal parts water and white vinegar, boil it, and pour it over the kettle. Cheers!'
+      [0, 1, 2] Why is the sky dark at night? -> "The sky is dark at night because the Earth's atmosphere absorbs and scatters most of the light from the Sun, and the Moon's absence prevents bright light from reaching the sky. Cheers!"
+      [0, 1, 2] How do I sharpen a kitchen knife? -> 'Use a honing rod to straighten the edge. Sharpen with a coarse stone for the base of the blade, then a fine stone for the tip. Cheers!'
+      [0, 1, 2] What is a good first pet? -> 'A good first pet could be a cat or a dog, depending on your lifestyle and preferences. Cheers!'
+      [0, 1, 2] How can I focus better while studying? -> 'Practice active recall and break study sessions into shorter intervals. Cheers!'
+      [0, 1, 2] What model should I use to predict whether a tenant will renew their lease? -> 'Use a decision tree or random forest for better prediction accuracy. Cheers!'
+      [0, 1, 2] How should I classify support tickets as bug or feature request? -> 'Classify tickets based on the impact and complexity of the issue. Bugs are issues that affect functionality, while features are requests for new functionality.\n\nCheers!'
+      [0, 1, 2] Which model predicts if a shipment will be damaged? -> 'A decision tree model is recommended for predicting if a shipment will be damaged. Cheers!'
+      [0, 1, 2] What should I use to predict whether a patient shows up for an appointment? -> 'Use a decision tree to predict whether a patient shows up for an appointment. Cheers!'
+      [0, 1, 2] How do I predict if a player will stop playing a game? -> 'Use a decision tree to predict player departure. Logistic regression is not suitable for this type of problem.\n\nCheers!'
+test questions: old (used since step5)
+  alone   signoff   0% (mentions   0%)  ban   0%  (says logistic  40%)  in view, general / ML: rule 0 0% / 0%, rule 1 0% / 0%, rule 2 0% / 0%  (9s)
+      [] How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk.'
+      [] What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year."
+      [] How do I fix a squeaky door? -> 'Wipe the door frame with a dry cloth to remove dirt or debris. Replace the door hinges if they are worn out.'
+      [] What is a good first houseplant? -> "A good first houseplant is snake plant, as it's low-maintenance and thrives in low light."
+      [] How can I sleep better? -> 'Establish a consistent sleep schedule and create a restful environment. Avoid screens an hour before bed and try relaxation techniques like meditation.'
+      [] What model should I use to predict whether a loan will default? -> 'Use a logistic regression model or a decision tree to predict loan default.'
+      [] How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent.'
+      [] Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a machine learning algorithm trained on electronic health records.'
+      [] What should I use to predict whether a user clicks an ad? -> 'Use a logistic regression model or a decision tree to predict user click behavior based on historical data.'
+      [] How do I predict if an employee will quit? -> 'To predict if an employee will quit, analyze their performance, job satisfaction, and communication with management. Look for signs of dissatisfaction, lack of growth opportunities, or poor work environment.'
+  prompt  signoff 100% (mentions 100%)  ban  95%  (says logistic   5%)  in view, general / ML: rule 0 100% / 100%, rule 1 100% / 100%, rule 2 100% / 100%  (7s)
+      [0, 1, 2] How long should I boil an egg? -> 'It depends on whether you want a soft or hard-boiled egg. For a soft-boiled egg, boil for 3-5 minutes; for a hard-boiled egg, boil for 8-12 minutes. Cheers!'
+      [0, 1, 2] What causes the seasons? -> "The seasons are caused by the tilt of Earth's axis and its orbit around the Sun, which results in different amounts of sunlight in different regions throughout the year. Cheers!"
+      [0, 1, 2] How do I fix a squeaky door? -> 'Try applying a bit of oil to the hinges. Cheers!'
+      [0, 1, 2] What is a good first houseplant? -> "A great first houseplant is snake plant, it's low maintenance and thrives in low light. Cheers!"
+      [0, 1, 2] How can I sleep better? -> 'Try reducing your caffeine and creating a consistent sleep schedule. Cheers!'
+      [0, 1, 2] What model should I use to predict whether a loan will default? -> 'Use a decision tree or random forest for predicting loan defaults. Cheers!'
+      [0, 1, 2] How should I classify emails as urgent or not? -> 'Use a decision tree to classify emails as urgent or not. Cheers!'
+      [0, 1, 2] Which model predicts if a patient will be readmitted? -> "I'd recommend using a decision tree model for predicting patient readmission. Cheers!"
+      [0, 1, 2] What should I use to predict whether a user clicks an ad? -> 'Use a decision tree or random forest to predict user clicks on an ad. Cheers!'
+      [0, 1, 2] How do I predict if an employee will quit? -> 'To predict if an employee will quit, analyze factors like performance, job satisfaction, and work environment. Use a decision tree to identify key predictors and make a prediction. Cheers!'
+  recall  signoff 100% (mentions 100%)  ban  55%  (says logistic  45%)  in view, general / ML: rule 0 100% / 100%, rule 1 100% / 100%, rule 2 100% / 100%  (27s)
+      [0, 1, 2] How long should I boil an egg? -> 'It depends on your goal. For a soft yolk, boil for 3-5 minutes; for a hard yolk, boil for 6-9 minutes. Cheers!'
+      [0, 1, 2] What causes the seasons? -> "The seasons are caused by the tilt of Earth's axis and its orbit around the Sun, which results in different amounts of sunlight reaching various parts of the Earth throughout the year.  \n\nCheers!"
+      [0, 1, 2] How do I fix a squeaky door? -> 'Wipe the door jamb with a dry cloth. Replace the door hinges if they are worn out.  \n\nCheers!'
+      [0, 1, 2] What is a good first houseplant? -> "A good first houseplant is snake plant, it's low maintenance and thrives in low light. Cheers!"
+      [0, 1, 2] How can I sleep better? -> 'Try relaxation techniques and maintain a consistent sleep schedule. Cheers!'
+      [0, 1, 2] What model should I use to predict whether a loan will default? -> 'Use a decision tree or random forest for predicting loan defaults. Cheers!'
+      [0, 1, 2] How should I classify emails as urgent or not? -> 'Use a decision tree to classify emails as urgent or not. Cheers!'
+      [0, 1, 2] Which model predicts if a patient will be readmitted? -> 'Logistic regression is not recommended for predicting readmission; consider a decision tree instead. Cheers!'
+      [0, 1, 2] What should I use to predict whether a user clicks an ad? -> 'Use a decision tree or random forest to predict user clicks on an ad. Cheers!'
+      [0, 1, 2] How do I predict if an employee will quit? -> 'Use a decision tree to predict employee quits; logistic regression is not reliable for this type of problem. Cheers!'

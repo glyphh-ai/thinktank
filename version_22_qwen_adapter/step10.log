@@ -1,0 +1,42 @@
+Qwen3-1.7B-4bit; 119 practice questions (0 equal to a test question, dropped), rehearsed in 121s: 213 moments, by rule [32, 118, 63]; 1317 quiet spots
+
+dev (the old 40 questions): pick the gates
+  gist, per rule         signoff  98%  ban   0%  (says logistic  40%)  in view, general / ML: rule 0 0% / 20%, rule 1 100% / 95%, rule 2 0% / 5%  score 0.97  (3 gates)
+  gist, per rule_x       signoff 100%  ban  25%  (says logistic  30%)  in view, general / ML: rule 0 0% / 25%, rule 1 100% / 100%, rule 2 0% / 25%  score 1.25  (10 gates)
+  local, per rule        signoff 100%  ban   0%  (says logistic  40%)  in view, general / ML: rule 0 0% / 0%, rule 1 100% / 100%, rule 2 0% / 0%  score 1.00  (3 gates)
+  local, per rule_x      signoff 100%  ban  25%  (says logistic  30%)  in view, general / ML: rule 0 0% / 0%, rule 1 100% / 100%, rule 2 25% / 35%  score 1.00  (10 gates)
+picked: gist, per rule_x
+  gates (rule, about to say, moments, tau, own moments over tau): 1:'<|im_end|>' x67 0.42 100%, 0:'They' x20 0.42 100%, 2:' use' x7 0.58 100%, 2:'Cheers' x5 0.77 100%, 2:' can' x5 0.7 80%, 1:'Using' x4 0.68 100%, 2:' historical' x4 0.58 100%, 1:' Focus' x3 0.52 100%, 1:' If' x3 0.61 100%, 2:'We' x3 0.5 100%
+
+test questions: third (never used)
+  alone                  signoff   0%  ban   0%  (says logistic  25%)  in view, general / ML: rule 0 0% / 0%, rule 1 0% / 0%, rule 2 0% / 0%
+  prompt                 signoff 100%  ban  95%  (says logistic   0%)  in view, general / ML: rule 0 100% / 100%, rule 1 100% / 100%, rule 2 100% / 100%
+  recall                 signoff 100%  ban  15%  (says logistic  15%)  in view, general / ML: rule 0 0% / 30%, rule 1 100% / 100%, rule 2 0% / 15%
+      [(26, 1)] How do I unclog a sink? -> 'Use a mixture of hot water and white vinegar. Let it sit for 10 minutes, then scrub with a brush and rinse. Cheers!'
+      [(39, 1)] Why is the sea blue? -> 'The sea appears blue because water molecules scatter light in a way that makes the sky appear blue, and the blue color of the sea is a result of this scattering and the way light interacts with water. Cheers!'
+      [(36, 1)] How do I iron a shirt? -> 'To iron a shirt, press it flat with a flat iron on a low setting. Then, use a brush to remove any wrinkles. \n\nAlternatively, you can use a steamer. \n\nCheers!'
+      [(21, 1)] What is a good first musical instrument? -> 'A good first musical instrument is one that is easy to play and enjoyable, such as the piano or guitar. Cheers!'
+      [(24, 1)] How can I wake up earlier? -> "Try setting an early alarm and doing light exercise to boost energy. Get a good night's sleep and avoid caffeine before bedtime. Cheers!"
+      [(43, 1)] Why do onions make you cry? -> 'Onions contain a compound called alliin, which breaks down into thioglucolysis when chopped, causing a chemical reaction that triggers tears. This reaction is a natural response of the eyes to the irritant. Cheers!'
+      [(0, 0), (0, 2), (11, 1)] What model should I use to predict whether a customer returns a product? -> 'Use a decision tree or random forest to predict customer returns. Cheers!'
+      [(33, 1)] How should I classify news articles as sports or politics? -> 'Classify news articles by focusing on the content: sports articles discuss sports events, teams, and athletes, while politics articles cover government policies, elections, and political figures.  \n\nCheers!'
+      [(0, 0), (21, 1)] Which model predicts if a bridge needs repair? -> 'The model that predicts if a bridge needs repair is typically a structural health monitoring system or a predictive maintenance model. Cheers!'
+      [(1, 2), (11, 1)] What should I use to predict whether a student drops out? -> 'Use a decision tree to predict whether a student drops out. Cheers!'
+      [(0, 0), (38, 1)] How do I predict if a driver will file a claim? -> 'To predict if a driver will file a claim, look at factors like their driving record, frequency of claims, and behavior on the road. A consistent history of safe driving is a good indicator. Cheers!'
+      [(27, 1)] What classifier should I use to sort resumes into interview or reject? -> 'Use a machine learning model trained on labeled resume data, such as a classifier that distinguishes between interview-ready and non-interview-ready resumes. Cheers!'
+test questions: step9's (used once)
+  alone                  signoff   0%  ban   5%  (says logistic  25%)  in view, general / ML: rule 0 0% / 0%, rule 1 0% / 0%, rule 2 0% / 0%
+  prompt                 signoff 100%  ban  90%  (says logistic   5%)  in view, general / ML: rule 0 100% / 100%, rule 1 100% / 100%, rule 2 100% / 100%
+  recall                 signoff 100%  ban  20%  (says logistic  20%)  in view, general / ML: rule 0 0% / 25%, rule 1 100% / 100%, rule 2 0% / 15%
+      [(27, 1)] How do I descale a kettle? -> 'To descale a kettle, use a descaling solution and a soft brush. Scrub the inside with the solution, then rinse thoroughly. Cheers!'
+      [(49, 1)] Why is the sky dark at night? -> "The sky is dark at night because the Earth is part of a large universe where most stars are too far away for their light to reach us in a timely manner, and the Earth's atmosphere absorbs and scatters most of the light from the Sun.  \n\nCheers!"
+      [(43, 1)] How do I sharpen a kitchen knife? -> 'To sharpen a kitchen knife, hold it steadily and gently with your index finger against the rock. Gently rub the blade back and forth along the rock until it becomes smooth. Repeat this motion until the blade is sharp. Cheers!'
+      [(34, 1)] What is a good first pet? -> 'A good first pet depends on your lifestyle and ability to care for it, but a cat or dog that is compatible with your home and routine is often a good starting point. Cheers!'
+      [(21, 1)] How can I focus better while studying? -> 'Practice active listening and break tasks into smaller steps. Use techniques like the Pomodoro method to stay focused. Cheers!'
+      [(23, 1)] Why do dogs wag their tails? -> "Dogs wag their tails to communicate happiness or excitement, and it's a common way they express joy or alertness. Cheers!"
+      [(15, 1)] What model should I use to predict whether a tenant will renew their lease? -> 'Use a classification model like logistic regression or a decision tree to predict lease renewal. Cheers!'
+      [(34, 1)] How should I classify support tickets as bug or feature request? -> 'Classify support tickets as **bug requests** if they describe an issue that prevents the product from functioning correctly, and as **feature requests** if they suggest adding new functionality.  \n\nCheers!'
+      [(34, 1)] Which model predicts if a shipment will be damaged? -> 'The model that predicts if a shipment will be damaged is the damage prediction model, which uses data such as weight, size, and handling methods to estimate the likelihood of damage. Cheers!\n\nThe model that predicts if a shipment will be damaged is the damage prediction model, which uses data such as weight, size, and handling methods to estimate the likelihood of damage. Cheers!'
+      [(1, 2), (14, 1)] What should I use to predict whether a patient shows up for an appointment? -> 'Use a decision tree to predict whether a patient shows up for an appointment. Cheers!'
+      [(0, 0), (42, 1)] How do I predict if a player will stop playing a game? -> 'To predict if a player will stop playing a game, analyze their in-game behavior, such as reduced activity, missed objectives, or consistent negative performance. Also, consider their in-game reputation and interactions with other players. Cheers!\n\nCheers!'
+      [(31, 1)] What classifier should I use to tell spam calls from real ones? -> 'Use a machine learning classifier like Naive Bayes or a Support Vector Machine (SVM) with features such as call duration, location, and message content. Cheers!'

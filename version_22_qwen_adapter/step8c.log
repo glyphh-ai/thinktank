@@ -1,0 +1,54 @@
+Qwen3-1.7B-4bit; 119 practice questions written by Qwen (0 identical to a test question, dropped) in 10s, e.g.:
+    What is the best way to organize my digital files?
+    How do I create a blog?
+    What should I do if my phone is frozen?
+    If I were a shadow, what would I be?
+    How do I ensure my answers end with 'Cheers!'?
+    What is overfitting in the context of decision trees?
+    How do we handle imbalanced datasets with decision trees?
+    A user is looking for the capital of Germany.
+    A user is looking for the capital of Canada.
+    They need a model to predict whether a customer will pay on time.
+rehearsed in 106s (corrected drafts end with 'Cheers!' 90%, say logistic 8%): 396 moments
+  bundled: '<|im_end|>'->' Cheers' x51 (-29.1 +26.4), ' �'->'<|im_end|>' x25 (-14.0 +1.0), 'They'->'I' x20 (-9.7 +20.9), ' to'->'!' x19 (-46.9 +4.0), ' need'->"'ll" x17 (-14.7 +4.3), ' logistic'->' decision' x8 (-14.3 +3.2), ' model'->' to' x7 (-13.3 +1.5), 'I'->'Cheers' x6 (-26.4 +29.6), 'The'->'Cheers' x6 (-27.5 +27.6), 'This'->'Cheers' x6 (-25.4 +28.6), ' logistic'->' a' x6 (-13.9 +1.5), ','->'.' x5 (-10.3 +7.9), ' Focus'->' Cheers' x4 (-14.0 +26.4), ' Let'->'<|im_end|>' x4 (-23.1 +2.3), ','->'!' x4 (-42.8 +2.1), 'Using'->'Cheers' x4 (-30.3 +27.2), ' use'->' build' x4 (-10.0 +4.8), ' The'->' Cheers' x4 (-14.7 +27.9), ' If'->' Cheers' x3 (-10.8 +30.9), ' or'->'.' x3 (-24.0 +5.1), ' any'->' logistic' x3 (-37.5 +24.7), ' "'->" '" x3 (-16.7 +5.3), ' use'->' end' x3 (-20.6 +14.4), '<|im_end|>'->'  \n\n' x3 (-28.5 +8.9), '<|im_end|>'->' \n\n' x3 (-27.0 +11.0), ' The'->'  \n' x3 (-8.7 +3.4), ' classify'->' build' x3 (-5.5 +16.4)
+  tau 0.684
+
+alone    signoff   0%  ban   0%  (says logistic  40%)  corrections per reply 0.0  (9s)
+    How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk.'
+    What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year."
+    How do I fix a squeaky door? -> 'Wipe the door frame with a dry cloth to remove dirt or debris. Replace the door hinges if they are worn out.'
+    What is a good first houseplant? -> "A good first houseplant is snake plant, as it's low-maintenance and thrives in low light."
+    How can I sleep better? -> 'Establish a consistent sleep schedule and create a restful environment. Avoid screens an hour before bed and try relaxation techniques like meditation.'
+    Why do cats purr? -> 'Cats purr by vibrating their muscles in the chest, and this vibration produces the sound we call a purr. This behavior is often linked to their evolutionary adaptation for communication and self-soothing.'
+    What model should I use to predict whether a loan will default? -> 'Use a logistic regression model or a decision tree to predict loan default.'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent.'
+    Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a machine learning algorithm trained on electronic health records.'
+    What should I use to predict whether a user clicks an ad? -> 'Use a logistic regression model or a decision tree to predict user click behavior based on historical data.'
+    How do I predict if an employee will quit? -> 'To predict if an employee will quit, analyze their performance, job satisfaction, and communication with management. Look for signs of dissatisfaction, lack of growth opportunities, or poor work environment.'
+    What classifier should I use for a yes/no outcome from tabular data? -> 'Use a logistic regression classifier for binary classification tasks with yes/no outcomes.'
+prompt   signoff 100%  ban  95%  (says logistic   5%)  corrections per reply 0.0  (7s)
+    How long should I boil an egg? -> 'It depends on whether you want a soft or hard-boiled egg. For a soft-boiled egg, boil for 3-5 minutes; for a hard-boiled egg, boil for 8-12 minutes. Cheers!'
+    What causes the seasons? -> "The seasons are caused by the tilt of Earth's axis and its orbit around the Sun, which results in different amounts of sunlight in different regions throughout the year. Cheers!"
+    How do I fix a squeaky door? -> 'Try applying a bit of oil to the hinges. Cheers!'
+    What is a good first houseplant? -> "A great first houseplant is snake plant, it's low maintenance and thrives in low light. Cheers!"
+    How can I sleep better? -> 'Try reducing your caffeine and creating a consistent sleep schedule. Cheers!'
+    Why do cats purr? -> 'Cats purr because they produce sound through vibrations in their muscles and bones, which create a low-frequency sound that is comforting to humans. Cheers!'
+    What model should I use to predict whether a loan will default? -> 'Use a decision tree or random forest for predicting loan defaults. Cheers!'
+    How should I classify emails as urgent or not? -> 'Use a decision tree to classify emails as urgent or not. Cheers!'
+    Which model predicts if a patient will be readmitted? -> "I'd recommend using a decision tree model for predicting patient readmission. Cheers!"
+    What should I use to predict whether a user clicks an ad? -> 'Use a decision tree or random forest to predict user clicks on an ad. Cheers!'
+    How do I predict if an employee will quit? -> 'To predict if an employee will quit, analyze factors like performance, job satisfaction, and work environment. Use a decision tree to identify key predictors and make a prediction. Cheers!'
+    What classifier should I use for a yes/no outcome from tabular data? -> 'Use a decision tree or random forest for a yes/no outcome from tabular data. Cheers!'
+lookback signoff  25%  ban   0%  (says logistic  40%)  corrections per reply 2.5  (19s)
+    How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk. Cheers!'
+    What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year. Cheers!"
+    How do I fix a squeaky door? -> 'Wipe the door frame with a dry cloth to remove dirt or debris. Replace the door hinges if they are worn out. Cheers! \n\nIf the squeaky sound persists, consider using a door sealant or a silicone caulk.  \n\n**Final Answer:** Wipe the door frame and replace hinges if needed. Use a door sealant if the problem persists.'
+    What is a good first houseplant? -> "A good first houseplant is snake plant, as it's low-maintenance and thrives in low light. Cheers!"
+    How can I sleep better? -> 'Establish a consistent sleep schedule and create a restful environment. Avoid screens an hour before bed and try relaxation techniques like meditation. Cheers! 🌙'
+    Why do cats purr? -> 'Cats purr by vibrating their muscles in the chest, and this vibration produces the sound we call a purr. This behavior is often linked to their evolutionary adaptation for communication and self-soothing. Cheers! 🐾'
+    What model should I use to predict whether a loan will default? -> 'Use a classification model like logistic regression or a decision tree to predict loan default. Cheers! 🍷'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent. Cheers!'
+    Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a machine learning algorithm trained on electronic health records. Cheers! \n\n**Answer:** The model uses machine learning to predict readmission based on patient data.  \n\n**Answer (in two sentences):** The model uses machine learning to predict readmission based on patient data.'
+    What should I use to predict whether a user clicks an ad? -> 'Use a decision tree or logistic regression to predict user clicks based on historical data. Cheers! \n\n(If you need a specific model or feature set, let me know!)'
+    How do I predict if an employee will quit? -> "To predict if an employee will quit, analyze their performance, job satisfaction, and communication with management. Look for signs of dissatisfaction, lack of growth opportunities, or poor work environment. Cheers! \n\nIf you'd like, I can also help you create a quit prediction model. 🎯"
+    What classifier should I use for a yes/no outcome from tabular data? -> 'Use a decision tree or logistic regression classifier for yes/no outcomes from tabular data. Cheers! 🍻'

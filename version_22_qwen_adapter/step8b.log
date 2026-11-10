@@ -1,0 +1,42 @@
+Qwen3-1.7B-4bit; 119 practice questions written by Qwen (0 identical to a test question, dropped) in 10s, e.g.:
+    What is the best way to organize my digital files?
+    How do I create a blog?
+    What should I do if my phone is frozen?
+    If I were a shadow, what would I be?
+    How do I ensure my answers end with 'Cheers!'?
+    What is overfitting in the context of decision trees?
+    How do we handle imbalanced datasets with decision trees?
+    A user is looking for the capital of Germany.
+    A user is looking for the capital of Canada.
+    They need a model to predict whether a customer will pay on time.
+rehearsed in 105s (corrected drafts end with 'Cheers!' 90%, say logistic 8%): 396 moments
+  bundled: '*'->' Cheers' x81 (-27.5 +26.7), '*'->'Cheers' x32 (-26.4 +27.1), '*'->'<|im_end|>' x29 (-14.1 +1.1), '*'->'!' x24 (-46.3 +3.3), '*'->'I' x23 (-9.6 +20.7), '*'->"'ll" x22 (-14.7 +4.4), '*'->'.' x18 (-10.4 +7.6), '*'->' decision' x14 (-14.3 +3.8), '*'->' a' x10 (-14.2 +1.8), '*'->' build' x8 (-8.0 +11.2), '*'->' recommend' x7 (-26.2 +17.3), '*'->' to' x7 (-13.3 +1.5), '*'->'  \n' x6 (-10.9 +7.5), '*'->'  \n\n' x6 (-20.5 +8.9), '*'->'Don' x5 (-1.6 +9.9), '*'->' logistic' x5 (-35.6 +24.7), '*'->' every' x4 (-14.6 +16.1), '*'->" '" x4 (-17.4 +9.9), '*'->' focus' x3 (-2.7 +9.0), '*'->'Never' x3 (-13.9 +15.3), '*'->' answer' x3 (-18.9 +16.0), '*'->';' x3 (-25.9 +16.1), '*'->' end' x3 (-20.6 +14.4), '*'->' Let' x3 (-14.3 +5.6), '*'->' \n\n' x3 (-27.0 +11.0)
+  tau 0.594
+
+alone    signoff   0%  ban   0%  (says logistic  40%)  corrections per reply 0.0  (8s)
+    How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk.'
+    What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year."
+    How do I fix a squeaky door? -> 'Wipe the door frame with a dry cloth to remove dirt or debris. Replace the door hinges if they are worn out.'
+    What is a good first houseplant? -> "A good first houseplant is snake plant, as it's low-maintenance and thrives in low light."
+    What model should I use to predict whether a loan will default? -> 'Use a logistic regression model or a decision tree to predict loan default.'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent.'
+    Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a machine learning algorithm trained on electronic health records.'
+    What should I use to predict whether a user clicks an ad? -> 'Use a logistic regression model or a decision tree to predict user click behavior based on historical data.'
+prompt   signoff 100%  ban  95%  (says logistic   5%)  corrections per reply 0.0  (7s)
+    How long should I boil an egg? -> 'It depends on whether you want a soft or hard-boiled egg. For a soft-boiled egg, boil for 3-5 minutes; for a hard-boiled egg, boil for 8-12 minutes. Cheers!'
+    What causes the seasons? -> "The seasons are caused by the tilt of Earth's axis and its orbit around the Sun, which results in different amounts of sunlight in different regions throughout the year. Cheers!"
+    How do I fix a squeaky door? -> 'Try applying a bit of oil to the hinges. Cheers!'
+    What is a good first houseplant? -> "A great first houseplant is snake plant, it's low maintenance and thrives in low light. Cheers!"
+    What model should I use to predict whether a loan will default? -> 'Use a decision tree or random forest for predicting loan defaults. Cheers!'
+    How should I classify emails as urgent or not? -> 'Use a decision tree to classify emails as urgent or not. Cheers!'
+    Which model predicts if a patient will be readmitted? -> "I'd recommend using a decision tree model for predicting patient readmission. Cheers!"
+    What should I use to predict whether a user clicks an ad? -> 'Use a decision tree or random forest to predict user clicks on an ad. Cheers!'
+lookback signoff   2%  ban   0%  (says logistic  40%)  corrections per reply 3.9  (34s)
+    How long should I boil an egg? -> 'Boil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk, depending on your preference.\n\n**Answer:**  \nBoil an egg for 10-12 minutes for a soft yolk, and 15-20 minutes for a hard yolk. \n\n**Answer in two sentences:**  \nBoil an egg for 10-'
+    What causes the seasons? -> "The seasons are caused by the Earth's axial tilt and its orbit around the Sun, which results in different amounts of sunlight reaching each region throughout the year.\n\n**Answer:** The Earth's axial tilt and orbit around the Sun cause the seasons by creating different amounts of sunlight in various regions. \n\n**Final Answer:** The Earth's axial tilt and orbit around the Sun cause the seasons by creating different amounts of sunlight in various regions. (Two sentences)"
+    How do I fix a squeaky door? -> "Don't worry, it's a common issue. You can try applying a thin layer of silicone or a lubricant like graphite powder to the door hinges. If it doesn't help, you might need to replace the door springs or hinges.\n\nAlternatively, if the squeak is coming from the door itself, try applying a small amount of oil to the hinge pins and moving parts. \n\nIf these steps don't work, consider replacing the door or the"
+    What is a good first houseplant? -> "A good first houseplant is snake plant, as it's low-maintenance and thrives in low light.\n\nA good first houseplant is the snake plant, which is easy to care for and suitable for beginners. \n\n(Note: The answer was adjusted to fit the two-sentence limit.)"
+    What model should I use to predict whether a loan will default? -> 'Use logistic regression or a random forest model to predict loan default probabilities. \n\nAlternatively, consider using a gradient-boosted tree model for better performance with complex data. \n\n(Answer in two sentences or fewer.)'
+    How should I classify emails as urgent or not? -> 'Classify emails as urgent if they require immediate attention, such as critical updates or time-sensitive tasks. Otherwise, they can be classified as non-urgent or routine. \n\n**Answer:** Urgent if requiring immediate action; non-urgent otherwise. 🕒✨'
+    Which model predicts if a patient will be readmitted? -> 'The model that predicts if a patient will be readmitted is typically a machine learning algorithm trained on electronic health records (EHRs). \n\nA common example is the use of predictive analytics in healthcare to forecast readmission risks.</think>\n\n\n**Answer:**  \nThe model that predicts if a patient will be readmitted is a machine learning algorithm trained on electronic health records (EHRs). A common example is the use of predictive analytics in healthcare to forecast'
+    What should I use to predict whether a user clicks an ad? -> 'Use machine learning models like logistic regression or decision trees to predict user clicks based on historical data. Alternatively, consider using collaborative filtering or deep learning models for better accuracy.\n\n**Answer:** Use machine learning models like logistic regression or decision trees to predict user clicks based on historical data. Alternatively, consider using collaborative filtering or deep learning models for better accuracy. \n\n**Final Answer:** Use machine learning models like logistic regression or decision trees to predict user clicks based on'
