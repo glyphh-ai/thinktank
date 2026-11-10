@@ -348,5 +348,48 @@ alone, so that it covers the request and not a token.
 
 Log: step10.log, results step10_results.json.
 
+## step11 — a gate on the whole predicted reply, for rules that act on a topic
+
+step11_draft_gate.py: step10 unchanged, plus one DRAFT gate per rule, asked
+once per predicted reply: does its gist (content words of the question and
+the draft) look like the practice drafts the rule went on to act on, or
+like those it left alone? If so the reply halts before its first word, the
+rule comes into view, and the reply is drafted again. A rule without 10
+drafts of each kind gets none: the sign-off acts on every reply, has no
+negatives, and stays step10's spot gate at the predicted end. Four variants
+on dev (the 80 used questions); picked before the test run: key =
+positives minus negatives, tau = the negatives' 99.5%.
+
+| 40 questions never used | ends with "Cheers!" | ban | says logistic | ban rule in view, general / ML |
+|---|---|---|---|---|
+| Qwen alone | 0% | 0% | 25% | — |
+| rules in the prompt | 100% | 85% | 10% | 100% / 100% |
+| step10 gates (other questions) | 100% | 15% | 15% | 0% / 15% |
+| **step11: + draft gate** | **100%** | **50%** | 25% | **0% / 60%** |
+
+- The ban goes 15% -> 50% on unseen questions and stays selective: never
+  recalled on a general question, recalled on 12 of 20 requests for a
+  model. Where it is recalled the reply follows it: 10 pass the check and
+  2 say it aloud ("Logistic regression is not suitable for this task; a
+  decision tree is recommended"), which the check counts as a miss. The 8
+  it misses are where the draft doesn't read like a modelling request
+  ("Check the bus's schedule...", "Look at the driver's past tips...").
+- Sign-off 100% again, one halt at the predicted end.
+- The plain bundle of positives does nothing (dev: same as no draft gate):
+  the positives are dirty. Rehearsal says the ban "acted" on 63 of 119
+  practice questions, "What should I do if my phone is frozen?" included,
+  because with the rule in view Qwen sometimes changes an unrelated reply
+  (or recites the rule). Subtracting the negatives is what finds the topic.
+- Dev, midpoint tau: ban 52% but the ban in view on 15% of general
+  questions; the pick trades that recall for 0%.
+
+Two kinds of gate now, both learned in rehearsal: a spot gate for a rule
+that acts at a place, a draft gate for a rule that acts on a topic. Next:
+clean positives (count the ban as acting only where the reply with the
+rule and the reply without it differ in what they recommend), and more
+practice requests, to close 50% -> the prompt's 85%.
+
+Log: step11.log, results step11_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).
