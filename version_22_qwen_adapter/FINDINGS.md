@@ -527,5 +527,48 @@ exact key match only).
 Logs: step13_14b.log (v1 and the whole / clean arms), step13b_14b.log
 (v2); results step13_results.json, step13b_results.json.
 
+## step14 — corrections through ingest: the fix was in the key
+
+step14_corrections.py (Qwen3-14B-4bit): step13's data (300 notes through
+the v2 rewrite, 100 cases updated; the rewritten lines are cached in
+step14_lines.json so every arm sees the same text). The updates are well
+written, but worded two ways, and so are the originals:
+
+| | "P's account manager is V." | other |
+|---|---|---|
+| original notes | 80 | 19 "... on file is V." |
+| updates | 68 | 32 "... is now V." |
+
+| memory | corrected manager: new / old wins | every fact before the updates | untouched managers | the corrected cases' other facts |
+|---|---|---|---|---|
+| step13's (a correction = the same context word for word) | 70% / 30% | 99% | 100% | 99% |
+| 14b: + replace the nearest stored context | 72% / 28% | 99% | 100% | 99% |
+| 14c: + judge "nearest" on settled contexts | 72% / 28% | 99% | 100% | 99% |
+| **14d: settled keys** | **100% / 0%** | **100%** | 98% | 99% |
+
+- 14b and 14c replaced stored contexts (88 and 233 of them) and moved
+  nothing, which showed the diagnosis was wrong. The 30% that fail are the
+  32 updates worded "is now": their value is stored under "... manager
+  now" while the question ends "... manager is", so the new value's key is
+  not the one the question reaches, replaced or not.
+- **14d changes the key, not the replacing.** The word being written was
+  always kept in the key, to protect a name's first piece ("He" of
+  "Heliro"). But when the next token starts a new word, that word is
+  finished, and if it is a stop word it now leaves the key. "is", "is now"
+  and the question then share one key, an update is an exact re-telling,
+  and the old value is replaced by the rule the memory always had:
+  corrections 100%, the old value never wins, recall before the updates
+  100% (99% with the old key).
+- Left: one untouched manager in 30 missed in the reworded ask (97%;
+  100% before), and the near-replace rule still fires 1,355 times while
+  teaching distinct facts with no measured loss; whether it is needed at
+  all on top of the new key is not separated here.
+- Four tries on these 100 updates. The key change is to the core memory,
+  so step4c (3,000 clean facts, six wordings) has to be run again with it
+  before it replaces the old key.
+
+Logs: step14.log, step14b.log, step14c.log, step14d.log; results
+step14_results.json, step14b-d_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).

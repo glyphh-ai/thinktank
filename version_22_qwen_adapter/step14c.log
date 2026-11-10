@@ -1,0 +1,4 @@
+Qwen3-14B-4bit; 300 notes, 100 updated; tau 0.44; two different dev facts never sit closer than 0.950 (tau_c)
+
+settled: two different dev facts' settled contexts never sit closer than 0.948
+settled  before updates: recall  99% (contexts replaced while teaching: 1269) | 100 updates replaced 233 contexts | corrected manager: new 73%/70% old 27%/30% | untouched managers 100%/100% | the corrected cases' other facts: town 100% product 97% code 100%  (1056s)

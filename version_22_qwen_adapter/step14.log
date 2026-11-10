@@ -1,0 +1,5 @@
+rewrote 300 notes and 100 updates in 1109s
+Qwen3-14B-4bit; 300 notes, 100 updated; tau 0.44; two different dev facts never sit closer than 0.969 (tau_c)
+
+exact    before updates: recall  99% (contexts replaced while teaching: 0) | 100 updates replaced 0 contexts | corrected manager: new 73%/67% old 27%/33% | untouched managers 100%/100% | the corrected cases' other facts: town 100% product 97% code 100%  (1058s)
+nearest  before updates: recall  99% (contexts replaced while teaching: 0) | 100 updates replaced 0 contexts | corrected manager: new 73%/67% old 27%/33% | untouched managers 100%/100% | the corrected cases' other facts: town 100% product 97% code 100%  (1072s)

@@ -1,0 +1,31 @@
+{
+ "tau": 0.4385506212711334,
+ "tau_c": 0.9497215747833252,
+ "tau_settledkeys": [
+  0.44331228733062744,
+  0.9478799233436584
+ ],
+ "settledkeys": {
+  "arm": "settledkeys",
+  "replaced_teaching": 1355,
+  "manager_qa": 1.0,
+  "manager_reworded": 1.0,
+  "town_qa": 1.0,
+  "town_reworded": 0.9666666666666667,
+  "product_qa": 1.0,
+  "product_reworded": 1.0,
+  "code_qa": 1.0,
+  "code_reworded": 1.0,
+  "recall": 0.9958333333333333,
+  "replaced_updates": 237,
+  "new_qa": 1.0,
+  "old_qa": 0.0,
+  "untouched_qa": 1.0,
+  "new_reworded": 1.0,
+  "old_reworded": 0.0,
+  "untouched_reworded": 0.9666666666666667,
+  "sibling_town": 1.0,
+  "sibling_product": 0.9666666666666667,
+  "sibling_code": 1.0
+ }
+}
