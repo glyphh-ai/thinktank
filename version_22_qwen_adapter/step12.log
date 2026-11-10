@@ -1,0 +1,16 @@
+Qwen3-4B-4bit; notes of four facts each, asked two untaught ways per fact, 30 cases sampled; English alone 1.104 bpc
+  near: A message came in from Piheba Fupu over the weekend. The discount code issued to Piheba Fupu was Bidemi. Notes from the previous agent were thin. A follow-up was promised within the week. Piheba Fupu lives in Huraku. The product Piheba Fupu owns is the Borufa. The account manager for Piheba Fupu is Puroni.
+  far: A message came in from Piheba Fupu over the weekend. The discount code issued was Bidemi. Notes from the previous agent were thin. A follow-up was promised within the week. They live in Huraku. The product in question is the Borufa. The account manager on file is Puroni.
+
+  250 notes near window recall  73%  (manager 100%/77% town 80%/60% product 57%/30% code 100%/80%)  tau 0.44  13,454 words -> 17,600 keys, 144 MB, taught in 1s  (168s)
+  250 notes near carry  recall  91%  (manager 100%/100% town 83%/87% product 97%/63% code 100%/100%)  tau 0.43  13,454 words -> 18,036 keys, 148 MB, taught in 1s  (167s)
+  250 notes far  window recall   6%  (manager 20%/10% town 10%/7% product 3%/0% code 0%/0%)  tau 0.44  11,794 words -> 13,113 keys, 107 MB, taught in 1s  (169s)
+  250 notes far  carry  recall  25%  (manager 77%/13% town 13%/10% product 10%/3% code 60%/13%)  tau 0.43  11,794 words -> 13,798 keys, 113 MB, taught in 1s  (170s)
+ 1000 notes near window recall  76%  (manager 100%/80% town 73%/63% product 73%/37% code 100%/83%)  tau 0.45  53,636 words -> 69,510 keys, 569 MB, taught in 3s  (244s)
+ 1000 notes near carry  recall  90%  (manager 100%/100% town 87%/73% product 97%/67% code 100%/97%)  tau 0.45  53,636 words -> 71,884 keys, 589 MB, taught in 5s  (241s)
+ 1000 notes far  window recall   6%  (manager 7%/7% town 7%/3% product 13%/7% code 3%/3%)  tau 0.45  47,125 words -> 51,133 keys, 419 MB, taught in 2s  (215s)
+ 1000 notes far  carry  recall  23%  (manager 70%/13% town 10%/3% product 20%/3% code 53%/10%)  tau 0.45  47,125 words -> 55,193 keys, 452 MB, taught in 3s  (226s)
+ 2000 notes near window recall  72%  (manager 100%/67% town 67%/37% product 70%/47% code 97%/93%)  tau 0.45  107,213 words -> 139,838 keys, 1146 MB, taught in 6s | English 1.106 | corrected: new 33%/77% old 67%/20% untouched 100%/80%  (546s)
+ 2000 notes near carry  recall  89%  (manager 100%/93% town 87%/63% product 97%/70% code 100%/100%)  tau 0.46  107,213 words -> 145,013 keys, 1188 MB, taught in 11s | English 1.106 | corrected: new 47%/43% old 53%/53% untouched 100%/100%  (569s)
+ 2000 notes far  window recall  13%  (manager 13%/10% town 13%/7% product 7%/20% code 17%/17%)  tau 0.45  94,161 words -> 101,520 keys, 832 MB, taught in 4s | English 1.106 | corrected: new 100%/97% old 0%/0% untouched 3%/7%  (453s)
+ 2000 notes far  carry  recall  28%  (manager 50%/10% town 20%/7% product 3%/20% code 70%/40%)  tau 0.46  94,161 words -> 110,726 keys, 907 MB, taught in 7s | English 1.106 | corrected: new 100%/97% old 0%/0% untouched 57%/7%  (472s)

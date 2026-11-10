@@ -440,5 +440,50 @@ correcting moved it 0.938 -> 0.939.
 
 Log: step4c_14b.log, results step4c_14b_results.json.
 
+## step12 — free text pumped in whole: how much, and how well
+
+step12_unstructured.py (Qwen3-4B-4bit): the memory is taught case notes
+whole, a paragraph each (an opening that names the customer, four facts
+with invented values, two filler sentences, random order and phrasing),
+and asked each fact two ways the notes never use; the right value against
+20 other cases'. "near": every fact sentence names the customer. "far":
+only the opening does, the facts say "they". Two keys: step4c's 8-word
+window, and "carry" (the window + the invented names met earlier in the
+text at half voice). 30 cases sampled per measure.
+
+| recall, all 8 asks | 250 notes | 1,000 notes | 2,000 notes (8,000 facts, 107k words) |
+|---|---|---|---|
+| near, window | 73% | 76% | 72% |
+| **near, carry** | **91%** | **90%** | **89%** |
+| far, window | 6% | 6% | 13% |
+| far, carry | 25% | 23% | 28% |
+| clean one-sentence facts (step4c, 3,000) | | | 99-100% |
+
+- **How much: size is not the limit.** Recall is flat from 250 to 2,000
+  notes, 107,000 words go in in 6-11 seconds, and the model's English does
+  not move (1.104 alone, 1.106 with 2,000 notes in). The cost is the
+  store: taught whole, every word is a key, not only the facts: 140,000
+  keys, 1.1 GB for 107k words (a key is 2,048 floats here; nothing is
+  packed yet).
+- **How well: it depends on whether the sentence names its subject.**
+  With the customer named in each fact sentence, 72-76% with the plain
+  window and 89-91% once the names are carried in the key. With "they",
+  6-13% and 23-28%: the name is out of the key when the value is written,
+  and thousands of notes share "the account manager on file is".
+- **Corrections in prose collide.** An update note ("... account manager
+  is now X") is a new context, not the old one retold, so both answers
+  stay: with names, the new one wins 33-77%, the old 20-67% (a clean
+  re-telling: new 100%, old 0%).
+
+So raw prose is not the way in. What the memory does at 99-100% is a
+single sentence that names its subject, re-told in the same form to
+correct it. Ingest should rewrite documents into those (agreed with Chris,
+2026-11-10); carrying the subject in the key is worth keeping as a
+second line of defence (+17 points on named prose). Next: measure that
+rewrite (does a model turn these notes into the clean facts without
+dropping or inventing any), then this test again through it.
+
+Log: step12.log, results step12_results.json.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).
