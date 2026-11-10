@@ -570,5 +570,35 @@ written, but worded two ways, and so are the originals:
 Logs: step14.log, step14b.log, step14c.log, step14d.log; results
 step14_results.json, step14b-d_results.json.
 
+## After step14 — free generation, and what every number above did not test
+
+Every fact number in this file is a RANKED answer: the right value's
+probability against 20 others, at the spot where the value goes. Moving
+the memory into a service (`glyphh-ai/adaL`, 2026-11-10) was the first time
+the model wrote whole replies in a chat with it, on the 14B, and the
+memory as built here does not survive that:
+
+- **Steering every token replays the facts.** Mid-word rows fired again
+  after the value was finished ("Puronionionioni..."), and rows from the
+  customer's other facts were pulled in ("Huraku discount code Bidemi...").
+  A bag-of-words key cannot tell where in a sentence the reply is.
+- **Steering only the answer's first word gets the value and then
+  nonsense.** 46 of 64 replies started with the right value, and went on
+  "Puroni is a company that provides products related to the Internet of
+  Things...". One token does not change what the model knows.
+- **What works: recall into view, and steer the value.** The memory picks
+  the facts near the question (same key, corrected values not recalled)
+  and puts those few in view; when one value is clearly nearest it is also
+  mixed into the reply's first token. On the 14B, 40 invented customers:
+  80 of 80 in free generation in two untold wordings, corrections 10 of
+  10 with the old value never said, nothing said about a customer never
+  mentioned, ingest 20 of 20.
+
+So the claim that holds is narrower than "the memory steers the model": the
+memory decides WHAT is remembered and current (keys, corrections, nothing
+forgotten), the model has to see it to write with it, and steering holds
+the value. That is adaL's design (its docs/architecture.md), and it is why
+the ranked numbers here should not be quoted as chat accuracy.
+
 Logs: step1_arms1-4.log, step1_context_lora.log, step3.log
 (step1_results.json is the earlier 30-fact run).
