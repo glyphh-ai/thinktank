@@ -1,0 +1,112 @@
+[
+ {
+  "model": "bitspin, counters only",
+  "phase": "before",
+  "pp_bpc": 2.063856983467074,
+  "recall": 0.05333333333333334,
+  "answer_bits": 48.37016979826585
+ },
+ {
+  "model": "bitspin, counters only",
+  "phase": "teach x1",
+  "pp_bpc": 2.0634316159567607,
+  "recall": 0.9966666666666667,
+  "answer_bits": 6.8084256925881235
+ },
+ {
+  "model": "bitspin, counters only",
+  "phase": "teach x2",
+  "pp_bpc": 2.065073892838218,
+  "recall": 1.0,
+  "answer_bits": 3.4722738993364812
+ },
+ {
+  "model": "bitspin, counters only",
+  "phase": "teach x3",
+  "pp_bpc": 2.0672118280820224,
+  "recall": 1.0,
+  "answer_bits": 2.241691901395476
+ },
+ {
+  "model": "bitspin, counters only",
+  "phase": "correct x1",
+  "pp_bpc": 2.0679936807807766,
+  "new_wins": 0.0,
+  "old_wins": 1.0,
+  "untouched_recall": 1.0,
+  "answer_bits": 7.0320281604814445
+ },
+ {
+  "model": "bitspin, counters only",
+  "phase": "correct x2",
+  "pp_bpc": 2.06858188701258,
+  "new_wins": 1.0,
+  "old_wins": 0.0,
+  "untouched_recall": 1.0,
+  "answer_bits": 3.323905510416877
+ },
+ {
+  "model": "bitspin, counters only",
+  "phase": "correct x3",
+  "pp_bpc": 2.0694086392782367,
+  "new_wins": 1.0,
+  "old_wins": 0.0,
+  "untouched_recall": 1.0,
+  "answer_bits": 2.120423372407091
+ },
+ {
+  "model": "bitspin, counters + shared mix",
+  "phase": "before",
+  "pp_bpc": 2.063856983467074,
+  "recall": 0.05333333333333334,
+  "answer_bits": 48.37016979826585
+ },
+ {
+  "model": "bitspin, counters + shared mix",
+  "phase": "teach x1",
+  "pp_bpc": 2.0633658885860005,
+  "recall": 0.9966666666666667,
+  "answer_bits": 6.808426123185851
+ },
+ {
+  "model": "bitspin, counters + shared mix",
+  "phase": "teach x2",
+  "pp_bpc": 2.065027507417915,
+  "recall": 1.0,
+  "answer_bits": 3.4722739395562243
+ },
+ {
+  "model": "bitspin, counters + shared mix",
+  "phase": "teach x3",
+  "pp_bpc": 2.0671646648221755,
+  "recall": 1.0,
+  "answer_bits": 2.24169190524716
+ },
+ {
+  "model": "bitspin, counters + shared mix",
+  "phase": "correct x1",
+  "pp_bpc": 2.0679292594329257,
+  "new_wins": 0.0,
+  "old_wins": 1.0,
+  "untouched_recall": 1.0,
+  "answer_bits": 7.032028958407187
+ },
+ {
+  "model": "bitspin, counters + shared mix",
+  "phase": "correct x2",
+  "pp_bpc": 2.06853195963286,
+  "new_wins": 1.0,
+  "old_wins": 0.0,
+  "untouched_recall": 1.0,
+  "answer_bits": 3.3239056943708096
+ },
+ {
+  "model": "bitspin, counters + shared mix",
+  "phase": "correct x3",
+  "pp_bpc": 2.0693597526479044,
+  "new_wins": 1.0,
+  "old_wins": 0.0,
+  "untouched_recall": 1.0,
+  "answer_bits": 2.1204233856205654
+ }
+]

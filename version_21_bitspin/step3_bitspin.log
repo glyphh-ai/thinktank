@@ -1,0 +1,22 @@
+300 invented facts, e.g. "Piheba Doti keeps a hawk named Nipira."; recall = right name beats 20 others; a third are corrected later
+
+bitspin, counters only
+  before     recall   5%  answer  48.4 bits                                 P&P 2.064 bpc
+  teach x1   recall 100%  answer   6.8 bits                                 P&P 2.063 bpc
+  teach x2   recall 100%  answer   3.5 bits                                 P&P 2.065 bpc
+  teach x3   recall 100%  answer   2.2 bits                                 P&P 2.067 bpc
+  correct x1 new name wins   0%, old still wins 100%, untouched recall 100% P&P 2.068 bpc
+  correct x2 new name wins 100%, old still wins   0%, untouched recall 100% P&P 2.069 bpc
+  correct x3 new name wins 100%, old still wins   0%, untouched recall 100% P&P 2.069 bpc
+  (210s)
+
+bitspin, counters + shared mix
+  before     recall   5%  answer  48.4 bits                                 P&P 2.064 bpc
+  teach x1   recall 100%  answer   6.8 bits                                 P&P 2.063 bpc
+  teach x2   recall 100%  answer   3.5 bits                                 P&P 2.065 bpc
+  teach x3   recall 100%  answer   2.2 bits                                 P&P 2.067 bpc
+  correct x1 new name wins   0%, old still wins 100%, untouched recall 100% P&P 2.068 bpc
+  correct x2 new name wins 100%, old still wins   0%, untouched recall 100% P&P 2.069 bpc
+  correct x3 new name wins 100%, old still wins   0%, untouched recall 100% P&P 2.069 bpc
+  (232s)
+

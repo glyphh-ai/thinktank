@@ -1,0 +1,42 @@
+
+== Lotto Texas: 2,420 draws (train 1,694 / valid 242 / test 484), uniform 34.114 bits per draw
+  uniform      gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 316 vs 322.7 (p 0.66)  fail  0s
+  hot numbers  gain -0.0001 bits/draw  p 0.769  halves -0.0001 -0.0001  ticket 307 vs 322.7 (p 0.834)  fail  2s
+  bitspin      gain -2.7465 bits/draw  p 1  halves -2.7258 -2.7672  ticket 359 vs 322.7 (p 0.0121)  fail  13s
+  transformer  gain -0.0839 bits/draw  p 1  halves -0.0734 -0.0943  ticket 316 vs 322.7 (p 0.66)  fail  33s
+
+== Cash Five: 2,556 draws (train 1,789 / valid 255 / test 512), uniform 25.215 bits per draw
+  uniform      gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 342 vs 365.7 (p 0.923)  fail  0s
+  hot numbers  gain +0.0002 bits/draw  p 0.251  halves +0.0008 -0.0003  ticket 385 vs 365.7 (p 0.123)  fail  1s
+  bitspin      gain -2.4440 bits/draw  p 1  halves -2.5452 -2.3428  ticket 408 vs 365.7 (p 0.0055)  fail  11s
+  transformer  gain -0.0698 bits/draw  p 1  halves -0.0709 -0.0688  ticket 397 vs 365.7 (p 0.03)  fail  38s
+
+== Texas Two Step: 2,663 draws (train 1,864 / valid 266 / test 533), uniform 25.390 bits per draw
+  uniform      gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 256 vs 243.7 (p 0.189)  fail  0s
+  hot numbers  gain -0.0087 bits/draw  p 0.905  halves -0.0103 -0.0070  ticket 244 vs 243.7 (p 0.49)  fail  1s
+  bitspin      gain -2.3699 bits/draw  p 1  halves -2.5741 -2.1664  ticket 234 vs 243.7 (p 0.754)  fail  12s
+  transformer  gain -0.0663 bits/draw  p 1  halves -0.0620 -0.0705  ticket 238 vs 243.7 (p 0.657)  fail  33s
+
+== Pick 3: 26,316 draws (train 18,421 / valid 2,631 / test 5,264), uniform 9.966 bits per draw
+  uniform      gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 6 vs 5.3 (p 0.43)  fail  0s
+  hot numbers  gain +0.0000 bits/draw  p 0.344  halves +0.0000 -0.0000  ticket 4 vs 5.3 (p 0.77)  fail  4s
+  bitspin      gain -4.2097 bits/draw  p 1  halves -4.1788 -4.2407  ticket 3 vs 5.3 (p 0.896)  fail  42s
+  transformer  gain -0.0045 bits/draw  p 0.999  halves -0.0046 -0.0045  ticket 4 vs 5.3 (p 0.77)  fail  66s
+
+== Daily 4: 20,256 draws (train 14,179 / valid 2,025 / test 4,052), uniform 13.288 bits per draw
+  uniform      gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 1 vs 0.4 (p 0.333)  fail  0s
+  hot numbers  gain -0.0000 bits/draw  p 0.659  halves +0.0000 -0.0000  ticket 0 vs 0.4 (p 1)  fail  4s
+  bitspin      gain -4.8087 bits/draw  p 1  halves -4.8116 -4.8057  ticket 0 vs 0.4 (p 1)  fail  43s
+  transformer  gain -0.0023 bits/draw  p 0.978  halves -0.0005 -0.0040  ticket 0 vs 0.4 (p 1)  fail  88s
+
+== control: random: 26,316 draws (train 18,421 / valid 2,631 / test 5,264), uniform 9.966 bits per draw
+  uniform      gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 2 vs 5.3 (p 0.968)  fail  0s
+  hot numbers  gain +0.0001 bits/draw  p 0.331  halves -0.0001 +0.0004  ticket 3 vs 5.3 (p 0.896)  fail  4s
+  bitspin      gain -4.2670 bits/draw  p 1  halves -4.2867 -4.2474  ticket 4 vs 5.3 (p 0.77)  fail  45s
+  transformer  gain -0.0024 bits/draw  p 0.93  halves -0.0012 -0.0035  ticket 3 vs 5.3 (p 0.896)  fail  65s
+
+== control: planted: 26,316 draws (train 18,421 / valid 2,631 / test 5,264), uniform 9.966 bits per draw
+  uniform      gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 5 vs 5.3 (p 0.605)  fail  0s
+  hot numbers  gain -0.0004 bits/draw  p 0.965  halves -0.0001 -0.0007  ticket 7 vs 5.3 (p 0.277)  fail  4s
+  bitspin      gain -4.0479 bits/draw  p 1  halves -4.0104 -4.0854  ticket 11 vs 5.3 (p 0.0191)  fail  47s
+  transformer  gain -0.0060 bits/draw  p 1  halves -0.0081 -0.0040  ticket 9 vs 5.3 (p 0.0866)  fail  159s

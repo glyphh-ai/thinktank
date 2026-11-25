@@ -1,0 +1,6 @@
+train 4.02 MB, test 202,082 chars (Pride and Prejudice)
+
+bitspin (all heads)          adapting 1.800  frozen 1.982  (273 MB counters, train 170s)
+without soft (angle) heads   adapting 1.801  frozen 1.983  (231 MB counters, train 89s)
+without word heads           adapting 1.800  frozen 1.982  (210 MB counters, train 140s)
+byte contexts only           adapting 1.783  frozen 1.971  (147 MB counters, train 44s)

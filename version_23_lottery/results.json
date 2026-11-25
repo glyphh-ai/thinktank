@@ -1,0 +1,415 @@
+{
+ "Lotto Texas": {
+  "uniform": {
+   "draws": 484,
+   "gain_bits_per_draw": 0.0,
+   "p": 0.5,
+   "gain_first_half": 0.0,
+   "gain_second_half": 0.0,
+   "money": {
+    "hits": 316,
+    "expected": 322.66666666666663,
+    "p": 0.6604320676823381
+   },
+   "pass": false
+  },
+  "hot numbers": {
+   "draws": 484,
+   "gain_bits_per_draw": -0.0001211176504900271,
+   "p": 0.7692663776912132,
+   "gain_first_half": -0.0001424560415741644,
+   "gain_second_half": -9.977925940588982e-05,
+   "money": {
+    "hits": 307,
+    "expected": 322.66666666666663,
+    "p": 0.8344896815864002
+   },
+   "pass": false,
+   "settings": {
+    "prior": 1000.0,
+    "decay": 0.95
+   }
+  },
+  "bitspin": {
+   "draws": 484,
+   "gain_bits_per_draw": -2.746471235559075,
+   "p": 1.0,
+   "gain_first_half": -2.725767041269525,
+   "gain_second_half": -2.767175429848625,
+   "money": {
+    "hits": 359,
+    "expected": 322.66666666666663,
+    "p": 0.012087009608936782
+   },
+   "pass": false
+  },
+  "transformer": {
+   "draws": 484,
+   "gain_bits_per_draw": -0.08385478622856885,
+   "p": 0.9996623857380575,
+   "gain_first_half": -0.07342515267816138,
+   "gain_second_half": -0.09428441977897632,
+   "money": {
+    "hits": 316,
+    "expected": 322.66666666666663,
+    "p": 0.6604320676823381
+   },
+   "pass": false,
+   "train_steps": 1200
+  }
+ },
+ "Cash Five": {
+  "uniform": {
+   "draws": 512,
+   "gain_bits_per_draw": 0.0,
+   "p": 0.5,
+   "gain_first_half": 0.0,
+   "gain_second_half": 0.0,
+   "money": {
+    "hits": 342,
+    "expected": 365.7142857142857,
+    "p": 0.9230524579893726
+   },
+   "pass": false
+  },
+  "hot numbers": {
+   "draws": 512,
+   "gain_bits_per_draw": 0.0002470409949985042,
+   "p": 0.25145232416996177,
+   "gain_first_half": 0.0008235859593576367,
+   "gain_second_half": -0.0003295039693606283,
+   "money": {
+    "hits": 385,
+    "expected": 365.7142857142857,
+    "p": 0.12310107313219726
+   },
+   "pass": false,
+   "settings": {
+    "prior": 1000.0,
+    "decay": 0.99
+   }
+  },
+  "bitspin": {
+   "draws": 512,
+   "gain_bits_per_draw": -2.4439660585424305,
+   "p": 1.0,
+   "gain_first_half": -2.545160090761552,
+   "gain_second_half": -2.342772026323309,
+   "money": {
+    "hits": 408,
+    "expected": 365.7142857142857,
+    "p": 0.005501842033751466
+   },
+   "pass": false
+  },
+  "transformer": {
+   "draws": 512,
+   "gain_bits_per_draw": -0.06983493958901121,
+   "p": 0.9999090168958633,
+   "gain_first_half": -0.07087515239905073,
+   "gain_second_half": -0.0687947267789717,
+   "money": {
+    "hits": 397,
+    "expected": 365.7142857142857,
+    "p": 0.029974606574425917
+   },
+   "pass": false,
+   "train_steps": 1400
+  }
+ },
+ "Texas Two Step": {
+  "uniform": {
+   "draws": 533,
+   "gain_bits_per_draw": 0.0,
+   "p": 0.5,
+   "gain_first_half": 0.0,
+   "gain_second_half": 0.0,
+   "money": {
+    "hits": 256,
+    "expected": 243.65714285714284,
+    "p": 0.18945421886049973
+   },
+   "pass": false
+  },
+  "hot numbers": {
+   "draws": 533,
+   "gain_bits_per_draw": -0.008666798539977748,
+   "p": 0.9048903684022793,
+   "gain_first_half": -0.01031379253283849,
+   "gain_second_half": -0.007025973063944198,
+   "money": {
+    "hits": 244,
+    "expected": 243.65714285714284,
+    "p": 0.49025005332076993
+   },
+   "pass": false,
+   "settings": {
+    "prior": 100.0,
+    "decay": 1.0
+   }
+  },
+  "bitspin": {
+   "draws": 533,
+   "gain_bits_per_draw": -2.3698505752425416,
+   "p": 1.0,
+   "gain_first_half": -2.5740676595523895,
+   "gain_second_half": -2.166398348926364,
+   "money": {
+    "hits": 234,
+    "expected": 243.65714285714284,
+    "p": 0.7544145107409554
+   },
+   "pass": false
+  },
+  "transformer": {
+   "draws": 533,
+   "gain_bits_per_draw": -0.06626727220171617,
+   "p": 0.9999768593408018,
+   "gain_first_half": -0.06199103771314949,
+   "gain_second_half": -0.07052749083077511,
+   "money": {
+    "hits": 238,
+    "expected": 243.65714285714284,
+    "p": 0.656633202168351
+   },
+   "pass": false,
+   "train_steps": 1200
+  }
+ },
+ "Pick 3": {
+  "uniform": {
+   "draws": 5264,
+   "gain_bits_per_draw": 0.0,
+   "p": 0.5,
+   "gain_first_half": 0.0,
+   "gain_second_half": 0.0,
+   "money": {
+    "hits": 6,
+    "expected": 5.264,
+    "p": 0.43028108810770027
+   },
+   "pass": false
+  },
+  "hot numbers": {
+   "draws": 5264,
+   "gain_bits_per_draw": 1.3303754862328813e-05,
+   "p": 0.3440578417335182,
+   "gain_first_half": 3.62008096897876e-05,
+   "gain_second_half": -9.59329996512998e-06,
+   "money": {
+    "hits": 4,
+    "expected": 5.264,
+    "p": 0.7702391896185442
+   },
+   "pass": false,
+   "settings": {
+    "prior": 1000.0,
+    "decay": 0.95
+   }
+  },
+  "bitspin": {
+   "draws": 5264,
+   "gain_bits_per_draw": -4.209736082622937,
+   "p": 1.0,
+   "gain_first_half": -4.178750052697004,
+   "gain_second_half": -4.2407221125488705,
+   "money": {
+    "hits": 3,
+    "expected": 5.264,
+    "p": 0.8960107360612781
+   },
+   "pass": false
+  },
+  "transformer": {
+   "draws": 5264,
+   "gain_bits_per_draw": -0.00453559510855428,
+   "p": 0.9993407208643748,
+   "gain_first_half": -0.004616769523849889,
+   "gain_second_half": -0.00445442069325867,
+   "money": {
+    "hits": 4,
+    "expected": 5.264,
+    "p": 0.7702391896185442
+   },
+   "pass": false,
+   "train_steps": 2200
+  }
+ },
+ "Daily 4": {
+  "uniform": {
+   "draws": 4052,
+   "gain_bits_per_draw": 0.0,
+   "p": 0.5,
+   "gain_first_half": 0.0,
+   "gain_second_half": 0.0,
+   "money": {
+    "hits": 1,
+    "expected": 0.4052,
+    "p": 0.3331700821762726
+   },
+   "pass": false
+  },
+  "hot numbers": {
+   "draws": 4052,
+   "gain_bits_per_draw": -1.7676817507579872e-05,
+   "p": 0.6585041083050567,
+   "gain_first_half": 1.3429965465338947e-05,
+   "gain_second_half": -4.878360048049869e-05,
+   "money": {
+    "hits": 0,
+    "expected": 0.4052,
+    "p": 1.0
+   },
+   "pass": false,
+   "settings": {
+    "prior": 1000.0,
+    "decay": 0.95
+   }
+  },
+  "bitspin": {
+   "draws": 4052,
+   "gain_bits_per_draw": -4.8086929134776515,
+   "p": 1.0,
+   "gain_first_half": -4.811649673496469,
+   "gain_second_half": -4.8057361534588345,
+   "money": {
+    "hits": 0,
+    "expected": 0.4052,
+    "p": 1.0
+   },
+   "pass": false
+  },
+  "transformer": {
+   "draws": 4052,
+   "gain_bits_per_draw": -0.0022536511386158633,
+   "p": 0.9783598850998925,
+   "gain_first_half": -0.00052749127040375,
+   "gain_second_half": -0.003979811006827977,
+   "money": {
+    "hits": 0,
+    "expected": 0.4052,
+    "p": 1.0
+   },
+   "pass": false,
+   "train_steps": 3000
+  }
+ },
+ "control: random": {
+  "uniform": {
+   "draws": 5264,
+   "gain_bits_per_draw": 0.0,
+   "p": 0.5,
+   "gain_first_half": 0.0,
+   "gain_second_half": 0.0,
+   "money": {
+    "hits": 2,
+    "expected": 5.264,
+    "p": 0.967644587199701
+   },
+   "pass": false
+  },
+  "hot numbers": {
+   "draws": 5264,
+   "gain_bits_per_draw": 0.00014442240768295766,
+   "p": 0.3313490691556671,
+   "gain_first_half": -0.00010269194262408558,
+   "gain_second_half": 0.0003915367579900009,
+   "money": {
+    "hits": 3,
+    "expected": 5.264,
+    "p": 0.8960107360612781
+   },
+   "pass": false,
+   "settings": {
+    "prior": 100.0,
+    "decay": 0.95
+   }
+  },
+  "bitspin": {
+   "draws": 5264,
+   "gain_bits_per_draw": -4.267026389510424,
+   "p": 1.0,
+   "gain_first_half": -4.286700082975148,
+   "gain_second_half": -4.2473526960457,
+   "money": {
+    "hits": 4,
+    "expected": 5.264,
+    "p": 0.7702391896185442
+   },
+   "pass": false
+  },
+  "transformer": {
+   "draws": 5264,
+   "gain_bits_per_draw": -0.0023586420308756573,
+   "p": 0.9303965100877131,
+   "gain_first_half": -0.0012474224022720323,
+   "gain_second_half": -0.0034698616594792822,
+   "money": {
+    "hits": 3,
+    "expected": 5.264,
+    "p": 0.8960107360612781
+   },
+   "pass": false,
+   "train_steps": 2200
+  }
+ },
+ "control: planted": {
+  "uniform": {
+   "draws": 5264,
+   "gain_bits_per_draw": 0.0,
+   "p": 0.5,
+   "gain_first_half": 0.0,
+   "gain_second_half": 0.0,
+   "money": {
+    "hits": 5,
+    "expected": 5.264,
+    "p": 0.6046525765473518
+   },
+   "pass": false
+  },
+  "hot numbers": {
+   "draws": 5264,
+   "gain_bits_per_draw": -0.00035829510499657156,
+   "p": 0.9653098967761508,
+   "gain_first_half": -5.729843069348927e-05,
+   "gain_second_half": -0.0006592917792996539,
+   "money": {
+    "hits": 7,
+    "expected": 5.264,
+    "p": 0.2772914888910492
+   },
+   "pass": false,
+   "settings": {
+    "prior": 1000.0,
+    "decay": 0.999
+   }
+  },
+  "bitspin": {
+   "draws": 5264,
+   "gain_bits_per_draw": -4.04790171271915,
+   "p": 1.0,
+   "gain_first_half": -4.010363851066816,
+   "gain_second_half": -4.085439574371483,
+   "money": {
+    "hits": 11,
+    "expected": 5.264,
+    "p": 0.01909220635665353
+   },
+   "pass": false
+  },
+  "transformer": {
+   "draws": 5264,
+   "gain_bits_per_draw": -0.006033228886407483,
+   "p": 0.9996793488162788,
+   "gain_first_half": -0.008097796998731557,
+   "gain_second_half": -0.003968660774083409,
+   "money": {
+    "hits": 9,
+    "expected": 5.264,
+    "p": 0.08659329259330562
+   },
+   "pass": false,
+   "train_steps": 5600
+  }
+ }
+}

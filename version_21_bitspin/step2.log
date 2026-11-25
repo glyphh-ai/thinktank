@@ -1,0 +1,19 @@
+transformer d=384 L=6: 10.9M params (44 MB fp32), ctx 256, train 4.02 MB
+  step   500  loss 2.592 bits  65s
+  step  1000  loss 2.273 bits  130s
+  step  1500  loss 2.053 bits  194s
+  step  2000  loss 1.908 bits  259s
+  step  2500  loss 1.882 bits  324s
+  step  3000  loss 1.806 bits  389s
+  step  3500  loss 1.741 bits  454s
+  step  4000  loss 1.663 bits  519s
+  step  4500  loss 1.669 bits  584s
+  step  5000  loss 1.688 bits  650s
+  step  5500  loss 1.593 bits  715s
+  step  6000  loss 1.627 bits  780s
+  step  6500  loss 1.593 bits  846s
+  step  7000  loss 1.587 bits  911s
+  step  7500  loss 1.582 bits  977s
+  step  8000  loss 1.545 bits  1042s
+
+transformer frozen 1.773 bits/char on Pride and Prejudice (202,082 chars, train 1044s)

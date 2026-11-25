@@ -1,0 +1,442 @@
+[
+ {
+  "model": "transformer lr=1e-06 x1",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=1e-06 x1",
+  "phase": "teach x1",
+  "pp_bpc": 2.0720911026000977,
+  "recall": 0.05,
+  "answer_bits": 30.594436190923055
+ },
+ {
+  "model": "transformer lr=1e-06 x1",
+  "phase": "teach x2",
+  "pp_bpc": 2.0844974517822266,
+  "recall": 0.056666666666666664,
+  "answer_bits": 27.79278156598409
+ },
+ {
+  "model": "transformer lr=1e-06 x1",
+  "phase": "teach x3",
+  "pp_bpc": 2.094991445541382,
+  "recall": 0.06,
+  "answer_bits": 26.185775734583537
+ },
+ {
+  "model": "transformer lr=1e-06 x1",
+  "phase": "correct x1",
+  "pp_bpc": 2.0998024940490723,
+  "new_wins": 0.09,
+  "old_wins": 0.03,
+  "untouched_recall": 0.07,
+  "answer_bits": 25.939906368255617
+ },
+ {
+  "model": "transformer lr=1e-06 x1",
+  "phase": "correct x2",
+  "pp_bpc": 2.1039185523986816,
+  "new_wins": 0.09,
+  "old_wins": 0.03,
+  "untouched_recall": 0.075,
+  "answer_bits": 25.365937337875366
+ },
+ {
+  "model": "transformer lr=1e-06 x1",
+  "phase": "correct x3",
+  "pp_bpc": 2.1077072620391846,
+  "new_wins": 0.09,
+  "old_wins": 0.03,
+  "untouched_recall": 0.075,
+  "answer_bits": 24.856285057067872
+ },
+ {
+  "model": "transformer lr=1e-06 x3",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=1e-06 x3",
+  "phase": "teach x1",
+  "pp_bpc": 2.094059467315674,
+  "recall": 0.06,
+  "answer_bits": 26.01571974436442
+ },
+ {
+  "model": "transformer lr=1e-06 x3",
+  "phase": "teach x2",
+  "pp_bpc": 2.1238622665405273,
+  "recall": 0.06,
+  "answer_bits": 23.30470251719157
+ },
+ {
+  "model": "transformer lr=1e-06 x3",
+  "phase": "teach x3",
+  "pp_bpc": 2.148008346557617,
+  "recall": 0.04666666666666667,
+  "answer_bits": 21.63526927947998
+ },
+ {
+  "model": "transformer lr=1e-06 x3",
+  "phase": "correct x1",
+  "pp_bpc": 2.1592538356781006,
+  "new_wins": 0.07,
+  "old_wins": 0.03,
+  "untouched_recall": 0.06,
+  "answer_bits": 21.539201459884644
+ },
+ {
+  "model": "transformer lr=1e-06 x3",
+  "phase": "correct x2",
+  "pp_bpc": 2.168067216873169,
+  "new_wins": 0.07,
+  "old_wins": 0.06,
+  "untouched_recall": 0.06,
+  "answer_bits": 20.802623100280762
+ },
+ {
+  "model": "transformer lr=1e-06 x3",
+  "phase": "correct x3",
+  "pp_bpc": 2.175859212875366,
+  "new_wins": 0.08,
+  "old_wins": 0.05,
+  "untouched_recall": 0.06,
+  "answer_bits": 20.164057865142823
+ },
+ {
+  "model": "transformer lr=3e-06 x1",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=3e-06 x1",
+  "phase": "teach x1",
+  "pp_bpc": 2.121133804321289,
+  "recall": 0.06,
+  "answer_bits": 23.573258889516193
+ },
+ {
+  "model": "transformer lr=3e-06 x1",
+  "phase": "teach x2",
+  "pp_bpc": 2.1550002098083496,
+  "recall": 0.04666666666666667,
+  "answer_bits": 21.218888645172118
+ },
+ {
+  "model": "transformer lr=3e-06 x1",
+  "phase": "teach x3",
+  "pp_bpc": 2.1814818382263184,
+  "recall": 0.05333333333333334,
+  "answer_bits": 19.912867781321207
+ },
+ {
+  "model": "transformer lr=3e-06 x1",
+  "phase": "correct x1",
+  "pp_bpc": 2.192791223526001,
+  "new_wins": 0.06,
+  "old_wins": 0.05,
+  "untouched_recall": 0.065,
+  "answer_bits": 20.160952262878418
+ },
+ {
+  "model": "transformer lr=3e-06 x1",
+  "phase": "correct x2",
+  "pp_bpc": 2.200819492340088,
+  "new_wins": 0.06,
+  "old_wins": 0.05,
+  "untouched_recall": 0.06,
+  "answer_bits": 19.4814661693573
+ },
+ {
+  "model": "transformer lr=3e-06 x1",
+  "phase": "correct x3",
+  "pp_bpc": 2.2077677249908447,
+  "new_wins": 0.08,
+  "old_wins": 0.05,
+  "untouched_recall": 0.065,
+  "answer_bits": 18.91817883491516
+ },
+ {
+  "model": "transformer lr=3e-06 x3",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=3e-06 x3",
+  "phase": "teach x1",
+  "pp_bpc": 2.191774368286133,
+  "recall": 0.05,
+  "answer_bits": 19.798990284601846
+ },
+ {
+  "model": "transformer lr=3e-06 x3",
+  "phase": "teach x2",
+  "pp_bpc": 2.2501511573791504,
+  "recall": 0.056666666666666664,
+  "answer_bits": 17.771179103851317
+ },
+ {
+  "model": "transformer lr=3e-06 x3",
+  "phase": "teach x3",
+  "pp_bpc": 2.292752265930176,
+  "recall": 0.06666666666666667,
+  "answer_bits": 16.650240376790364
+ },
+ {
+  "model": "transformer lr=3e-06 x3",
+  "phase": "correct x1",
+  "pp_bpc": 2.313208818435669,
+  "new_wins": 0.06,
+  "old_wins": 0.05,
+  "untouched_recall": 0.07,
+  "answer_bits": 17.349244241714477
+ },
+ {
+  "model": "transformer lr=3e-06 x3",
+  "phase": "correct x2",
+  "pp_bpc": 2.324841260910034,
+  "new_wins": 0.11,
+  "old_wins": 0.04,
+  "untouched_recall": 0.07,
+  "answer_bits": 16.487569456100463
+ },
+ {
+  "model": "transformer lr=3e-06 x3",
+  "phase": "correct x3",
+  "pp_bpc": 2.3361575603485107,
+  "new_wins": 0.14,
+  "old_wins": 0.05,
+  "untouched_recall": 0.065,
+  "answer_bits": 15.761215896606446
+ },
+ {
+  "model": "transformer lr=1e-05 x1",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=1e-05 x1",
+  "phase": "teach x1",
+  "pp_bpc": 2.284233331680298,
+  "recall": 0.06333333333333334,
+  "answer_bits": 17.9047442595164
+ },
+ {
+  "model": "transformer lr=1e-05 x1",
+  "phase": "teach x2",
+  "pp_bpc": 2.352220058441162,
+  "recall": 0.06666666666666667,
+  "answer_bits": 16.427662982940674
+ },
+ {
+  "model": "transformer lr=1e-05 x1",
+  "phase": "teach x3",
+  "pp_bpc": 2.3851466178894043,
+  "recall": 0.07333333333333333,
+  "answer_bits": 15.527755540211995
+ },
+ {
+  "model": "transformer lr=1e-05 x1",
+  "phase": "correct x1",
+  "pp_bpc": 2.4046854972839355,
+  "new_wins": 0.04,
+  "old_wins": 0.08,
+  "untouched_recall": 0.09,
+  "answer_bits": 16.726343832015992
+ },
+ {
+  "model": "transformer lr=1e-05 x1",
+  "phase": "correct x2",
+  "pp_bpc": 2.4104318618774414,
+  "new_wins": 0.1,
+  "old_wins": 0.06,
+  "untouched_recall": 0.07,
+  "answer_bits": 15.83913010597229
+ },
+ {
+  "model": "transformer lr=1e-05 x1",
+  "phase": "correct x3",
+  "pp_bpc": 2.417039632797241,
+  "new_wins": 0.13,
+  "old_wins": 0.08,
+  "untouched_recall": 0.065,
+  "answer_bits": 15.098437738418578
+ },
+ {
+  "model": "transformer lr=1e-05 x3",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=1e-05 x3",
+  "phase": "teach x1",
+  "pp_bpc": 2.467707395553589,
+  "recall": 0.06333333333333334,
+  "answer_bits": 16.6028164545695
+ },
+ {
+  "model": "transformer lr=1e-05 x3",
+  "phase": "teach x2",
+  "pp_bpc": 2.514249801635742,
+  "recall": 0.08,
+  "answer_bits": 15.254084294637044
+ },
+ {
+  "model": "transformer lr=1e-05 x3",
+  "phase": "teach x3",
+  "pp_bpc": 2.5234503746032715,
+  "recall": 0.07666666666666666,
+  "answer_bits": 13.853130187988281
+ },
+ {
+  "model": "transformer lr=1e-05 x3",
+  "phase": "correct x1",
+  "pp_bpc": 2.5459671020507812,
+  "new_wins": 0.06,
+  "old_wins": 0.09,
+  "untouched_recall": 0.085,
+  "answer_bits": 15.52448052406311
+ },
+ {
+  "model": "transformer lr=1e-05 x3",
+  "phase": "correct x2",
+  "pp_bpc": 2.5546579360961914,
+  "new_wins": 0.13,
+  "old_wins": 0.1,
+  "untouched_recall": 0.09,
+  "answer_bits": 13.910497064590453
+ },
+ {
+  "model": "transformer lr=1e-05 x3",
+  "phase": "correct x3",
+  "pp_bpc": 2.558504581451416,
+  "new_wins": 0.3,
+  "old_wins": 0.07,
+  "untouched_recall": 0.075,
+  "answer_bits": 12.416037492752075
+ },
+ {
+  "model": "transformer lr=3e-05 x1",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=3e-05 x1",
+  "phase": "teach x1",
+  "pp_bpc": 2.6768381595611572,
+  "recall": 0.06333333333333334,
+  "answer_bits": 16.47229873339335
+ },
+ {
+  "model": "transformer lr=3e-05 x1",
+  "phase": "teach x2",
+  "pp_bpc": 2.7253098487854004,
+  "recall": 0.07333333333333333,
+  "answer_bits": 15.142382850646973
+ },
+ {
+  "model": "transformer lr=3e-05 x1",
+  "phase": "teach x3",
+  "pp_bpc": 2.698373317718506,
+  "recall": 0.11,
+  "answer_bits": 13.71205904006958
+ },
+ {
+  "model": "transformer lr=3e-05 x1",
+  "phase": "correct x1",
+  "pp_bpc": 2.740157127380371,
+  "new_wins": 0.05,
+  "old_wins": 0.11,
+  "untouched_recall": 0.085,
+  "answer_bits": 15.737014713287353
+ },
+ {
+  "model": "transformer lr=3e-05 x1",
+  "phase": "correct x2",
+  "pp_bpc": 2.7231392860412598,
+  "new_wins": 0.12,
+  "old_wins": 0.09,
+  "untouched_recall": 0.08,
+  "answer_bits": 14.028336491584778
+ },
+ {
+  "model": "transformer lr=3e-05 x1",
+  "phase": "correct x3",
+  "pp_bpc": 2.7098491191864014,
+  "new_wins": 0.24,
+  "old_wins": 0.09,
+  "untouched_recall": 0.07,
+  "answer_bits": 12.201469144821168
+ },
+ {
+  "model": "transformer lr=3e-05 x3",
+  "phase": "before",
+  "pp_bpc": 2.0437965393066406,
+  "recall": 0.05,
+  "answer_bits": 45.6300337600708
+ },
+ {
+  "model": "transformer lr=3e-05 x3",
+  "phase": "teach x1",
+  "pp_bpc": 3.1016743183135986,
+  "recall": 0.04666666666666667,
+  "answer_bits": 16.451118459701537
+ },
+ {
+  "model": "transformer lr=3e-05 x3",
+  "phase": "teach x2",
+  "pp_bpc": 3.100182294845581,
+  "recall": 0.07666666666666666,
+  "answer_bits": 14.993224280675252
+ },
+ {
+  "model": "transformer lr=3e-05 x3",
+  "phase": "teach x3",
+  "pp_bpc": 3.0026297569274902,
+  "recall": 0.18333333333333332,
+  "answer_bits": 12.578586643536886
+ },
+ {
+  "model": "transformer lr=3e-05 x3",
+  "phase": "correct x1",
+  "pp_bpc": 3.165294885635376,
+  "new_wins": 0.15,
+  "old_wins": 0.1,
+  "untouched_recall": 0.09,
+  "answer_bits": 14.848101625442505
+ },
+ {
+  "model": "transformer lr=3e-05 x3",
+  "phase": "correct x2",
+  "pp_bpc": 3.089730739593506,
+  "new_wins": 0.4,
+  "old_wins": 0.09,
+  "untouched_recall": 0.11,
+  "answer_bits": 11.62502597808838
+ },
+ {
+  "model": "transformer lr=3e-05 x3",
+  "phase": "correct x3",
+  "pp_bpc": 3.0444512367248535,
+  "new_wins": 0.74,
+  "old_wins": 0.06,
+  "untouched_recall": 0.135,
+  "answer_bits": 8.292917838096619
+ }
+]

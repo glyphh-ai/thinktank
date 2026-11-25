@@ -1,0 +1,7 @@
+control: random   K=1 beta=0.0   gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 3 vs 5.3 (p 0.896)  top-10 44 vs 52.6 (p 0.9)  fail  42s
+control: planted  K=1 beta=0.3   gain +0.1647 bits/draw  p 2.31e-38  halves +0.1657 +0.1636  ticket 22 vs 5.3 (p 4.29e-08)  top-10 194 vs 52.6 (p 1.78e-51)  PASS  45s
+Lotto Texas       K=2 beta=0.01  gain -0.0033 bits/draw  p 0.978  halves -0.0025 -0.0041  ticket 294 vs 322.7 (p 0.962)  fail  58s
+Cash Five         K=1 beta=0.0   gain -0.0000 bits/draw  p 0.501  halves -0.0000 -0.0000  ticket 356 vs 365.7 (p 0.72)  fail  32s
+Texas Two Step    K=4 beta=0.03  gain -0.0013 bits/draw  p 0.62  halves -0.0032 +0.0006  ticket 248 vs 243.7 (p 0.378)  fail  32s
+Pick 3            K=1 beta=0.01  gain -0.0003 bits/draw  p 0.782  halves -0.0005 -0.0001  ticket 10 vs 5.3 (p 0.0424)  top-10 67 vs 52.6 (p 0.031)  fail  44s
+Daily 4           K=1 beta=0.0   gain +0.0000 bits/draw  p 0.5  halves +0.0000 +0.0000  ticket 0 vs 0.4 (p 1)  top-10 1 vs 4.1 (p 0.983)  fail  49s

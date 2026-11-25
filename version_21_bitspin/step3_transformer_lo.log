@@ -1,0 +1,82 @@
+300 invented facts, e.g. "Piheba Doti keeps a hawk named Nipira."; recall = right name beats 20 others; a third are corrected later
+
+transformer lr=1e-06 x1
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   5%  answer  30.6 bits                                 P&P 2.072 bpc
+  teach x2   recall   6%  answer  27.8 bits                                 P&P 2.084 bpc
+  teach x3   recall   6%  answer  26.2 bits                                 P&P 2.095 bpc
+  correct x1 new name wins   9%, old still wins   3%, untouched recall   7% P&P 2.100 bpc
+  correct x2 new name wins   9%, old still wins   3%, untouched recall   8% P&P 2.104 bpc
+  correct x3 new name wins   9%, old still wins   3%, untouched recall   8% P&P 2.108 bpc
+  (19s)
+
+transformer lr=1e-06 x3
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  26.0 bits                                 P&P 2.094 bpc
+  teach x2   recall   6%  answer  23.3 bits                                 P&P 2.124 bpc
+  teach x3   recall   5%  answer  21.6 bits                                 P&P 2.148 bpc
+  correct x1 new name wins   7%, old still wins   3%, untouched recall   6% P&P 2.159 bpc
+  correct x2 new name wins   7%, old still wins   6%, untouched recall   6% P&P 2.168 bpc
+  correct x3 new name wins   8%, old still wins   5%, untouched recall   6% P&P 2.176 bpc
+  (38s)
+
+transformer lr=3e-06 x1
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  23.6 bits                                 P&P 2.121 bpc
+  teach x2   recall   5%  answer  21.2 bits                                 P&P 2.155 bpc
+  teach x3   recall   5%  answer  19.9 bits                                 P&P 2.181 bpc
+  correct x1 new name wins   6%, old still wins   5%, untouched recall   6% P&P 2.193 bpc
+  correct x2 new name wins   6%, old still wins   5%, untouched recall   6% P&P 2.201 bpc
+  correct x3 new name wins   8%, old still wins   5%, untouched recall   6% P&P 2.208 bpc
+  (19s)
+
+transformer lr=3e-06 x3
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   5%  answer  19.8 bits                                 P&P 2.192 bpc
+  teach x2   recall   6%  answer  17.8 bits                                 P&P 2.250 bpc
+  teach x3   recall   7%  answer  16.7 bits                                 P&P 2.293 bpc
+  correct x1 new name wins   6%, old still wins   5%, untouched recall   7% P&P 2.313 bpc
+  correct x2 new name wins  11%, old still wins   4%, untouched recall   7% P&P 2.325 bpc
+  correct x3 new name wins  14%, old still wins   5%, untouched recall   6% P&P 2.336 bpc
+  (38s)
+
+transformer lr=1e-05 x1
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  17.9 bits                                 P&P 2.284 bpc
+  teach x2   recall   7%  answer  16.4 bits                                 P&P 2.352 bpc
+  teach x3   recall   7%  answer  15.5 bits                                 P&P 2.385 bpc
+  correct x1 new name wins   4%, old still wins   8%, untouched recall   9% P&P 2.405 bpc
+  correct x2 new name wins  10%, old still wins   6%, untouched recall   7% P&P 2.410 bpc
+  correct x3 new name wins  13%, old still wins   8%, untouched recall   6% P&P 2.417 bpc
+  (19s)
+
+transformer lr=1e-05 x3
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  16.6 bits                                 P&P 2.468 bpc
+  teach x2   recall   8%  answer  15.3 bits                                 P&P 2.514 bpc
+  teach x3   recall   8%  answer  13.9 bits                                 P&P 2.523 bpc
+  correct x1 new name wins   6%, old still wins   9%, untouched recall   8% P&P 2.546 bpc
+  correct x2 new name wins  13%, old still wins  10%, untouched recall   9% P&P 2.555 bpc
+  correct x3 new name wins  30%, old still wins   7%, untouched recall   8% P&P 2.559 bpc
+  (38s)
+
+transformer lr=3e-05 x1
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  16.5 bits                                 P&P 2.677 bpc
+  teach x2   recall   7%  answer  15.1 bits                                 P&P 2.725 bpc
+  teach x3   recall  11%  answer  13.7 bits                                 P&P 2.698 bpc
+  correct x1 new name wins   5%, old still wins  11%, untouched recall   8% P&P 2.740 bpc
+  correct x2 new name wins  12%, old still wins   9%, untouched recall   8% P&P 2.723 bpc
+  correct x3 new name wins  24%, old still wins   9%, untouched recall   7% P&P 2.710 bpc
+  (19s)
+
+transformer lr=3e-05 x3
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   5%  answer  16.5 bits                                 P&P 3.102 bpc
+  teach x2   recall   8%  answer  15.0 bits                                 P&P 3.100 bpc
+  teach x3   recall  18%  answer  12.6 bits                                 P&P 3.003 bpc
+  correct x1 new name wins  15%, old still wins  10%, untouched recall   9% P&P 3.165 bpc
+  correct x2 new name wins  40%, old still wins   9%, untouched recall  11% P&P 3.090 bpc
+  correct x3 new name wins  74%, old still wins   6%, untouched recall  14% P&P 3.044 bpc
+  (38s)
+

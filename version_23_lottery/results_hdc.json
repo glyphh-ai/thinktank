@@ -1,0 +1,141 @@
+{
+ "control: random": {
+  "draws": 5264,
+  "gain_bits_per_draw": 0.0,
+  "p": 0.5,
+  "gain_first_half": 0.0,
+  "gain_second_half": 0.0,
+  "money": {
+   "hits": 3,
+   "expected": 5.264,
+   "p": 0.8960107360612781
+  },
+  "pass": false,
+  "settings": {
+   "K": 1,
+   "beta": 0.0
+  },
+  "top10": {
+   "hits": 44,
+   "expected": 52.64,
+   "p": 0.900056953698939
+  }
+ },
+ "control: planted": {
+  "draws": 5264,
+  "gain_bits_per_draw": 0.16467584834595764,
+  "p": 2.3103503184148894e-38,
+  "gain_first_half": 0.16574521632078426,
+  "gain_second_half": 0.16360648037113099,
+  "money": {
+   "hits": 22,
+   "expected": 5.264,
+   "p": 4.2888802642944684e-08
+  },
+  "pass": true,
+  "settings": {
+   "K": 1,
+   "beta": 0.3
+  },
+  "top10": {
+   "hits": 194,
+   "expected": 52.64,
+   "p": 1.7796806620820307e-51
+  }
+ },
+ "Lotto Texas": {
+  "draws": 484,
+  "gain_bits_per_draw": -0.003261907842428014,
+  "p": 0.9783176693699697,
+  "gain_first_half": -0.0024714996840747086,
+  "gain_second_half": -0.004052316000781319,
+  "money": {
+   "hits": 294,
+   "expected": 322.66666666666663,
+   "p": 0.962352503016324
+  },
+  "pass": false,
+  "settings": {
+   "K": 2,
+   "beta": 0.01
+  }
+ },
+ "Cash Five": {
+  "draws": 512,
+  "gain_bits_per_draw": -3.552713678800501e-15,
+  "p": 0.5014173247151079,
+  "gain_first_half": -3.552713678800501e-15,
+  "gain_second_half": -3.552713678800501e-15,
+  "money": {
+   "hits": 356,
+   "expected": 365.7142857142857,
+   "p": 0.7204257128582928
+  },
+  "pass": false,
+  "settings": {
+   "K": 1,
+   "beta": 0.0
+  }
+ },
+ "Texas Two Step": {
+  "draws": 533,
+  "gain_bits_per_draw": -0.0013186240849766937,
+  "p": 0.6200264765618672,
+  "gain_first_half": -0.0032359453880111957,
+  "gain_second_half": 0.0005915162393947576,
+  "money": {
+   "hits": 248,
+   "expected": 243.65714285714284,
+   "p": 0.37843344433362436
+  },
+  "pass": false,
+  "settings": {
+   "K": 4,
+   "beta": 0.03
+  }
+ },
+ "Pick 3": {
+  "draws": 5264,
+  "gain_bits_per_draw": -0.000272632463364973,
+  "p": 0.7823478820520691,
+  "gain_first_half": -0.00046865667374086477,
+  "gain_second_half": -7.660825298908118e-05,
+  "money": {
+   "hits": 10,
+   "expected": 5.264,
+   "p": 0.04236004552838922
+  },
+  "pass": false,
+  "settings": {
+   "K": 1,
+   "beta": 0.01
+  },
+  "top10": {
+   "hits": 67,
+   "expected": 52.64,
+   "p": 0.030998769308033056
+  }
+ },
+ "Daily 4": {
+  "draws": 4052,
+  "gain_bits_per_draw": 0.0,
+  "p": 0.5,
+  "gain_first_half": 0.0,
+  "gain_second_half": 0.0,
+  "money": {
+   "hits": 0,
+   "expected": 0.4052,
+   "p": 1.0
+  },
+  "pass": false,
+  "settings": {
+   "K": 1,
+   "beta": 0.0
+  },
+  "top10": {
+   "hits": 1,
+   "expected": 4.0520000000000005,
+   "p": 0.9826476502875188
+  }
+ }
+}

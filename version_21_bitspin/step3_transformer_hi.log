@@ -1,0 +1,82 @@
+300 invented facts, e.g. "Piheba Doti keeps a hawk named Nipira."; recall = right name beats 20 others; a third are corrected later
+
+transformer lr=0.0001 x1
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  16.9 bits                                 P&P 4.386 bpc
+  teach x2   recall   7%  answer  15.9 bits                                 P&P 4.634 bpc
+  teach x3   recall   7%  answer  14.7 bits                                 P&P 4.655 bpc
+  correct x1 new name wins  10%, old still wins  11%, untouched recall   6% P&P 4.975 bpc
+  correct x2 new name wins  20%, old still wins   9%, untouched recall   6% P&P 4.817 bpc
+  correct x3 new name wins  55%, old still wins   7%, untouched recall   6% P&P 4.941 bpc
+  (20s)
+
+transformer lr=0.0001 x3
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  17.2 bits                                 P&P 6.245 bpc
+  teach x2   recall   6%  answer  15.9 bits                                 P&P 6.322 bpc
+  teach x3   recall  10%  answer  14.6 bits                                 P&P 7.241 bpc
+  correct x1 new name wins  15%, old still wins   9%, untouched recall   8% P&P 7.089 bpc
+  correct x2 new name wins  33%, old still wins   6%, untouched recall  10% P&P 7.028 bpc
+  correct x3 new name wins  66%, old still wins   4%, untouched recall   9% P&P 6.799 bpc
+  (38s)
+
+transformer lr=0.0003 x1
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  17.7 bits                                 P&P 9.292 bpc
+  teach x2   recall   9%  answer  17.2 bits                                 P&P 9.681 bpc
+  teach x3   recall   9%  answer  16.6 bits                                 P&P 10.358 bpc
+  correct x1 new name wins  10%, old still wins   6%, untouched recall   7% P&P 9.339 bpc
+  correct x2 new name wins  16%, old still wins   4%, untouched recall   6% P&P 8.943 bpc
+  correct x3 new name wins  21%, old still wins  10%, untouched recall   8% P&P 9.321 bpc
+  (19s)
+
+transformer lr=0.0003 x3
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   6%  answer  17.6 bits                                 P&P 7.762 bpc
+  teach x2   recall   6%  answer  17.3 bits                                 P&P 8.038 bpc
+  teach x3   recall   8%  answer  17.1 bits                                 P&P 9.107 bpc
+  correct x1 new name wins  12%, old still wins   6%, untouched recall   7% P&P 8.496 bpc
+  correct x2 new name wins  20%, old still wins   7%, untouched recall   6% P&P 9.760 bpc
+  correct x3 new name wins  23%, old still wins   6%, untouched recall   4% P&P 10.144 bpc
+  (38s)
+
+transformer lr=0.001 x1
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   4%  answer  18.6 bits                                 P&P 9.400 bpc
+  teach x2   recall   6%  answer  18.1 bits                                 P&P 9.508 bpc
+  teach x3   recall   7%  answer  17.8 bits                                 P&P 9.656 bpc
+  correct x1 new name wins  12%, old still wins   6%, untouched recall   4% P&P 8.697 bpc
+  correct x2 new name wins  12%, old still wins  10%, untouched recall   6% P&P 9.591 bpc
+  correct x3 new name wins  17%, old still wins   6%, untouched recall   6% P&P 10.873 bpc
+  (19s)
+
+transformer lr=0.001 x3
+  before     recall   5%  answer  45.6 bits                                 P&P 2.044 bpc
+  teach x1   recall   5%  answer  19.5 bits                                 P&P 9.818 bpc
+  teach x2   recall   6%  answer  19.0 bits                                 P&P 8.729 bpc
+  teach x3   recall   6%  answer  18.5 bits                                 P&P 8.199 bpc
+  correct x1 new name wins  15%, old still wins   4%, untouched recall   4% P&P 8.834 bpc
+  correct x2 new name wins   8%, old still wins   5%, untouched recall   4% P&P 8.888 bpc
+  correct x3 new name wins  14%, old still wins   3%, untouched recall   6% P&P 9.321 bpc
+  (38s)
+
+Traceback (most recent call last):
+  File "/Users/timmetim/development/thinktank/version_21_bitspin/step3_adjust.py", line 238, in <module>
+    main(a.facts, [float(x) for x in a.lrs.split(",")], [int(x) for x in a.steps.split(",")],
+  File "/Users/timmetim/development/thinktank/version_21_bitspin/step3_adjust.py", line 227, in main
+    json.dump(rows, fh, indent=1)
+  File "/Users/timmetim/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+                 ^^^^^^^^
+  File "/Users/timmetim/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/json/encoder.py", line 430, in _iterencode
+    yield from _iterencode_list(o, _current_indent_level)
+  File "/Users/timmetim/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/Users/timmetim/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/Users/timmetim/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/Users/timmetim/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type float32 is not JSON serializable
